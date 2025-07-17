@@ -1,4 +1,5 @@
 import Education from "../components/Education";
+import Experience from "../components/Experience";
 import Hero from "../components/Hero";
 import About from "../sections/About";
 
@@ -8,6 +9,7 @@ const Home = () => {
       <Hero />
       <About/>
       <Education/>
+      <Experience/>
       {/* other sections will go below */}
     </div>
   );
