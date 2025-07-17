@@ -1,7 +1,7 @@
 import Education from "../components/Education";
 import Experience from "../components/Experience";
 import Hero from "../components/Hero";
-import Publication from "../components/Publications/publications";
+import ReviewExperience from "../components/ReviewExperience";
 import About from "../sections/About";
 
 const Home = () => {
@@ -11,7 +11,7 @@ const Home = () => {
       <About/>
       <Education/>
       <Experience/>
-      <Publication/>
+      <ReviewExperience/>
       {/* other sections will go below */}
     </div>
   );
