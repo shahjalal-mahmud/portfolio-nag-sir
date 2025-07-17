@@ -1,6 +1,7 @@
 import Education from "../components/Education";
 import Experience from "../components/Experience";
 import Hero from "../components/Hero";
+import Publication from "../components/Publications/publications";
 import About from "../sections/About";
 
 const Home = () => {
@@ -10,6 +11,7 @@ const Home = () => {
       <About/>
       <Education/>
       <Experience/>
+      <Publication/>
       {/* other sections will go below */}
     </div>
   );
