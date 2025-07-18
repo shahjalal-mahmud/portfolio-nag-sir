@@ -57,43 +57,43 @@ const StatCard = ({ label, value, duration = 3 }) => {
 
 
 const PublicationStats = () => {
-    const stats = publicationsData.publications.summary;
+  const stats = publicationsData.publications.summary;
 
-    return (
-        <section
-            id="publications"
-            className="py-24 px-6 md:px-16 bg-base-100 text-gray-900"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-        >
-            <div className="max-w-6xl mx-auto text-center">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                    Publication Summary
-                </h2>
-                <p className="text-gray-600 mb-10">
-                    As of {stats.as_of_date}. Source:&nbsp;
-                    <a
-                        href={stats.google_scholar_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-blue-600 hover:underline hover:text-blue-800 transition"
-                    >
-                        Google Scholar <FaGoogle className="ml-1" />
-                    </a>
-                </p>
+  return (
+    <section
+      id="summary"
+      className="py-24 px-6 md:px-16 bg-base-100 text-gray-900"
+      style={{ fontFamily: "'Inter', sans-serif" }}
+    >
+      <div className="max-w-6xl mx-auto text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          Publication Summary
+        </h2>
+        <p className="text-gray-600 mb-10">
+          As of {stats.as_of_date}. Source:&nbsp;
+          <a
+            href={stats.google_scholar_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-blue-600 hover:underline hover:text-blue-800 transition"
+          >
+            Google Scholar <FaGoogle className="ml-1" />
+          </a>
+        </p>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 justify-center">
-                    <StatCard label="Total Articles" value={stats.total_articles} />
-                    <StatCard
-                        label="First/Corresponding Author"
-                        value={stats.first_author_articles}
-                    />
-                    <StatCard label="Citations" value={stats.citations} />
-                    <StatCard label="H-Index" value={stats.h_index} />
-                    <StatCard label="i10-Index" value={stats.i10_index} />
-                </div>
-            </div>
-        </section>
-    );
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 justify-center">
+          <StatCard label="Total Articles" value={stats.total_articles} />
+          <StatCard
+            label="First/Corresponding Author"
+            value={stats.first_author_articles}
+          />
+          <StatCard label="Citations" value={stats.citations} />
+          <StatCard label="H-Index" value={stats.h_index} />
+          <StatCard label="i10-Index" value={stats.i10_index} />
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default PublicationStats;

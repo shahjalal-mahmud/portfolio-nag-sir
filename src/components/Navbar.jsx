@@ -20,7 +20,15 @@ const Navbar = () => {
                 { name: "Review Experience", to: "review-experience" },
             ],
         },
-        { name: "Publications", to: "publications" },
+        { name: "Publications",
+            sub: [
+                { name: "Summary", to: "summary"},
+                { name: "Edited Books", to: "edited-books"},
+                { name: "Journal Articles", to: "journal-articles"},
+                { name: "Conference Proceedings", to: "conference-proceedings"},
+                { name: "Book Chapters", to: "book-chapters"},
+            ]
+         },
         {
             name: "Portfolio",
             sub: [
