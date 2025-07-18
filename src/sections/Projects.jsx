@@ -1,4 +1,4 @@
-import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
+import { FaGithub, FaExternalLinkAlt, FaRegCalendarAlt } from "react-icons/fa";
 
 const projects = [
   {
@@ -36,36 +36,50 @@ const projects = [
 
 const Projects = () => {
   return (
-    <section id="projects" className="py-16 px-4 md:px-10 bg-white dark:bg-neutral-900">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-10 text-neutral-900 dark:text-white">
-          Projects
-        </h2>
-        <div className="space-y-8">
+    <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
+            Featured Projects
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            A selection of my technical implementations and solutions
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-8">
           {projects.map((project, index) => (
             <div
               key={index}
-              className="border border-neutral-300 dark:border-neutral-700 p-6 rounded-2xl hover:shadow-lg transition duration-300 bg-neutral-50 dark:bg-neutral-800"
+              className="group relative bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden"
             >
-              <div className="flex justify-between items-start flex-wrap gap-y-2">
-                <h3 className="text-xl font-semibold text-primary-600 dark:text-primary-400">
-                  {project.title}
-                </h3>
-                <span className="text-sm text-neutral-500 dark:text-neutral-400">{project.date}</span>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-300"></div>
+              
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{project.title}</h3>
+                  
+                  <div className="flex items-center text-gray-500 mb-4">
+                    <FaRegCalendarAlt className="mr-2 text-blue-500" />
+                    <span className="text-sm">{project.date}</span>
+                  </div>
+                  
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    {project.description}
+                  </p>
+                </div>
               </div>
-              <p className="mt-2 text-neutral-700 dark:text-neutral-300 text-sm">
-                {project.description}
-              </p>
-              <div className="flex gap-4 mt-4 text-sm">
+              
+              <div className="flex flex-wrap gap-3 mt-4">
                 {project.github && (
                   <a
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-blue-600 hover:underline"
+                    className="inline-flex items-center px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-800 transition-colors duration-200"
                   >
-                    <FaGithub className="text-base" />
-                    GitHub
+                    <FaGithub className="mr-2" />
+                    View Code
                   </a>
                 )}
                 {project.external && (
@@ -73,10 +87,10 @@ const Projects = () => {
                     href={project.external}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-green-600 hover:underline"
+                    className="inline-flex items-center px-4 py-2 rounded-md bg-blue-100 hover:bg-blue-200 text-blue-800 transition-colors duration-200"
                   >
-                    <FaExternalLinkAlt className="text-xs" />
-                    Live Demo / Article
+                    <FaExternalLinkAlt className="mr-2" />
+                    {project.external.includes('github.io') ? 'Live Demo' : 'View Article'}
                   </a>
                 )}
               </div>
