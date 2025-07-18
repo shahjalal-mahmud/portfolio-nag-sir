@@ -36,37 +36,38 @@ const Education = () => {
   return (
     <section
       id="education"
-      className="bg-base-100 dark:bg-base-200 text-gray-900 dark:text-white px-6 pt-12 pb-24"
+      className="bg-[#f1f5f9] text-gray-900 px-6 pt-16 pb-28"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="max-w-6xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-        <h3 className="text-3xl font-bold text-center mb-14">Education</h3>
+        <h3 className="text-3xl lg:text-4xl font-bold text-center mb-14">Education</h3>
 
         <div className="relative">
-          {/* Center Line for large screens */}
+          {/* Center Line */}
           <div className="hidden lg:block absolute left-1/2 top-0 w-1 h-full bg-primary transform -translate-x-1/2"></div>
 
-          <div className="space-y-14">
+          <div className="space-y-20">
             {educationData.map((item, idx) => {
               const isLeft = idx % 2 === 0;
               return (
                 <div
                   key={idx}
-                  className={`relative flex flex-col lg:flex-row items-center ${
-                    isLeft ? "lg:justify-start" : "lg:justify-end"
-                  }`}
+                  className={`relative flex flex-col lg:flex-row items-start gap-6 lg:gap-0 ${isLeft ? "lg:justify-start" : "lg:justify-end"
+                    }`}
                   data-aos={isLeft ? "fade-right" : "fade-left"}
                   data-aos-delay={idx * 100}
                 >
                   {/* Timeline Dot */}
-                  <div className="absolute top-5 lg:top-1/2 lg:-translate-y-1/2 left-1/2 transform -translate-x-1/2 w-5 h-5 rounded-full bg-primary border-4 border-white dark:border-base-100 z-20"></div>
+                  <div className="absolute left-1/2 transform -translate-x-1/2 top-2 lg:top-1/2 lg:-translate-y-1/2 z-20">
+                    <div className="w-4 h-4 rounded-full bg-primary border-4 border-white"></div>
+                  </div>
 
-                  {/* Education Card */}
+                  {/* Timeline Card */}
                   <motion.div
                     whileHover={{ scale: 1.03 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className={`bg-white dark:bg-base-300 shadow-lg rounded-xl p-6 w-full lg:w-[45%] z-10 ${
-                      isLeft ? "lg:mr-auto" : "lg:ml-auto"
-                    }`}
+                    className={`bg-white shadow-md rounded-xl p-6 w-full lg:w-[45%] z-10 ${isLeft ? "lg:mr-auto" : "lg:ml-auto"
+                      }`}
                   >
                     <div className="text-sm text-primary font-semibold mb-1">
                       {item.year}
@@ -75,11 +76,11 @@ const Education = () => {
                     <p className="text-sm mt-1 font-medium italic">
                       {item.institution}
                     </p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    <p className="text-sm text-gray-700 mt-2">
                       <span className="font-semibold">{item.result}</span>
                     </p>
                     {item.courses && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                      <p className="text-sm text-gray-600 mt-2">
                         <span className="font-medium">Courses:</span>{" "}
                         {item.courses}
                       </p>
