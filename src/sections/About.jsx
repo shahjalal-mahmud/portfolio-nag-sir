@@ -32,7 +32,8 @@ const About = () => {
   return (
     <section
       id="about"
-      className="py-24 px-6 bg-base-100 dark:bg-base-200 text-gray-900 dark:text-white relative"
+      className="py-24 px-6 bg-[#f9f9f9] text-gray-900"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
         {/* Profile Image */}
@@ -52,7 +53,7 @@ const About = () => {
         <div className="w-full md:w-1/2 space-y-6 text-center md:text-left" data-aos="fade-left">
           <h2 className="text-4xl font-extrabold">About Me</h2>
 
-          <p className="text-md sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+          <p className="text-md sm:text-lg text-gray-700 leading-relaxed">
             {shortBio}
             {!isDesktop && isExpanded && (
               <>
@@ -77,7 +78,7 @@ const About = () => {
             </div>
             <div className="flex items-center gap-3">
               <FaMapMarkerAlt className="text-primary" />
-              <span>Khulna, Bangladesh</span>
+              <span>Shib Bari Circle, Sonadanga, Khulna-9100</span>
             </div>
             <div className="flex items-center gap-3">
               <FaEnvelope className="text-primary" />
@@ -86,7 +87,7 @@ const About = () => {
             <div className="flex items-center gap-3">
               <FaDownload className="text-primary" />
               <a
-                href="/cv/AnindyaNag_CV.pdf"
+                href="/cv/Anindya_Nag_CV.pdf"
                 download="AnindyaNag_CV.pdf"
                 className="underline hover:text-primary transition"
               >
@@ -105,7 +106,7 @@ const About = () => {
                   whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="bg-gray-200 dark:bg-gray-700 dark:text-white text-sm px-3 py-1 rounded-full shadow-sm cursor-pointer transition-colors duration-300 ease-in-out hover:bg-primary hover:text-white"
+                  className="bg-gray-200 text-sm px-3 py-1 rounded-full shadow-sm cursor-pointer hover:bg-primary hover:text-white transition-colors"
                 >
                   {skill}
                 </motion.span>
@@ -123,12 +124,12 @@ const About = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             layoutId="about-popup"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-30"
             onClick={toggleExpanded}
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-base-100 rounded-2xl p-6 max-w-2xl w-full text-left space-y-6 shadow-xl overflow-auto max-h-[90vh] relative"
+              className="bg-white rounded-2xl p-6 max-w-2xl w-full text-left space-y-6 shadow-xl overflow-auto max-h-[90vh] relative"
             >
               <button
                 onClick={toggleExpanded}
@@ -137,7 +138,7 @@ const About = () => {
                 <IoClose />
               </button>
               <h3 className="text-2xl font-bold">Full Biography</h3>
-              <p className="text-base leading-relaxed dark:text-gray-300">
+              <p className="text-base leading-relaxed text-gray-800">
                 {shortBio}<br /><br />{fullBio}
               </p>
               <div>
@@ -149,7 +150,7 @@ const About = () => {
                       whileHover={{ scale: 1.08 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="bg-gray-200 dark:bg-gray-700 dark:text-white text-sm px-3 py-1 rounded-full shadow-sm cursor-pointer transition-colors duration-300 ease-in-out hover:bg-primary hover:text-white"
+                      className="bg-gray-200 text-sm px-3 py-1 rounded-full shadow-sm cursor-pointer hover:bg-primary hover:text-white transition-colors"
                     >
                       {skill}
                     </motion.span>
@@ -160,6 +161,7 @@ const About = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
     </section>
   );
 };

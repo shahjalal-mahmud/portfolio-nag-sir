@@ -16,7 +16,7 @@ const Hero = () => {
 
   return (
     <section
-      className="bg-white text-black py-12 px-6 md:px-12"
+      className="bg-white text-black py-12 px-6 md:px-12 shadow-sm"
       id="hero"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
