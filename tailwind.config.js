@@ -11,15 +11,21 @@ export default {
         inter: ['Inter', 'sans-serif'],
       },
       colors: {
-        // Optional: define your main background color as a custom color if you want
         pageBg: '#ffffff',  // white background
-        textPrimary: '#1f2937', // gray-800 from Tailwind for text
-      }
+        textPrimary: '#1f2937', // gray-800
+      },
     },
   },
   // eslint-disable-next-line no-undef
   plugins: [require("daisyui")],
   daisyui: {
-    themes: false, // disable DaisyUI themes, because you want just one fixed theme
-  }
+    themes: [
+      {
+        mytheme: {
+          "primary": "#2563EB",           // Tailwind blue-600
+          "primary-content": "#ffffff",   // Text color on primary backgrounds
+        },
+      },
+    ],
+  },
 }
