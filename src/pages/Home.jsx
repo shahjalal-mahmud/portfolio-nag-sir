@@ -3,6 +3,7 @@ import Education from "../components/Education";
 import Experience from "../components/Experience";
 import Hero from "../components/Hero";
 import MembershipsAndAwards from "../components/MembershipsAndAwards";
+import Navbar from "../components/Navbar";
 import References from "../components/References";
 import ReviewExperience from "../components/ReviewExperience";
 import Skills from "../components/Skills";
@@ -12,14 +13,15 @@ import Projects from "../sections/Projects";
 const Home = () => {
   return (
     <div>
+      <Navbar/>
       <Hero />
       <About/>
       <Education/>
       <Experience/>
       <ReviewExperience/>
-      <MembershipsAndAwards/>
       <Skills/>
       <Projects/>
+      <MembershipsAndAwards/>
       <Certifications/>
       <References/>
       {/* other sections will go below */}
