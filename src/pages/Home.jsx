@@ -5,6 +5,8 @@ import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import MembershipsAndAwards from "../components/MembershipsAndAwards";
 import Navbar from "../components/Navbar";
+import BookChapters from "../components/publications/BookChapters";
+import ConferenceProceedings from "../components/publications/ConferenceProceedings";
 import EditedBooks from "../components/publications/EditedBooks";
 import JournalArticles from "../components/publications/JournalArticles";
 import PublicationStats from "../components/publications/PublicationStats";
@@ -18,22 +20,24 @@ import Projects from "../sections/Projects";
 const Home = () => {
   return (
     <div>
-      <Navbar/>
+      <Navbar />
       <Hero />
-      <About/>
-      <Education/>
-      <Experience/>
-      <PublicationStats/>
-      <EditedBooks/>
-      <JournalArticles/>
-      <ReviewExperience/>
-      <Skills/>
-      <Projects/>
-      <MembershipsAndAwards/>
-      <Certifications/>
-      <References/>
-      <Contact/>
-      <Footer/>
+      <About />
+      <Education />
+      <Experience />
+      <PublicationStats />
+      <EditedBooks />
+      <JournalArticles />
+      <ConferenceProceedings />
+      <BookChapters />
+      <ReviewExperience />
+      <Skills />
+      <Projects />
+      <MembershipsAndAwards />
+      <Certifications />
+      <References />
+      <Contact />
+      <Footer />
       {/* other sections will go below */}
     </div>
   );
