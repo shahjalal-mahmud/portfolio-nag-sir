@@ -11,7 +11,7 @@ import {
   FaGlobe,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { SiGooglescholar, SiOrcid, SiResearchgate, SiScopus } from "react-icons/si";
+import { SiGooglescholar, SiOrcid, SiResearchgate, SiScopus, SiClarivate } from "react-icons/si";
 
 const Contact = () => {
   return (
@@ -63,7 +63,7 @@ const Contact = () => {
                 <SiOrcid className="mr-2" /> ORCID
               </a>
               <a
-                href="https://scholar.google.com/citations?user=AnindyaNag"
+                href="https://scholar.google.com/citations?hl=en&user=V4OLVPAAAAAJ&view_op=list_works"
                 target="_blank"
                 className="btn btn-sm btn-outline btn-secondary"
               >
@@ -75,6 +75,13 @@ const Contact = () => {
                 className="btn btn-sm btn-outline btn-info"
               >
                 <SiScopus className="mr-2" /> Scopus ID
+              </a>
+              <a
+                href="https://www.webofscience.com/wos/author/record/ITT-5228-2023"
+                target="_blank"
+                className="btn btn-sm btn-outline btn-warning"
+              >
+                <SiClarivate className="mr-2" /> Web of Science
               </a>
             </div>
           </div>
@@ -90,7 +97,7 @@ const Contact = () => {
               <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.instagram.com%2Fanindya__nag%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExMlFvQ3VPWkhYRVQyaXNtcQEeUKadgZAHN0LRD2zWTlKrffYugf84qvaJZWP_mAe_-NTcdDgk1zc4LfWtwvI_aem_frMuqxRDv4EzSzoHx8wBbA&h=AT0FZBIlJLiL-3XiykFaMrACLZCvceotlUqfXexYQs01pgDZklcwkvchx8nhQ9dSavYzhmUMqpYigoO7w-KsDrPCE0WGn7q63YjKSBodnIkruTH9ahW62vuJcyQr4ULacX5P" target="_blank">
                 <FaInstagram className="hover:text-pink-500" />
               </a>
-              <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Flinkedin.com%2Fin%2Fanindya-nag-892b19190%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExMlFvQ3VPWkhYRVQyaXNtcQEewX4D1URdMSWerVDq7YimdueG9yCKlye8gaUSfvxClpcEy5rGtihZk98U8P8_aem_Ml_3acXMIY8R7CtkL9G-uw&h=AT2-rrHTVkeZuhXmj8wN7levuLrtSI_A8AKY9rkIIjxUPe0pmkTaQX1ygkuz4dEtmo_oOFd1sA_V6YT6hLARVo_DRraqpXwp5l_-qe_lt09VXfEXQb8cJaV1U6Q1IoWwC2LM" target="_blank">
+              <a href="https://www.linkedin.com/in/anindya-nag-892b19190/" target="_blank">
                 <FaLinkedin className="hover:text-blue-600" />
               </a>
               <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Fx.com%2FAnindyaNag1%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExMlFvQ3VPWkhYRVQyaXNtcQEeU91WiPEBpbWwDNiDGgH6y0_eZaCRkPpTMZikEC3uvNXJSLrAiXXZsY77V4o_aem_Ktj8o-IqcRv7ySCDutcIuQ&h=AT1UCG-JwHWAnKjx032tDs23fVxS7sP7X4b0V13dETlwwy0BINUmpLwvn8jtmrWNcZwiX8rWoZfQumNdc_tJHse55nrLtAYAMdzBCogxGuzp4qDiQWEP9hGoDHGwGPDYHrY8" target="_blank">

@@ -14,15 +14,21 @@ const About = () => {
   const toggleExpanded = () => setIsExpanded(!isExpanded);
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
 
-  const shortBio = `Anindya Nag is a Lecturer in the Dept. of Computer Science & Engineering at NUBT Khulna, Bangladesh. He holds an M.Sc. in CSE from Khulna University and a B.Tech in CSE from Adamas University, India. His research includes health informatics, medical IoT, neuroscience, and machine learning.`;
+  const shortBio = ` Anindya Nag (NID: 1504091131) obtained an M.Sc. in Computer Science and Engineering from Khulna
+ University in Khulna, Bangladesh, and a B.Tech. in Computer Science and Engineering from Adamas
+ University in Kolkata, India. He is currently a lecturer in the Department of Computer Science and
+ Engineering at the Northern University of Business and Technology in Khulna, Bangladesh.`;
 
-  const fullBio = `He has authored/co-authored 67+ publications and co-edited 9 books. He is a reviewer for many international journals and conferences. His Master's CGPA is 3.96 and Bachelor's CGPA is 9.64. He’s fluent in English, Bangla, and has working proficiency in Hindi.`;
+  const fullBio = `His research
+ focuses on health informatics, medical Internet of Things, neuroscience, and machine learning. He serves as
+ a reviewer for numerous prestigious journals and international conferences. He has authored and
+ co-authored about 67 publications, including journal articles, conference papers, book chapters, and has
+ co-edited nine books.`;
 
   const skills = [
     "Python", "C", "C++", "NumPy", "Pandas", "SciPy", "Matplotlib",
     "LaTex", "MySQL Workbench", "Google Colab", "PyCharm",
   ];
-
   return (
     <section
       id="about"

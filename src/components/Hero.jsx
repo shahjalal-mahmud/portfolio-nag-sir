@@ -3,51 +3,112 @@ import {
   FaResearchgate,
   FaGoogle,
   FaOrcid,
+  FaDatabase,
+  FaBook,
   FaGithub,
   FaMapMarkerAlt,
 } from "react-icons/fa";
 
 const Hero = () => {
+  // Google Maps link to the university location
+  const locationMapUrl =
+    "https://maps.app.goo.gl/sr7kWTtaCYLGGRM87";
+
   return (
-    <section className="bg-base-100 py-10 px-4 md:px-10" id="hero">
-      <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-8">
+    <section
+      className="bg-white text-black py-12 px-6 md:px-12"
+      id="hero"
+      style={{ fontFamily: "'Inter', sans-serif" }}
+    >
+      <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-10">
         {/* Text Content */}
         <div className="flex-1">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">
+          <h1 className="text-4xl md:text-5xl font-semibold mb-4 tracking-wide">
             ANINDYA NAG
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
-            Lecturer, Dept. of Computer Science & Engineering<br />
-            Northern University of Business and Technology, Khulna
+
+          <p className="text-lg mb-3 leading-relaxed max-w-lg">
+            Lecturer, Dept. of Computer Science & Engineering
+            <br />
+            Northern University of Business and Technology Khulna
           </p>
-          <p className="text-sm mb-6 text-gray-600 dark:text-gray-400">
+
+          <p className="text-sm mb-6 text-gray-700 max-w-lg">
             Health Informatics • Medical IoT • Neuroscience • Machine Learning
           </p>
 
           {/* Location & Contact */}
-          <div className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-            <p className="flex items-center gap-2"><FaMapMarkerAlt /> Damodar, Khulna, Bangladesh</p>
-            <p>Email: <a href="mailto:anindyanag@ieee.org" className="link">anindyanag@ieee.org</a></p>
+          <div className="text-sm text-gray-800 space-y-1 mb-6 max-w-xs">
+            {/* Interactive Location */}
+            <p
+              className="flex items-center gap-2 cursor-pointer whitespace-nowrap hover:text-blue-700 transition-colors min-w-0"
+              onClick={() => window.open(locationMapUrl, "_blank")}
+            >
+              <FaMapMarkerAlt className="text-gray-600 flex-shrink-0" />
+              Northern University of Business and Technology Khulna
+            </p>
+            <p>
+              Email:{" "}
+              <a
+                href="mailto:anindyanag@ieee.org"
+                className="text-blue-700 underline"
+              >
+                anindyanag@ieee.org
+              </a>
+            </p>
             <p>Mobile: +880 1795617168</p>
           </div>
 
           {/* Social Links */}
-          <div className="flex flex-wrap gap-3 mt-4">
-            <a href="https://www.linkedin.com/in/anindya-nag-892b19190/" target="_blank" className="btn btn-sm btn-outline">
-              <FaLinkedin /> LinkedIn
-            </a>
-            <a href="https://www.researchgate.net/profile/Anindya-Nag-3" target="_blank" className="btn btn-sm btn-outline">
-              <FaResearchgate /> ResearchGate
-            </a>
-            <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Fscholar.google.com%2Fcitations%3Fhl%3Den%26user%3DV4OLVPAAAAAJ%26fbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExeEc2OHp5SUE3Y0hMblVyWQEeGYUFYMIJHQBBfXwcrEozHRUDpHB6A2I-IAdn4ZwF02nJ1GpS0jHbI2A6m8Q_aem_antc60W54NdQfNtdmngVBg&h=AT0iTSwFrKCrxTj5krt5GBLeNIPviwjmkZlUdScz69jvcCQmYUdN2LeK3XLSbDCmRkvveOFX_A7feI_w5t4AYlydYAL0xe_aeArGOufKqzDuQlReHtbvBeoRjdqknO45LG32zw" target="_blank" className="btn btn-sm btn-outline">
-              <FaGoogle /> Google Scholar
-            </a>
-            <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Forcid.org%2F0000-0001-6518-8233%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExeEc2OHp5SUE3Y0hMblVyWQEeEcYQNYN6m36ql-9ef4lMAYj9d_wmkTE6NcenxfuQvFXlrFVlqEUI2bhHLv0_aem_MYAX4TtpxxlDLGWIf6f-uQ&h=AT1uYf0WLwlVj8rG5OOuxVAtLw60e7b6AysbFJ_WyMgg_sqjHEtOcbsd50GZayqIiNisKyYKoXEmmDQ90FmQXp_fZkZSfRgjtcAXZMtvbJ9rzPgXbBP4GdvK73QbRu1opf5-oQ" target="_blank" className="btn btn-sm btn-outline">
-              <FaOrcid /> ORCID
-            </a>
-            <a href="https://github.com/AnindyaNag" target="_blank" className="btn btn-sm btn-outline">
-              <FaGithub /> GitHub
-            </a>
+          <div className="flex flex-wrap gap-3 mt-4 max-w-md">
+            {[{
+              href: "https://www.linkedin.com/in/anindya-nag-892b19190/",
+              icon: <FaLinkedin className="text-blue-700" />,
+              label: "LinkedIn",
+            },
+            {
+              href: "https://www.researchgate.net/profile/Anindya-Nag-3",
+              icon: <FaResearchgate className="text-green-700" />,
+              label: "ResearchGate",
+            },
+            {
+              href: "https://scholar.google.com/citations?hl=en&user=V4OLVPAAAAAJ&view_op=list_works",
+              icon: <FaGoogle className="text-red-600" />,
+              label: "Google Scholar",
+            },
+            {
+              href: "https://orcid.org/0000-0001-6518-8233",
+              icon: <FaOrcid className="text-green-800" />,
+              label: "ORCID",
+            },
+            {
+              href: "https://www.scopus.com/authid/detail.uri?authorId=58398246900",
+              icon: <FaDatabase className="text-gray-700" />,
+              label: "Scopus",
+            },
+            {
+              href: "https://www.webofscience.com/wos/author/record/ITT-5228-2023",
+              icon: <FaBook className="text-gray-700" />,
+              label: "Web of Science",
+            },
+            {
+              href: "https://github.com/AnindyaNag",
+              icon: <FaGithub className="text-black" />,
+              label: "GitHub",
+            }].map(({ href, icon, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 border border-gray-400 rounded-md px-4 py-2 text-sm font-medium text-black
+                           hover:border-blue-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                aria-label={`Visit ${label}`}
+              >
+                {icon}
+                <span>{label}</span>
+              </a>
+            ))}
           </div>
         </div>
 
@@ -56,7 +117,7 @@ const Hero = () => {
           <img
             src="/images/A.jpg"
             alt="Anindya Nag"
-            className="w-52 h-52 md:w-64 md:h-64 object-cover rounded-full shadow-lg"
+            className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-full border-4 border-primary shadow-2xl group-hover:scale-105"
           />
         </div>
       </div>
