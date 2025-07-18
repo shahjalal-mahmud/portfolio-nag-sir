@@ -41,7 +41,7 @@ const Hero = () => {
           <div className="text-sm text-gray-800 space-y-1 mb-6 max-w-xs">
             {/* Interactive Location */}
             <p
-              className="flex items-center gap-2 cursor-pointer whitespace-nowrap hover:text-blue-700 transition-colors min-w-0"
+              className="flex items-center gap-2 cursor-pointer hover:text-blue-700 transition-colors min-w-0"
               onClick={() => window.open(locationMapUrl, "_blank")}
             >
               <FaMapMarkerAlt className="text-gray-600 flex-shrink-0" />

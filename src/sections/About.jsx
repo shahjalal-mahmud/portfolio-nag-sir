@@ -98,7 +98,7 @@ const About = () => {
 
           {/* Skills */}
           <div className="pt-6">
-            <h3 className="text-xl font-semibold mb-3">Skills & Tools</h3>
+            <h3 className="text-xl font-semibold mb-3">Skills & Tech Stack</h3>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               {skills.map((skill, idx) => (
                 <motion.span
@@ -142,7 +142,7 @@ const About = () => {
                 {shortBio}<br /><br />{fullBio}
               </p>
               <div>
-                <h4 className="text-xl font-semibold mb-3">Tech Stack & Tools</h4>
+                <h4 className="text-xl font-semibold mb-3">Skills & Tech Stack</h4>
                 <div className="flex flex-wrap gap-2">
                   {skills.map((skill, idx) => (
                     <motion.span

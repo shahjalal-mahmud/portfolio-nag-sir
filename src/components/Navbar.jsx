@@ -37,7 +37,6 @@ const Navbar = () => {
         },
         { name: "References", to: "references" },
         { name: "Contact", to: "contact" },
-        { name: "Login", to: "auth" },
     ];
 
     const renderLink = (item) => (
