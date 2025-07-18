@@ -6,6 +6,7 @@ import Hero from "../components/Hero";
 import MembershipsAndAwards from "../components/MembershipsAndAwards";
 import Navbar from "../components/Navbar";
 import EditedBooks from "../components/publications/EditedBooks";
+import JournalArticles from "../components/publications/JournalArticles";
 import PublicationStats from "../components/publications/PublicationStats";
 import References from "../components/References";
 import ReviewExperience from "../components/ReviewExperience";
@@ -24,6 +25,7 @@ const Home = () => {
       <Experience/>
       <PublicationStats/>
       <EditedBooks/>
+      <JournalArticles/>
       <ReviewExperience/>
       <Skills/>
       <Projects/>
