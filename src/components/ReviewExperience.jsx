@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardContent } from "../components/ui/Card";
 
 const journalReviews = [
   "Pattern Recognition, Elsevier",
@@ -101,43 +100,88 @@ const conferenceReviews = [
   },
 ];
 
+
 const ReviewExperience = () => {
   return (
-    <section className="max-w-6xl mx-auto px-4 py-20" id="review-experience">
-      <h2 className="text-3xl font-bold text-center mb-12">Review Experience</h2>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-white" id="review-experience">
+      <div className="text-center mb-16">
+        <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
+          Review Experience
+        </h2>
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          Peer review contributions to academic journals and conferences
+        </p>
+      </div>
 
       {/* Journal Reviews */}
-      <div className="mb-16">
-        <h3 className="text-2xl font-semibold mb-6">Journal Article Reviews</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="mb-20">
+        <div className="flex items-center mb-8">
+          <h3 className="text-2xl font-bold text-gray-900">Journal Article Reviews</h3>
+          <div className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            {journalReviews.length} Journals
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {journalReviews.map((journal, index) => (
-            <Card key={index}>
-              <CardContent>
-                <p className="text-base font-medium text-neutral-800 dark:text-neutral-200">
-                  {journal}
-                </p>
-              </CardContent>
-            </Card>
+            <div 
+              key={index}
+              className="bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md"
+            >
+              <div className="flex items-start">
+                <div className="flex-shrink-0 mt-1 mr-4">
+                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-gray-800 font-medium">{journal.split(',')[0]}</p>
+                  <p className="text-gray-600 text-sm">{journal.split(',')[1]}</p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
 
       {/* Conference Reviews */}
       <div>
-        <h3 className="text-2xl font-semibold mb-6">Conferences Review Experiences</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="flex items-center mb-8">
+          <h3 className="text-2xl font-bold text-gray-900">Conference Review Experiences</h3>
+          <div className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            {conferenceReviews.length} Conferences
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {conferenceReviews.map((conf, index) => (
-            <Card key={index}>
-              <CardContent>
-                <h4 className="text-lg font-semibold text-primary mb-1">{conf.name}</h4>
-                <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-1">{conf.date}</p>
-                <p className="text-sm text-neutral-700 dark:text-neutral-200">{conf.title}</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">{conf.location}</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  Publication Partner: <span className="font-medium">{conf.publisher}</span>
-                </p>
-              </CardContent>
-            </Card>
+            <div 
+              key={index}
+              className="bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="text-xl font-bold text-blue-700">{conf.name}</h4>
+                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                  {conf.date}
+                </span>
+              </div>
+              
+              <p className="text-gray-800 mb-3">{conf.title}</p>
+              
+              <div className="flex items-center text-sm text-gray-600 mb-2">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                {conf.location}
+              </div>
+              
+              <div className="flex items-center text-sm text-gray-600">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                </svg>
+                <span>Published by <span className="font-medium">{conf.publisher}</span></span>
+              </div>
+            </div>
           ))}
         </div>
       </div>
