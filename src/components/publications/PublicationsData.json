@@ -1,0 +1,657 @@
+{
+  "publications": {
+    "summary": {
+      "total_articles": 67,
+      "first_author_articles": 38,
+      "citations": 236,
+      "h_index": 9,
+      "i10_index": 8,
+      "google_scholar_link": "https://scholar.google.com/citations?user=V4OLVPAAAAAJ&hl=en",
+      "as_of_date": "June 2025"
+    },
+    "edited_books": {
+      "2025": [
+        {
+          "title": "Generative AI in Neurology: Advancing Neurodegenerative Disease Treatment",
+          "publisher": "CRC Press, Taylor & Francis, USA",
+          "authors": "C Kishor Kumar Reddy, Anindya Nag, Lavanya Pamulaparty, Mariya Ouaissa, Marlia Mohd Hanafiah",
+          "isbn": "9781041082156",
+          "link": "https://www.routledge.com/Generative-AI-in-Neurology-Advancing-Neurodegenerative-Disease-Treatment/KumarReddy-Nag-Pamulaparty-Ouaissa-Hanafiah/p/book/9781041082156",
+          "is_first_author": false
+        },
+        {
+          "title": "Feature Fusion for Next-Generation AI: Building Intelligent Solutions from Medical Data",
+          "publisher": "Springer Nature, Switzerland",
+          "authors": "Anindya Nag, Md. Mehedi Hassan, Anupam Kumar Bairagi",
+          "isbn": "978-3-031-94388-1",
+          "link": "https://link.springer.com/book/9783031943850?srsltid=AfmBOoqo6KSoGTgeg1fTuBe6qDGTbBD9S1RmsSUZSCB7IiZU2V_XncpL.",
+          "is_first_author": true
+        },
+        {
+          "title": "Generative AI in Neurodegenerative Disorders: Innovations, Views, and Obstacles",
+          "publisher": "River Publishers (Partner of IEEE), Denmark",
+          "authors": "Anindya Nag, Md. Mehedi Hassan, Asif Karim, C Kishor Kumar Reddy",
+          "isbn": "9788743801757",
+          "link": "https://www.riverpublishers.com/book_details.php?book_id=1449#:~:text=Generative%20AI%20provides%20new%20opportunities,for%20healthcare%20providers%20and%20researchers.",
+          "is_first_author": true
+        },
+        {
+          "title": "Federated Learning for Neural Disorders in Healthcare 6.0",
+          "publisher": "CRC Press, Taylor & Francis, USA",
+          "authors": "C Kishor Kumar Reddy, Anindya Nag",
+          "isbn": "9781032968872",
+          "link": "https://www.routledge.com/Federated-Learning-for-Neural-Disorders-in-Healthcare-60/ReddyC-Nag/p/book/9781032968872",
+          "is_first_author": false
+        },
+        {
+          "title": "AI Applications in Agriculture: Enhancing Productivity and Sustainability",
+          "publisher": "Cambridge Scholars Publishing, United Kingdom",
+          "authors": "C Kishor Kumar Reddy, Anindya Nag, Anupam Kumar Bairagi",
+          "isbn": "1-0364-5220-4",
+          "link": "https://www.cambridgescholars.com/product/978-1-0364-5220-9",
+          "is_first_author": false
+        },
+        {
+          "title": "Generative AI and Robotics in Sustainable Agriculture: Advancing Smart Farming Systems",
+          "publisher": "Bentham Science Publishers",
+          "authors": "Kishor Kumar Reddy C, Binju Saju, Shikha Khullar, Anindya Nag, Srinath Doss",
+          "status": "In Progress",
+          "is_first_author": false
+        },
+        {
+          "title": "Agentic AI for Fraud Detection: Building Autonomous Systems for Secure Transactions and Risk Mitigation",
+          "publisher": "Cambridge Scholars Publishing",
+          "authors": "Kishor Kumar Reddy C, Sarika S, Shikha Khullar, Anindya Nag",
+          "status": "In Progress",
+          "is_first_author": false
+        },
+        {
+          "title": "Agent Based Artificial Intelligence in Fraud Detection: Strategies for Building Secure Self-Governing Systems",
+          "publisher": "Bentham Science Publishers",
+          "authors": "Kishor Kumar Reddy C, Sarika S, Shikha Khullar, Anindya Nag",
+          "status": "In Progress",
+          "is_first_author": false
+        },
+        {
+          "title": "Green Blocks: Cultivating Agriculture through Blockchain",
+          "publisher": "Bentham Science Publishers",
+          "authors": "Kishor Kumar Reddy C, Shikha Khullar, Anindya Nag, Srinath Doss",
+          "status": "In Progress",
+          "is_first_author": false
+        }
+      ],
+      "2024": [
+        {
+          "title": "The Metaverse Transformation Blockchain and Healthcare in Industry 6.0",
+          "publisher": "Cambridge Scholars",
+          "authors": "C. Kishor Kumar Reddy, P. Dhanalakshmi, Shugufta Fatima, Anindya Nag",
+          "status": "In Press",
+          "is_first_author": false
+        },
+        {
+          "title": "Next-Gen Supply Chains: Technologies, Trends, and the Future of Global Operations",
+          "publisher": "Cambridge Scholars",
+          "authors": "C. Kishor Kumar Reddy, Vijay Kumar Sadanand, Anindya Nag, Haïfa Nakouri",
+          "status": "In Press",
+          "is_first_author": false
+        },
+        {
+          "title": "Smart Systems for Global Health: AI, IoT, and the Green Transition",
+          "publisher": "CRC Press",
+          "authors": "Anindya Nag, MD. Mehedi Hassan, Riya Sil, Asif Karim",
+          "status": "In Press",
+          "is_first_author": true
+        },
+        {
+          "title": "Graph Neural Networks for Neurological Disorders: Fundamentals, Applications, and Benefits in Research and Diagnostics.",
+          "publisher": "Springer Nature",
+          "authors": "Md. Mehedi Hassan, Anindya Nag, Shariful Islam, Herat Joshi",
+          "status": "In Press",
+          "is_first_author": false
+        },
+        {
+          "title": "Intelligent Systems for Remote Sensing and Environmental Degradation in Industry 6.0: Advances and Challenges for Sustainable Development",
+          "publisher": "Bentham Science Publishers",
+          "authors": "C Kishor Kumar Reddy, Anindya Nag, Subhendu Kumar Pani",
+          "status": "In Press",
+          "is_first_author": false
+        },
+        {
+          "title": "Advancing Disaster Management Through Federated Learning: A Comprehensive Guide",
+          "publisher": "Cambridge Scholars Publishing, United Kingdom",
+          "authors": "C Kishor Kumar Reddy, Anindya Nag",
+          "isbn": "1-0364-1856-1",
+          "link": "https://www.cambridgescholars.com/product/978-1-0364-1856-4",
+          "is_first_author": false
+        },
+        {
+          "title": "The Rise of Quantum Computing in Industry 6.0 Towards Sustainability: Revolutionizing Smart Disaster Management",
+          "publisher": "Springer Nature, Switzerland",
+          "authors": "C Kishor Kumar Reddy, Anindya Nag, Mariya Ouaissa, Bharat Bhushan, and Marlia M. Hanafiah",
+          "isbn": "978-3-031-73349-9",
+          "link": "https://link.springer.com/book/9783031733499#:~:text=In%20the%20era%20of%20Industry,for%20improving%20disaster%20management%20procedures.",
+          "is_first_author": false
+        }
+      ]
+    },
+    "journal_articles": {
+      "2025": [
+        {
+          "title": "Explainable artificial intelligence for natural language processing: A survey.",
+          "journal": "Data & Knowledge Engineering",
+          "impact_factor": 2.6,
+          "authors": "Md. Mehedi Hassan, Anindya Nag, Riya Biswas, Md Shahin Ali, Sadika Zaman, Anupam Kumar Bairagi, Chetna Kaushal",
+          "link": "https://www.sciencedirect.com/science/article/abs/pii/S0169023X25000655?via%3Dihub",
+          "is_first_author": false
+        },
+        {
+          "title": "Adaptive DNA Cryptography With Intelligent Machine Learning for Cloud Data Defense.",
+          "journal": "Engineering Reports",
+          "impact_factor": 1.8,
+          "authors": "Animesh Kairi, Tapas Bhadra, Saroj Kumar Pandey, Anurag Sinha, Anindya Nag",
+          "link": "https://onlinelibrary.wiley.com/doi/10.1002/eng2.70223",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Ensemble model-based arrhythmia classification with local interpretable model-agnostic explanations.",
+          "journal": "IAES International Journal of Artificial Intelligence (IJ-AI)",
+          "cite_score": 3.9,
+          "authors": "Md. Rabiul Islam, Tapan Kumar Godder, Ahsan-Ul-Ambia, Ferdib-Al-Islam, Anindya Nag, Bulbul Ahamed, Nujhut Tanzim. Md. Estiak Ahmed",
+          "link": "https://ijai.iaescore.com/index.php/IJAI/article/view/25963",
+          "is_first_author": false
+        }
+      ],
+      "2024": [
+        {
+          "title": "Sustainable cost-effective chemically modified banana leaf powder for methyl blue dye removal: kinetics, isotherm, thermodynamics and artificial intelligence-based analysis.",
+          "journal": "Discov. Chem.",
+          "cite_score": 3.1,
+          "authors": "Sutapa Dey Barna, Mst. Nusrat Jahan, Sasbir Rahman Sium, Anindya Nag, Md. Hridoy Ali, Sagar Kumar Dutta",
+          "link": "https://link.springer.com/article/10.1007/s44371-024-00040-8",
+          "is_first_author": false
+        },
+        {
+          "title": "Development of soft computing-based models for forecasting water quality index of Lorestan Province, Iran.",
+          "journal": "Scientific Reports",
+          "impact_factor": 3.8,
+          "authors": "Balraj Singh, Alireza Sepahvand, Parveen Sihag, Karan Singh, Chander Prabha, Anindya Nag, Md. Mehedi Hassan, S. Vimal, Dongwann Kang",
+          "link": "https://doi.org/10.1038/s41598-024-76894-w",
+          "is_first_author": false
+        },
+        {
+          "title": "TumorGANet: A Transfer Learning and Generative Adversarial Network-based Data Augmentation Model for Brain Tumor Classification.",
+          "journal": "IEEE Access",
+          "impact_factor": 3.6,
+          "authors": "Anindya Nag, Hirak Mondal, Md Mehedi Hassan, Taher Al-Shehari, Mohammed Kadrie, Muna Al-Razgan, Taha Alfakih, Sujit Biswas, Anupam Kumar Bairagi",
+          "link": "https://ieeexplore.ieee.org/abstract/document/10600471",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Synergy of 6G technology and IoT networks for transformative applications.",
+          "journal": "International Journal of Communication Systems",
+          "impact_factor": 2.56,
+          "authors": "Moupriya Das, Anindya Nag, Md. Mehedi Hassan, Arkya Santra, Nisarga Chand, Farhana Yasmin, Anurag Sinha, Anupam Kumar Bairagi, Ahmed Alkhayyat",
+          "link": "https://onlinelibrary.wiley.com/doi/10.1002/dac.5869",
+          "is_first_author": false
+        },
+        {
+          "title": "Exploring the applications and security threats of Internet of Thing in the cloud computing paradigm: A comprehensive study on the cloud of things.",
+          "journal": "Transactions on Emerging Telecommunications Technologies",
+          "impact_factor": 3.6,
+          "authors": "Anindya Nag, Md. Mehedi Hassan, Ayontika Das, Anurag Sinha, Nisarga Chand, Anwesha Kar, Vandana Sharma, Ahmed Alkhayyat",
+          "link": "https://onlinelibrary.wiley.com/doi/10.1002/ett.4897",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "A comprehensive review of automated sarcasm detection techniques on Twitter.",
+          "journal": "International Journal of Services, Economics and Management",
+          "impact_factor": 0.252,
+          "authors": "Anindya Nag, Md. Mehedi Hassan, Ayontika Das, Anurag Sinha, Moupriya Das, G. Madhukar Rao, Md Shahin Ali, Chetna Kaushal, Biresh Kumar, Neetu Singh",
+          "link": "https://www.inderscience.com/info/ingeneral/forthcoming.php?jcode=ijsem#119572",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        }
+      ],
+      "2023": [
+        {
+          "title": "Machine learning-based rainfall prediction: Unveiling insights and forecasting for improved preparedness.",
+          "journal": "IEEE Access",
+          "impact_factor": 3.6,
+          "authors": "Md. Mehedi Hassan, Mohammad Abu Tareq Rony, Md Asif Rakib Khan, Md Mahedi Hassan, Farhana Yasmin, Anindya Nag, Tazria Helal Zarin, Anupam Kumar Bairagi, Samah Alshathri, and Walid El-Shafai",
+          "link": "https://ieeexplore.ieee.org/document/10320349",
+          "is_first_author": false
+        },
+        {
+          "title": "Intelligent Response System for Indian Law: An Approach to Women's Security.",
+          "journal": "Journal of Network and Innovative Computing (JNIC)",
+          "authors": "Riya Sil, Anindya Nag, Shabana Parveen, Bijoy Kumar Nath",
+          "link": "https://www.cspub-hk.org/doc_27411192.html",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Blood In Need: An Application for Blood Management.",
+          "journal": "International Journal of Computer Information Systems and Industrial Management Applications",
+          "impact_factor": 2.01,
+          "authors": "Riya Sil, Anindya Nag, Bijoy Kumar Nath, Pretam Chandra",
+          "link": "https://cspub-ijcisim.org/index.php/ijcisim/article/view/529",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "A Simple Application: Cloud-Based Vehicle Tracking System.",
+          "journal": "Journal of Information Assurance and Security",
+          "impact_factor": 0.3,
+          "authors": "Anindya Nag, Gulfishan Mobin, Ayontika Das, Anwesha Kar, Soubhik Kar",
+          "link": "https://openurl.ebsco.com/EPDB%3Agcd%3A13%3A7239757/detailv2?bquery=IS%201554-1010%20AND%20VI%2018%20AND%20IP%203%20AND%20DT%202023&page=1&sid=ebsco:ocu:record",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Shohayota: An Intelligent Response System for Safety.",
+          "journal": "Journal of Network and Innovative Computing (JNIC)",
+          "authors": "Anindya Nag, Bijoy Kumar Nath, Nilanjana Roy, Riya Sil",
+          "link": "https://cspub-jnic.org/index.php/jnic/article/view/150",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        }
+      ]
+    },
+    "conference_proceedings": {
+      "2025": [
+        {
+          "title": "Explainable AI-Driven Handwriting Analysis for Early Alzheimer's Disease Detection Using Machine Learning and Ensemble Models.",
+          "conference": "27th International Conference on Computer and Information Technology",
+          "location": "Cox's Bazar, Bangladesh",
+          "authors": "Nadim Samrat, Mazharul Islam, Sadia Sharmi, Rasmy Akter, Anjan Debnath, M. Raihan, Anindya Nag, Anupam Kumar Bairagi",
+          "link": "https://ieeexplore.ieee.org/document/11021728",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "EmotionRF: Enhancing Emotion Classification from EEG Signals Using Machine Learning with Explainable AI.",
+          "conference": "27th International Conference on Computer and Information Technology",
+          "location": "Cox's Bazar, Bangladesh",
+          "authors": "Kamrul Golder, Anindya Nag, Fahim Faisal Tarun, Hirak Mondal, Md. Mehedi Hassan, Asif Karim",
+          "link": "https://ieeexplore.ieee.org/document/11021975",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Real-Time and Automated Student Attention Monitoring System in Classroom Using Deep Learning Techniques.",
+          "conference": "27th International Conference on Computer and Information Technology",
+          "location": "Cox's Bazar, Bangladesh",
+          "authors": "Jannatul Ferdous, Anindya Nag, Shish Been Baha Uddin, Rameswar Debnath",
+          "link": "https://ieeexplore.ieee.org/document/11021871",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Enhanced Interpretability in Depression Classification with the Use of Machine Learning Models with Explainable AI.",
+          "conference": "International Conference on Electrical, Computer and Communication Engineering",
+          "location": "Chittagong, Bangladesh",
+          "authors": "Hirak Mondal, Kamrul Golder, Towfeka Benta Towhid, Bushra Jamil, Anindya Nag, Anupam Tarafder, Anindya Mozumder, Md Asaduzzaman",
+          "link": "https://ieeexplore.ieee.org/document/11013833",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Healthcare Cost Patterns and Prediction: Investigating Personal Datasets Using Data Analytics.",
+          "conference": "3rd International Conference on Signal and Data Processing",
+          "location": "Bhopal, India",
+          "authors": "Md Aminul Islam, Anindya Nag, Pretam Chandra, Bhupesh Kumar Mishra, S. M. Firoz Ahmed Fahim and Md Mozammel Hoque",
+          "link": "https://doi.org/10.1007/978-981-97-9578-9_30",
+          "is_first_author": false
+        },
+        {
+          "title": "A Novel Approach for Performance Evaluation and Effectiveness of Data-Driven Heart Disease Diagnosis.",
+          "conference": "International Conference on Advances and Applications of Artificial Intelligence and Machine Learning",
+          "location": "Noida, India",
+          "authors": "Md Aminul Islam, Anindya Nag, Ayontika Das, Jobaer Faruque, Shabbir Ahmed Shuvo, Abdullah Hafez Nur and Md Habibur Rahman",
+          "link": "https://doi.org/10.1007/978-981-97-9507-9_17",
+          "is_first_author": false
+        },
+        {
+          "title": "Deciphering Diabetes: Illuminating Prognostic Insights with an Interpretable Machine Learning Framework.",
+          "conference": "3rd Conference on Intelligent Systems and Sustainable Computing",
+          "location": "Hyderabad, India",
+          "authors": "Mohammad Abu Tareq Rony, Mohammad Shariful Islam, Pritom Saha, Fatama Tuz Johora, Mejbah Ahammad, Shah Md Nazmul Alam, Md Saifur Rahman and Anindya Nag",
+          "link": "https://doi.org/10.1007/978-981-97-8355-7_12",
+          "is_first_author": false
+        },
+        {
+          "title": "Exploring Efficient Model for Agricultural Commodity Price Prediction Using Data Analytics.",
+          "conference": "International Conference on Data, Electronics and Computing",
+          "location": "Aizawl, India",
+          "authors": "Md Aminul Islam, Anindya Nag, Kashinath Basu, Ayontika Das, G. M. Mujahidul Haq and Arjan Ghosh",
+          "link": "https://doi.org/10.1007/978-981-97-8476-9_23",
+          "is_first_author": false
+        }
+      ],
+      "2024": [
+        {
+          "title": "Identification of Lung Cancer Using Particle Swarm Optimization and Machine Learning Technique.",
+          "conference": "3rd International Conference on Trends in Electronics and Health Informatics",
+          "location": "Dhaka, Bangladesh",
+          "authors": "Sheikh Ridwan Raihan Kabir, Hirak Mondal, Anindya Nag, S. M. Hasan Jamil and Piya Das",
+          "link": "https://doi.org/10.1007/978-981-97-3937-0_29",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Brain Connectivity Analysis in Alzheimer's disease using Graph Convolutional Network.",
+          "conference": "4th International Conference on Soft Computing for Security Applications",
+          "location": "Salem, India",
+          "authors": "Rithika Ango, Kishor Kumar Reddy C, Shugufta Fatima, Anindya Nag",
+          "link": "https://ieeexplore.ieee.org/document/10917849/figures#figures",
+          "is_first_author": false
+        },
+        {
+          "title": "A Review of Machine Learning Methods for IoT Network-centric Anomaly Detection.",
+          "conference": "47th International Conference on Telecommunications and Signal Processing",
+          "location": "Prague, Czech Republic",
+          "authors": "Anindya Nag, Md. Mehedi Hassan, Dishari Mandal, Nisarga Chand, Md Babul Islam, V. P. Meena, Francesco Benedetto",
+          "link": "https://ieeexplore.ieee.org/document/10605928",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "An Investigation into the Prediction of Annual Income Levels Through the Utilization of Demographic Features Employing the Modified UCI Adult Dataset.",
+          "conference": "International Conference on Computing, Communication, and Intelligent Systems",
+          "location": "India",
+          "authors": "Md Aminul Islam, Anindya Nag, Nilanjana Roy, Arpita Rani Dey, SM Firoz Ahmed Fahim, and Arjan Ghosh",
+          "link": "https://ieeexplore.ieee.org/document/10425394",
+          "is_first_author": false
+        },
+        {
+          "title": "A Survey on Wireless Sensor Network Routing Performance Optimizing and Security Techniques.",
+          "conference": "4th International Conference on Frontiers in Computing and Systems",
+          "location": "India",
+          "authors": "Anindya Nag, Dishari Mandal, Nilanjana Roy, S. M. Firoz Ahmed Fahim, Nisarga Chand",
+          "link": "https://link.springer.com/chapter/10.1007/978-981-97-2614-1_12",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Emotion Decoding: An Extensive Examination of Electroencephalogram Signals Using Explainable Machine Learning.",
+          "conference": "6th International Conference on Electrical Engineering and Information & Communication Technology",
+          "location": "Bangladesh",
+          "authors": "Anindya Nag, Hirak Mondal, Sheikh Ridwan Raihan Kabir, Md. Rabiul Islam, Md. Estiak Ahmed, S M Hasan Jamil",
+          "link": "https://ieeexplore.ieee.org/document/10534518",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Utilization of Encoding, Early Stopping, Hyper Parameter Tuning, and Machine Learning Models for Bank Fraud Detection.",
+          "conference": "9th International Women in Engineering Conference on Electrical and Computer Engineering",
+          "location": "India",
+          "authors": "Md Aminul Islam, Anindya Nag, Saumik Chowdhury, SM Firoz Ahmed Fahim; Arjan Ghosh, Nahi Mumtaj",
+          "link": "https://ieeexplore.ieee.org/document/10456503",
+          "is_first_author": false
+        },
+        {
+          "title": "A Hybrid Model for Recognizing Human Activity Using Extreme Learning.",
+          "conference": "26th International Conference on Computer and Information Technology",
+          "location": "Bangladesh",
+          "authors": "Arafat Rahaman, Anindya Nag, Anupam Kumar Bairagi",
+          "link": "https://ieeexplore.ieee.org/document/10441574",
+          "is_first_author": false
+        },
+        {
+          "title": "A Survey on Image-based Cardiac Diagnosis Prediction using Machine Learning and Deep Learning Techniques.",
+          "conference": "2th International Conference on Computing, IoT, and Data Analytics",
+          "location": "Spain",
+          "authors": "Anindya Nag, Biva Das, Riya Sil, Alaa Ali Hameed, Bharat Bhushan, and Akhtar Jamil",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-53717-2_44",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "A comparison of the several speech tagging models used in NLP.",
+          "conference": "International Conference on Data Science and Communication",
+          "location": "India",
+          "authors": "Anindya Nag, Dishari Mandal, and Gulfishan Mobin",
+          "link": "https://link.springer.com/chapter/10.1007/978-981-99-5435-3_44",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        }
+      ],
+      "2023": [
+        {
+          "title": "Application of Artificial Intelligence in Mental Health.",
+          "conference": "23rd International Conference on Intelligent Systems Design and Applications",
+          "location": "Olten, Switzerland",
+          "authors": "Anindya Nag, Ayontika Das, Riya Sil, Anwesha Kar, Dishari Mandal, Biva Das",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-27440-4_13",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "A review on cloud-based smart applications.",
+          "conference": "23rd International Conference",
+          "location": "Olten, Switzerland",
+          "authors": "Anindya Nag, Gulfishan Mobin, Anwesha Kar, Pretam Chandra",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-27440-4_38",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        }
+      ]
+    },
+    "book_chapters": {
+      "2025": [
+        {
+          "title": "Deep Enhancing Lettuce Growth Efficiency and Assessing Environmental Impact Using Ensemble Machine Learning Models with Explainable AI.",
+          "book": "AI Applications in Agriculture: Enhancing Productivity and Sustainability, Cambridge Scholars Publishing",
+          "authors": "K M Danial Sadar, Md. Shahariar Tasin, Anindya Nag, Kaysun Molla, Anindita Guho, Pranto Bosu, Md. Mehedi Hassan",
+          "link": "https://www.cambridgescholars.com/product/978-1-0364-5220-9",
+          "is_first_author": false
+        },
+        {
+          "title": "A Data-Driven Approach for corn disease detection using deep learning models with explainable AI.",
+          "book": "AI Applications in Agriculture: Enhancing Productivity and Sustainability, Cambridge Scholars Publishing",
+          "authors": "K M Danial Sadar, Salman Islam, Sheikh Ridwan Raihan Kabir, Anindya Nag, Md. Shahariar Tasin, Pranto Bosu, Md. Mehedi Hassan",
+          "link": "https://www.cambridgescholars.com/product/978-1-0364-5220-9",
+          "is_first_author": false
+        },
+        {
+          "title": "Role of AI in Estimating Potential Aftershocks During Earthquake.",
+          "book": "Emerging AI Applications in Earth Sciences: Challenges, Impact and Analysis, Springer, Cham",
+          "authors": "V. V. N. Devi Mani Priya, Shugufta Fatima, C. Kishor Kumar Reddy, Anindya Nag",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-84583-3_9",
+          "is_first_author": false
+        },
+        {
+          "title": "AI-Driven Insights into Fault Movements and Earthquake Dynamics.",
+          "book": "Emerging AI Applications in Earth Sciences: Challenges, Impact and Analysis, Springer, Cham",
+          "authors": "Shugufta Fatima, Sri Chandana Bangali, C. Kishor Kumar Reddy, Anindya Nag",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-84583-3_6",
+          "is_first_author": false
+        },
+        {
+          "title": "Brain Network Dynamics: Implications for Health and Disease.",
+          "book": "Brain Networks in Neuroscience: Personalization Unveiled Via Artificial Intelligence, River Publishers",
+          "authors": "Tamanna Haque Ritu, Hirak Mondal, Anindya Nag, Riya Sil",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9788770047371-6/brain-network-dynamics-implications-health-disease-tamanna-haque-ritu-hirak-mondal-anindya-nag-riya-sil?context=ubx&refId=2df3eae0-f0e6-4340-b32c-e59d79adcfb9",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Deciphering Minds and Motion: A Unified Exploration of Brain Signal Decoding and Activity Recognition Through AI-driven Analysis.",
+          "book": "Brain Networks in Neuroscience: Personalization Unveiled Via Artificial Intelligence, River Publishers",
+          "authors": "Arafat Rahman, Ayontika Das, Anindya Nag, Tamanna Zubairi Sann",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9788770047371-14/deciphering-minds-motion-unified-exploration-brain-signal-decoding-activity-recognition-ai-driven-analysis-arafat-rahman-ayontika-das-anindya-nag-tamanna-zubairi-sana?context=ubx&refId=0f84a42a-52fc-427d-b797-141d57f546f6",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Interpreting Electroencephalogram Brain Signals: Insights from AI-driven Analysis.",
+          "book": "Brain Networks in Neuroscience: Personalization Unveiled Via Artificial Intelligence, River Publishers",
+          "authors": "Hirak Mondal, Anindya Nag, Md. Mushfiqur Rahman, Anupam Kumar Bairagi",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9788770047371-12/interpreting-electroencephalogram-brain-signals-insights-ai-driven-analysis-hirak-mondal-anindya-nag-md-mushfiqur-rahman-anupam-kumar-bairagi",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Harnessing Federated Learning to Revolutionize Climate Change Adaptation and Mitigation in Industry 6.0.",
+          "book": "Advancing Disaster Management Through Federated Learning: A Comprehensive Guide, Cambridge Scholars Publishing",
+          "authors": "Akshita Sunerah, Shugufta Fatima, Kishor Kumar Reddy C, Anindya Nag",
+          "link": "https://www.cambridgescholars.com/product/978-1-0364-1856-4",
+          "is_first_author": false
+        },
+        {
+          "title": "Fusing Sentiment Analysis with Hybrid Collaborative Algorithms for Enhanced Recommender Systems.",
+          "book": "Wellness Management Powered by AI Technologies, Scrivener Publishing LLC",
+          "authors": "Anindya Nag, Md. Mehedi Hassan, Mohammad Abu Tareq Rony, Biva Das, Riya Sil, Prianka Saha, Pronab Sarker, Anupam Kumar Bairagi",
+          "link": "https://onlinelibrary.wiley.com/doi/10.1002/9781394287024.ch13",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        }
+      ],
+      "2024": [
+        {
+          "title": "Leveraging Quantum Computing for Enhanced Decision Support in Disaster Management.",
+          "book": "The Rise of Quantum Computing in Industry 6.0 Towards Sustainability: Revolutionizing Smart Disaster Management, Springer, Cham",
+          "authors": "Shugufta Fatima, C Kishor Kumar Reddy, Anindya Nag, Sahithi Reddy Pullannagari",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-73350-5_6",
+          "is_first_author": false
+        },
+        {
+          "title": "Digital Twins for Healthcare in Industry 5.0: Fundamentals, Pharmaceutical Manufacturing Applications, Diagnostic Precision, Digital Patient Innovations, and Drug Discovery Impact.",
+          "book": "Soft Computing in Industry 5.0 for Sustainability, Springer, Cham",
+          "authors": "Tamanna Haque Ritu, Anindya Nag, Anupam Kumar Bairagi, Arafat Rahman",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-69336-6_16",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Tourism Companion: Enhancing Travel Experiences with AI Chatbot and Soft Computing.",
+          "book": "Soft Computing in Industry 5.0 for Sustainability, Springer, Cham",
+          "authors": "S. Babu Reddy, Riya Kathpalia, Riya Sil, Anindya Nag",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-69336-6_13",
+          "is_first_author": false
+        },
+        {
+          "title": "Transcending Boundaries: Assessing Transfer Learning's Effectiveness in ECG-Based Heart Disease Prediction.",
+          "book": "Soft Computing in Industry 5.0 for Sustainability, Springer, Cham",
+          "authors": "Anindya Nag, Hirak Mondal, Md. Mehedi Hassan, Prianka Saha",
+          "link": "https://link.springer.com/chapter/10.1007/978-3-031-69336-6_7",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Driving Sustainable Practices in Industry 6.0: A Study on Article Detection with Fuzzy-Wuzzy and Supervised Machine Learning Algorithms.",
+          "book": "Evolution and Advances in Computing Technologies for Industry 6.0: Technology, Practices, and Challenges, CRC Press",
+          "authors": "Subhasish Mohapatra, Riya Sil, and Anindya Nag",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781003503934-10/driving-sustainable-practices-industry-6-0-study-article-detection-fuzzy-wuzzy-supervised-machine-learning-algorithms-subhasish-mohapatra-riya-sil-anindya-nag?context=ubx&refId=af33b775-ccae-48d0-8d5a-98b5451fac6c",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "An Overview of Cloud Computing: Paradigm, Technologies, and Application.",
+          "book": "Evolution and Advances in Computing Technologies for Industry 6.0: Technology, Practices, and Challenges, CRC Press",
+          "authors": "Gulfishan Mobin, Riya Sil, and Anindya Nag",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781003503934-3/overview-cloud-computing-paradigm-technologies-application-gulfishan-mobin-riya-sil-anindya-nag?context=ubx&refId=338ff85d-f594-473e-b87c-8670b05565e2",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Machine learning feature selection method for anatomic brain MRI in dementia: A comparative study.",
+          "book": "Artificial Intelligence based Solutions for Industrial Applications, CRC Press",
+          "authors": "Anindya Nag, Ayontika Das, Biva Das, Moupriya Das, Anupam Kumar Bairagi",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781003534761-10/machine-learning-feature-selection-method-anatomic-brain-mri-dementia-anindya-nag-ayontika-das-biva-das-moupriya-das-anupam-kumar-bairagi",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Harnessing Computational Intelligence for Educational Transformation.",
+          "book": "Internet of Behavior-Based Computational Intelligence for Smart Education Systems, IGI Global",
+          "authors": "C. Kishor Kumar Reddy, Arshita Chintalapalli, and Anindya Nag",
+          "link": "https://doi.org/10.4018/979-8-3693-8151-9.ch006",
+          "is_first_author": false
+        },
+        {
+          "title": "Internet of Behavior-Based Computational Intelligence for Smart Education Systems.",
+          "book": "Internet of Behavior-Based Computational Intelligence for Smart Education Systems, IGI Global",
+          "authors": "T. Monika Singh, C. Kishor Kumar Reddy, B. V. Ramana Murthy, Anindya Nag, Srinath Doss",
+          "link": "https://doi.org/10.4018/979-8-3693-8151-9.ch005",
+          "is_first_author": false
+        },
+        {
+          "title": "Application of Artificial Intelligence in the Diagnosis and Treatment of Cancer: A Comprehensive Review.",
+          "book": "Internet of Things and Big Data Analytics-Based Manufacturing, CRC Press",
+          "authors": "Anindya Nag, Biva Das, Riya Sill, Anupam Kumar Bairagi, Alok Dutta, Pranto Bosu",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781032673479-18/application-artificial-intelligence-diagnosis-treatment-cancer-anindya-nag-biva-das-riya-sill-anupam-kumar-bairagi-alok-dutta-pranto-bosu",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Diabalance ML: Enhancing diabetes detection performance through dataset balancing strategies.",
+          "book": "Industry 6.0: Technology, Practices, Challenges, and Applications, CRC Press",
+          "authors": "Hirak Mondal, Saima Siddika, Anindya Nag, and Anupam Kumar Bairagi",
+          "link": "https://www.taylorfrancis.com/books/edit/10.1201/9781003517993/industry-6-0-kishor-kumar-reddy-srinath-doss-lavanya-pamulaparty-kari-lippert-ruchi-doshi?refId=e28400f8-6086-4f7d-9826-9350d980fcb9&context=ubx",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "A study of Cloud of Things enabled Machine learning based Smart health monitoring system.",
+          "book": "Sustainability in Industry 5.0:Theory and Applications, CRC Press",
+          "authors": "Ayontika Das, Anindya Nag, Biva Das, and Riya Paul",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781032686363-7/study-cloud-things-enabled-machine-learning-based-smart-health-monitoring-system-ayontika-das-riya-paul-anindya-nag-biva-das",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Exploring the Feasibility of the Internet of Things in the Context of Intelligent Healthcare Solutions: A Review.",
+          "book": "Intelligent Systems and Industrial Internet of Things for Sustainable Development, Chapman and Hall/CRC",
+          "authors": "Anwesa Sarkar, Anindya Nag, Moyuri Sen, and Nisarga Chand",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781032642789-3/exploring-feasibility-internet-things-context-intelligent-healthcare-solutions-anwesa-sarkar-anindya-nag-moyuri-sen-nisarga-chand",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Sustainable Agriculture: A Critical Analysis of Internet of Things - Based Solutions.",
+          "book": "Intelligent Systems and Industrial Internet of Things for Sustainable Development, Chapman and Hall/CRC",
+          "authors": "Anindya Nag, Ayontika Das, Nisarga Chand, Nilanjana Roy, and Nisarga Chand",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781032642789-6/sustainable-agriculture-anindya-nag-ayontika-das-nisarga-chand-nilanjana-roy",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Blockchain-based identity authentication for Internet of Things systems: A Comprehensive Survey.",
+          "book": "Artificial Intelligence and Internet of Things based Augmented Trends for Data-Driven Systems, CRC Press",
+          "authors": "Anindya Nag, Md. Mehedi Hassan, Ayontika Das, Chetna Kaushal, and Deepak Thakur",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781003497318-9/blockchain-based-identity-authentication-internet-things-systems-anindya-nag-md-mehedi-hassan-ayontika-das-chetna-kaushal-deepak-thakur",
+          "is_first_author": true,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Enhancing Medication Traceability: Advancements in Pharmaceutical Supply Chain Traceability through Blockchain and IoT.",
+          "book": "Exploring the Advancements and Future Directions of Digital Twins in Healthcare 6.0, IGI Global",
+          "authors": "Prianka Saha, Tamanna Haque Ritu, Anindya Nag, Riya Sil",
+          "link": "https://www.igi-global.com/chapter/enhancing-medication-traceability/351007",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "Unveiling the Essence of Digital Twins: A Comprehensive Study on Digital Twins for Future Innovation.",
+          "book": "Exploring the Advancements and Future Directions of Digital Twins in Healthcare 6.0, IGI Global",
+          "authors": "Hirak Mondal, Saima Siddika, Anindya Nag, Riya Sil",
+          "link": "https://www.igi-global.com/chapter/unveiling-the-essence-of-digital-twins/350994",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        },
+        {
+          "title": "The Integration of Federated Deep Learning with Internet of Things in Healthcare.",
+          "book": "Federated Deep Learning for Healthcare: A Practical Guide with Challenges and Opportunities, CRC Press",
+          "authors": "Hirak Mondal, Md. Mehedi Hassan, Anindya Nag, and Anupam Kumar Bairagi",
+          "link": "https://www.taylorfrancis.com/chapters/edit/10.1201/9781032694870-11/integration-federated-deep-learning-internet-things-healthcare-hirak-mondal-md-mehedi-hassan-anindya-nag-anupam-kumar-bairagi",
+          "is_first_author": false,
+          "is_corresponding_author": true
+        }
+      ]
+    }
+  }
+}
