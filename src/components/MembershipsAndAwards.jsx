@@ -1,4 +1,5 @@
 import React from "react";
+import { FaAward, FaUserTie } from "react-icons/fa";
 
 const memberships = [
   {
@@ -35,46 +36,74 @@ const awards = [
 
 const MembershipsAndAwards = () => {
   return (
-    <section className="max-w-6xl mx-auto px-4 py-12" id="memberships-awards">
-      {/* Memberships */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-semibold mb-6 border-b-2 border-primary inline-block">
-          Membership of Scientific Societies
-        </h2>
-        <div className="space-y-6">
-          {memberships.map((item, index) => (
-            <div
-              key={index}
-              className="border border-base-200 rounded-xl p-4 hover:shadow-md transition duration-300 bg-base-100"
-            >
-              <h3 className="text-lg font-semibold text-primary">
-                {item.organization}
-              </h3>
-              <p className="text-sm text-gray-500 italic">{item.period}</p>
-              <p className="mt-1 text-sm">{item.role}</p>
-            </div>
-          ))}
+    <section id="memberships-awards" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
+            Professional Recognition
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Memberships in professional organizations and academic honors received
+          </p>
         </div>
-      </div>
 
-      {/* Honors and Awards */}
-      <div>
-        <h2 className="text-3xl font-semibold mb-6 border-b-2 border-secondary inline-block">
-          Honors and Awards
-        </h2>
-        <div className="space-y-6">
-          {awards.map((award, index) => (
-            <div
-              key={index}
-              className="border border-base-200 rounded-xl p-4 hover:shadow-md transition duration-300 bg-base-100"
-            >
-              <h3 className="text-lg font-semibold text-secondary">
-                {award.title}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Memberships */}
+          <div className="bg-gray-50 p-8 rounded-xl border border-gray-200">
+            <div className="flex items-center mb-6">
+              <div className="bg-blue-100 p-3 rounded-full mr-4">
+                <FaUserTie className="text-blue-600 text-2xl" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">
+                Professional Memberships
               </h3>
-              <p className="text-sm text-gray-500 italic">{award.session}</p>
-              <p className="mt-1 text-sm">{award.description}</p>
             </div>
-          ))}
+
+            <div className="space-y-6">
+              {memberships.map((item, index) => (
+                <div key={index} className="pl-4 border-l-4 border-blue-200">
+                  <div className="flex justify-between items-start flex-wrap gap-y-2">
+                    <h4 className="text-xl font-semibold text-gray-900">
+                      {item.organization}
+                    </h4>
+                    <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                      {item.period}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-gray-700">{item.role}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Awards */}
+          <div className="bg-gray-50 p-8 rounded-xl border border-gray-200">
+            <div className="flex items-center mb-6">
+              <div className="bg-green-100 p-3 rounded-full mr-4">
+                <FaAward className="text-green-600 text-2xl" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">
+                Honors & Awards
+              </h3>
+            </div>
+
+            <div className="space-y-6">
+              {awards.map((award, index) => (
+                <div key={index} className="pl-4 border-l-4 border-green-200">
+                  <div className="flex justify-between items-start flex-wrap gap-y-2">
+                    <h4 className="text-xl font-semibold text-gray-900">
+                      {award.title}
+                    </h4>
+                    <span className="text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                      {award.session}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-gray-700">{award.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
