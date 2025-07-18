@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import MembershipsAndAwards from "../components/MembershipsAndAwards";
 import Navbar from "../components/Navbar";
+import EditedBooks from "../components/publications/EditedBooks";
 import PublicationStats from "../components/publications/PublicationStats";
 import References from "../components/References";
 import ReviewExperience from "../components/ReviewExperience";
@@ -22,6 +23,7 @@ const Home = () => {
       <Education/>
       <Experience/>
       <PublicationStats/>
+      <EditedBooks/>
       <ReviewExperience/>
       <Skills/>
       <Projects/>
