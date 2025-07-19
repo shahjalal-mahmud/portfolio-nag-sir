@@ -4,126 +4,208 @@ import {
   FaMapMarkerAlt,
   FaLinkedin,
   FaGithub,
+  FaGlobe,
   FaFacebook,
   FaInstagram,
   FaTumblr,
-  FaSnapchatGhost,
-  FaGlobe,
+  FaSnapchatGhost
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiGooglescholar, SiOrcid, SiResearchgate, SiScopus, SiClarivate } from "react-icons/si";
 
 const Contact = () => {
   return (
-    <section id="contact" className="bg-base-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-6">Contact</h2>
+    <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
+            Get In Touch
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            For academic collaborations, research inquiries, or professional connections
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* Left - Personal Info */}
-          <div className="space-y-4">
-            <p className="text-lg font-medium">Anindya Nag</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Contact Information */}
+          <div className="bg-gray-50 p-8 rounded-xl border border-gray-200">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h3>
 
-            <div className="flex items-center space-x-3">
-              <FaEnvelope className="text-primary" />
-              <a href="mailto:anindyanag@ieee.org" className="hover:underline">
-                anindyanag@ieee.org
-              </a>
+            <div className="space-y-5">
+              <div className="flex items-start">
+                <div className="bg-blue-100 p-2 rounded-full mr-4 mt-1">
+                  <FaEnvelope className="text-blue-600 text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Email</h4>
+                  <a href="mailto:anindyanag@ieee.org" className="text-blue-600 hover:underline">
+                    anindyanag@ieee.org
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="bg-blue-100 p-2 rounded-full mr-4 mt-1">
+                  <FaPhone className="text-blue-600 text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Phone</h4>
+                  <p>+880 1795617168</p>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="bg-blue-100 p-2 rounded-full mr-4 mt-1">
+                  <FaMapMarkerAlt className="text-blue-600 text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Location</h4>
+                  <p>
+                    Northern University of Business and Technology Khulna,<br />
+                    Shib Bari Circle, Sonadanga,<br />
+                    Khulna-9100, Bangladesh
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="bg-blue-100 p-2 rounded-full mr-4 mt-1">
+                  <FaGlobe className="text-blue-600 text-lg" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">Portfolio</h4>
+                  <p className="font-medium">anindyanag.netlify.app</p>
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <FaPhone className="text-primary" />
-              <span>+880 1795617168</span>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <FaMapMarkerAlt className="text-primary" />
-              <span>Damodar, Phultala, Damodar-9210, Khulna, Bangladesh</span>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <FaGlobe className="text-primary" />
-              <span>Portfolio: <span className="font-medium">anindyanag</span></span>
-            </div>
-
-            {/* Profile Link Badges */}
-            <div className="flex flex-wrap gap-3 mt-6">
+            {/* Academic Profiles */}
+            <h3 className="text-2xl font-bold text-gray-900 mt-10 mb-6">Academic Profiles</h3>
+            <div className="grid grid-cols-2 gap-3">
               <a
                 href="https://www.researchgate.net/profile/Anindya-Nag-3"
                 target="_blank"
-                className="btn btn-sm btn-outline btn-primary"
+                className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
-                <SiResearchgate className="mr-2" /> ResearchGate
+                <SiResearchgate className="text-green-600 text-xl mr-3" />
+                <span>ResearchGate</span>
               </a>
               <a
                 href="https://orcid.org/0000-0001-6518-8233"
                 target="_blank"
-                className="btn btn-sm btn-outline btn-accent"
+                className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
-                <SiOrcid className="mr-2" /> ORCID
+                <SiOrcid className="text-green-700 text-xl mr-3" />
+                <span>ORCID</span>
               </a>
               <a
                 href="https://scholar.google.com/citations?hl=en&user=V4OLVPAAAAAJ&view_op=list_works"
                 target="_blank"
-                className="btn btn-sm btn-outline btn-secondary"
+                className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
-                <SiGooglescholar className="mr-2" /> Google Scholar
+                <SiGooglescholar className="text-blue-500 text-xl mr-3" />
+                <span>Google Scholar</span>
               </a>
               <a
                 href="https://www.scopus.com/authid/detail.uri?authorId=58398246900"
                 target="_blank"
-                className="btn btn-sm btn-outline btn-info"
+                className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
-                <SiScopus className="mr-2" /> Scopus ID
+                <SiScopus className="text-red-500 text-xl mr-3" />
+                <span>Scopus</span>
               </a>
               <a
                 href="https://www.webofscience.com/wos/author/record/ITT-5228-2023"
                 target="_blank"
-                className="btn btn-sm btn-outline btn-warning"
+                className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
-                <SiClarivate className="mr-2" /> Web of Science
+                <SiClarivate className="text-red-700 text-xl mr-3" /> Web of Science
               </a>
             </div>
           </div>
 
-          {/* Right - Social and Message */}
+          {/* Social Media & Message */}
           <div>
-            <h3 className="text-xl font-semibold mb-4">Connect on Social Media</h3>
+            <div className="bg-gray-50 p-8 rounded-xl border border-gray-200 mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Social Media</h3>
+              <div className="flex flex-wrap gap-4">
+                {/* Facebook */}
+                <a
+                  href="https://www.facebook.com/anindya.nag.005"
+                  target="_blank"
+                  className="w-12 h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 rounded-full transition-colors"
+                >
+                  <FaFacebook className="text-blue-600 text-xl" />
+                </a>
 
-            <div className="flex flex-wrap gap-4 text-2xl">
-              <a href="https://www.facebook.com/anindya.nag.005" target="_blank">
-                <FaFacebook className="hover:text-primary" />
-              </a>
-              <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.instagram.com%2Fanindya__nag%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExMlFvQ3VPWkhYRVQyaXNtcQEeUKadgZAHN0LRD2zWTlKrffYugf84qvaJZWP_mAe_-NTcdDgk1zc4LfWtwvI_aem_frMuqxRDv4EzSzoHx8wBbA&h=AT0FZBIlJLiL-3XiykFaMrACLZCvceotlUqfXexYQs01pgDZklcwkvchx8nhQ9dSavYzhmUMqpYigoO7w-KsDrPCE0WGn7q63YjKSBodnIkruTH9ahW62vuJcyQr4ULacX5P" target="_blank">
-                <FaInstagram className="hover:text-pink-500" />
-              </a>
-              <a href="https://www.linkedin.com/in/anindya-nag-892b19190/" target="_blank">
-                <FaLinkedin className="hover:text-blue-600" />
-              </a>
-              <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Fx.com%2FAnindyaNag1%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExMlFvQ3VPWkhYRVQyaXNtcQEeU91WiPEBpbWwDNiDGgH6y0_eZaCRkPpTMZikEC3uvNXJSLrAiXXZsY77V4o_aem_Ktj8o-IqcRv7ySCDutcIuQ&h=AT1UCG-JwHWAnKjx032tDs23fVxS7sP7X4b0V13dETlwwy0BINUmpLwvn8jtmrWNcZwiX8rWoZfQumNdc_tJHse55nrLtAYAMdzBCogxGuzp4qDiQWEP9hGoDHGwGPDYHrY8" target="_blank">
-                <FaXTwitter className="hover:text-sky-500" />
-              </a>
-              <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Fanindyanag.tumblr.com%2F%3Ffbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExMlFvQ3VPWkhYRVQyaXNtcQEePwCnckMJ0fIIA_dV7NRBGs-iv1tIT10UkdPFCXh04VIyU-nMOS50CWVwu70_aem_OsDHUYgbACfXHtFCxoRq_Q&h=AT1krS9Pl8eOtwnUbSdhgve2ieu_NiGVfYBvxf8J0G_ciffVvawWKOJfr6qTDBaJ_vBnIRVeQEgI2T1uIWZegvr5F5L-CFaccOSHEYZMODF6qtpfpXHf66Jbuy3Ik48fsRpI" target="_blank">
-                <FaTumblr className="hover:text-purple-500" />
-              </a>
-              <a href="https://www.snapchat.com/explore/anindyanag20" target="_blank">
-                <FaSnapchatGhost className="hover:text-yellow-400" />
-              </a>
-              <a href="https://github.com/AnindyaNag" target="_blank">
-                <FaGithub className="hover:text-gray-600" />
-              </a>
+                {/* Instagram */}
+                <a
+                  href="https://www.instagram.com/anindya__nag"
+                  target="_blank"
+                  className="w-12 h-12 flex items-center justify-center bg-pink-50 hover:bg-pink-100 rounded-full transition-colors"
+                >
+                  <FaInstagram className="text-pink-600 text-xl" />
+                </a>
+
+                {/* LinkedIn */}
+                <a
+                  href="https://www.linkedin.com/in/anindya-nag-892b19190/"
+                  target="_blank"
+                  className="w-12 h-12 flex items-center justify-center bg-blue-50 hover:bg-blue-100 rounded-full transition-colors"
+                >
+                  <FaLinkedin className="text-blue-600 text-xl" />
+                </a>
+
+                {/* Twitter/X */}
+                <a
+                  href="https://x.com/AnindyaNag1"
+                  target="_blank"
+                  className="w-12 h-12 flex items-center justify-center bg-black hover:bg-gray-800 rounded-full transition-colors"
+                >
+                  <FaXTwitter className="text-white text-xl" />
+                </a>
+
+                {/* Tumblr */}
+                <a
+                  href="https://anindyanag.tumblr.com"
+                  target="_blank"
+                  className="w-12 h-12 flex items-center justify-center bg-purple-50 hover:bg-purple-100 rounded-full transition-colors"
+                >
+                  <FaTumblr className="text-purple-600 text-xl" />
+                </a>
+
+                {/* Snapchat */}
+                <a
+                  href="https://www.snapchat.com/explore/anindyanag20"
+                  target="_blank"
+                  className="w-12 h-12 flex items-center justify-center bg-yellow-50 hover:bg-yellow-100 rounded-full transition-colors"
+                >
+                  <FaSnapchatGhost className="text-yellow-500 text-xl" />
+                </a>
+
+                {/* GitHub */}
+                <a
+                  href="https://github.com/AnindyaNag"
+                  target="_blank"
+                  className="w-12 h-12 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
+                >
+                  <FaGithub className="text-gray-800 text-xl" />
+                </a>
+              </div>
             </div>
 
-            {/* Message or Call-to-Action */}
-            <div className="mt-10">
-              <p className="text-base leading-relaxed">
+            <div className="bg-blue-50 p-8 rounded-xl border border-blue-100">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Collaboration Inquiry</h3>
+              <p className="text-gray-700 mb-6">
                 For academic collaboration, publication inquiries, or supervision requests,
-                feel free to reach out via email or connect on professional platforms.
+                please don't hesitate to reach out.
               </p>
               <a
                 href="mailto:anindyanag@ieee.org"
-                className="mt-4 inline-block btn btn-primary btn-sm"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
               >
+                <FaEnvelope className="mr-2" />
                 Send Email
               </a>
             </div>

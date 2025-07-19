@@ -1,3 +1,5 @@
+import { FaUserTie, FaEnvelope, FaExternalLinkAlt } from "react-icons/fa";
+
 const references = [
   {
     name: "Dr. Anupam Kumar Bairagi",
@@ -19,41 +21,65 @@ const references = [
 
 const References = () => {
   return (
-    <section id="references" className="py-16 px-4 md:px-10 bg-base-100">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold mb-10 text-left">References</h2>
+    <section id="references" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+            <FaUserTie className="text-blue-600 text-2xl" />
+          </div>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
+            Professional References
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Esteemed academic and professional contacts
+          </p>
+        </div>
+
+        {/* References Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {references.map((ref, index) => (
             <div
               key={index}
-              className="border border-base-300 rounded-xl p-6 bg-base-200 shadow-sm hover:shadow-md transition"
+              className="bg-white p-8 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md"
             >
-              <h3 className="text-xl font-semibold text-primary">
-                {ref.link ? (
+              <div className="flex items-start mb-4">
+                <div className="bg-blue-100 p-3 rounded-full mr-4">
+                  <FaUserTie className="text-blue-600 text-xl" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    {ref.link ? (
+                      <a
+                        href={ref.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-blue-600 transition-colors duration-200 flex items-center"
+                      >
+                        {ref.name}
+                        <FaExternalLinkAlt className="ml-2 text-sm" />
+                      </a>
+                    ) : (
+                      ref.name
+                    )}
+                  </h3>
+                  <p className="text-blue-600 font-medium">{ref.title}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 pl-16">
+                <p className="text-gray-700">{ref.institution}</p>
+                <p className="text-gray-600">{ref.location}</p>
+                <div className="flex items-start mt-4">
+                  <FaEnvelope className="text-gray-500 mt-1 mr-3 flex-shrink-0" />
                   <a
-                    href={ref.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
+                    href={`mailto:${ref.email}`}
+                    className="text-blue-600 hover:underline break-all"
                   >
-                    {ref.name}
+                    {ref.email}
                   </a>
-                ) : (
-                  ref.name
-                )}
-              </h3>
-              <p className="mt-1">{ref.title}</p>
-              <p className="text-sm mt-1 text-gray-600">{ref.institution}</p>
-              <p className="text-sm text-gray-600">{ref.location}</p>
-              <p className="mt-3">
-                <span className="font-medium">Email: </span>
-                <a
-                  href={`mailto:${ref.email}`}
-                  className="text-blue-600 underline"
-                >
-                  {ref.email}
-                </a>
-              </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
