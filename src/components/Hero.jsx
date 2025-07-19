@@ -7,7 +7,9 @@ import {
   FaBook,
   FaGithub,
   FaMapMarkerAlt,
+  FaGlobe,
 } from "react-icons/fa";
+import { FaWebAwesome } from "react-icons/fa6";
 
 const Hero = () => {
   // Google Maps link to the university location
@@ -73,27 +75,32 @@ const Hero = () => {
             },
             {
               href: "https://scholar.google.com/citations?hl=en&user=V4OLVPAAAAAJ&view_op=list_works",
-              icon: <FaGoogle className="text-red-600" />,
+              icon: <FaGoogle className="text-blue-600" />,
               label: "Google Scholar",
             },
             {
               href: "https://orcid.org/0000-0001-6518-8233",
-              icon: <FaOrcid className="text-green-800" />,
+              icon: <FaOrcid className="text-green-600" />,
               label: "ORCID",
             },
             {
               href: "https://www.scopus.com/authid/detail.uri?authorId=58398246900",
-              icon: <FaDatabase className="text-gray-700" />,
+              icon: <FaDatabase className="text-red-600" />,
               label: "Scopus",
             },
             {
               href: "https://www.webofscience.com/wos/author/record/ITT-5228-2023",
-              icon: <FaBook className="text-gray-700" />,
+              icon: <FaBook className="text-purple-700" />,
               label: "Web of Science",
             },
             {
+              href: "https://nubtkhulna.ac.bd/sd/273/Anindya%20Nag",
+              icon: <FaGlobe className="text-indigo-600" />,
+              label: "Official Website",
+            },
+            {
               href: "https://github.com/AnindyaNag",
-              icon: <FaGithub className="text-black" />,
+              icon: <FaGithub className="text-gray-800" />,
               label: "GitHub",
             }].map(({ href, icon, label }) => (
               <a
@@ -102,7 +109,7 @@ const Hero = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 border border-gray-400 rounded-md px-4 py-2 text-sm font-medium text-black
-                           hover:border-blue-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                 hover:border-blue-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
                 aria-label={`Visit ${label}`}
               >
                 {icon}

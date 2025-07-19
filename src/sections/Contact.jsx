@@ -122,6 +122,14 @@ const Contact = () => {
               >
                 <SiClarivate className="text-red-700 text-xl mr-3" /> Web of Science
               </a>
+              <a
+                href="https://nubtkhulna.ac.bd/sd/273/Anindya%20Nag"
+                target="_blank"
+                className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
+              >
+                <FaGlobe className="text-indigo-600 text-xl mr-3" />
+                <span>Official Website</span>
+              </a>
             </div>
           </div>
 
