@@ -1,9 +1,12 @@
+import React, { useState } from "react";
+import { FaExternalLinkAlt, FaBook} from "react-icons/fa";
+import { HiOutlineCalendar } from 'react-icons/hi';
 import publicationsData from "./PublicationsData.json";
-import { FaExternalLinkAlt, FaBook } from "react-icons/fa";
 
 const EditedBooks = () => {
     const editedBooks = publicationsData.publications.edited_books;
-    const years = Object.keys(editedBooks).sort((a, b) => b - a); // Descending year
+    const years = Object.keys(editedBooks).sort((a, b) => b.localeCompare(a));
+    const [activeYear, setActiveYear] = useState(years[0]);
 
     return (
         <section
@@ -24,94 +27,107 @@ const EditedBooks = () => {
                     </p>
                 </div>
 
-                <div className="space-y-12">
-                    {years.map((year) => (
-                        <div key={year} className="group">
-                            <div className="flex items-center mb-6">
-                                <h3 className="text-2xl font-semibold text-gray-900 mr-4">
-                                    {year}
-                                </h3>
-                                <div className="flex-1 h-px bg-gray-300"></div>
-                                <span className="ml-4 text-sm font-medium text-gray-500">
-                                    {editedBooks[year].length} {editedBooks[year].length === 1 ? 'publication' : 'publications'}
+                <div className="flex overflow-x-auto pb-4 mb-10 scrollbar-hide">
+                    <div className="flex space-x-2 mx-auto">
+                        {years.map((year) => (
+                            <button
+                                key={year}
+                                onClick={() => setActiveYear(year)}
+                                className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${
+                                    activeYear === year
+                                        ? 'bg-blue-600 text-white shadow-md'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                            >
+                                <HiOutlineCalendar className="mr-2" />
+                                {year}
+                                <span className="ml-2 text-xs bg-white/20 rounded-full px-2 py-0.5">
+                                    {editedBooks[year]?.length || 0}
                                 </span>
-                            </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                                {editedBooks[year].map((book, index) => (
-                                    <div
-                                        key={index}
-                                        className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm"
-                                    >
-                                        <div className="flex flex-col h-full">
-                                            <div className="flex-1">
-                                                <h4 className="text-lg font-semibold text-gray-900 leading-snug">
-                                                    {book.title}
-                                                </h4>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                    {editedBooks[activeYear]?.map((book, index) => (
+                        <div
+                            key={index}
+                            className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm"
+                        >
+                            <div className="flex flex-col h-full">
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-gray-900 leading-snug">
+                                        <a
+                                            href={book.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="hover:text-blue-600 transition-colors"
+                                        >
+                                            {book.title}
+                                        </a>
+                                    </h3>
 
-                                                {book.is_first_author && (
-                                                    <span className="inline-block mt-2 text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
-                                                        First/Corresponding Author
-                                                    </span>
-                                                )}
+                                    {book.is_first_author && (
+                                        <span className="inline-block mt-2 text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
+                                            First/Corresponding Author
+                                        </span>
+                                    )}
 
-                                                <div className="mt-4 space-y-2 text-sm text-gray-600">
-                                                    <p className="flex">
-                                                        <span className="font-medium text-gray-700 min-w-[70px]">Editors:</span>
-                                                        <span className="ml-2">
-                                                            {book.authors.split(/(Anindya Nag)/).map((part, idx) =>
-                                                                part === "Anindya Nag" ? (
-                                                                    <span
-                                                                        key={idx}
-                                                                        className="font-semibold text-gray-900"
-                                                                    >
-                                                                        Anindya Nag
-                                                                    </span>
-                                                                ) : (
-                                                                    part
-                                                                )
-                                                            )}
+                                    <div className="mt-4 space-y-2 text-sm text-gray-600">
+                                        <p className="flex">
+                                            <span className="font-medium text-gray-700 min-w-[70px]">Editors:</span>
+                                            <span className="ml-2">
+                                                {book.authors.split(/(Anindya Nag)/).map((part, idx) =>
+                                                    part === "Anindya Nag" ? (
+                                                        <span
+                                                            key={idx}
+                                                            className="font-semibold text-gray-900"
+                                                        >
+                                                            Anindya Nag
                                                         </span>
-                                                    </p>
-                                                    <p className="flex">
-                                                        <span className="font-medium text-gray-700 min-w-[70px]">Publisher:</span>
-                                                        <span className="ml-2">{book.publisher}</span>
-                                                    </p>
+                                                    ) : (
+                                                        part
+                                                    )
+                                                )}
+                                            </span>
+                                        </p>
+                                        <p className="flex">
+                                            <span className="font-medium text-gray-700 min-w-[70px]">Publisher:</span>
+                                            <span className="ml-2">{book.publisher}</span>
+                                        </p>
 
-                                                    {book.isbn && (
-                                                        <p className="flex">
-                                                            <span className="font-medium text-gray-700 min-w-[70px]">ISBN:</span>
-                                                            <span className="ml-2 font-mono">{book.isbn}</span>
-                                                        </p>
-                                                    )}
+                                        {book.isbn && (
+                                            <p className="flex">
+                                                <span className="font-medium text-gray-700 min-w-[70px]">ISBN:</span>
+                                                <span className="ml-2 font-mono">{book.isbn}</span>
+                                            </p>
+                                        )}
 
-                                                    {book.status && !book.isbn && (
-                                                        <p className="flex items-center">
-                                                            <span className="font-medium text-gray-700 min-w-[70px]">Status:</span>
-                                                            <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">
-                                                                {book.status}
-                                                            </span>
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {book.link && (
-                                                <div className="mt-6 pt-4 border-t border-gray-100">
-                                                    <a
-                                                        href={book.link}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-                                                    >
-                                                        <span>View Publication</span>
-                                                        <FaExternalLinkAlt className="ml-2 text-xs" />
-                                                    </a>
-                                                </div>
-                                            )}
-                                        </div>
+                                        {book.status && !book.isbn && (
+                                            <p className="flex items-center">
+                                                <span className="font-medium text-gray-700 min-w-[70px]">Status:</span>
+                                                <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700">
+                                                    {book.status}
+                                                </span>
+                                            </p>
+                                        )}
                                     </div>
-                                ))}
+                                </div>
+
+                                {book.link && (
+                                    <div className="mt-6 pt-4 border-t border-gray-100">
+                                        <a
+                                            href={book.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                                        >
+                                            <span>View Publication</span>
+                                            <FaExternalLinkAlt className="ml-2 text-xs" />
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
