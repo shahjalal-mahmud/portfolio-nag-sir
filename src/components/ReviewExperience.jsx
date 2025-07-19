@@ -1,16 +1,46 @@
 import React from "react";
 
 const journalReviews = [
-  "Pattern Recognition, Elsevier",
-  "IEEE Access, IEEE",
-  "Transactions on Emerging Telecommunications Technologies, Wiley",
-  "Human-Centric Intelligent Systems, Springer",
-  "PLOS Digital Health, PLOS",
-  "Frontiers in Nutrition, Frontiers",
-  "Frontiers in Oncology, Frontiers",
-  "Computer Methods in Biomechanics and Biomedical Engineering, Taylor & Francis",
-  "Artificial Intelligence and Applications, Bon View Publishing",
-  "International Journal of Computing and Digital Systems, University of Bahrain, Bahrain",
+  {
+    name: "Pattern Recognition, Elsevier",
+    url: "https://www.sciencedirect.com/journal/pattern-recognition",
+  },
+  {
+    name: "IEEE Access, IEEE",
+    url: "https://ieeeaccess.ieee.org",
+  },
+  {
+    name: "Transactions on Emerging Telecommunications Technologies, Wiley",
+    url: "https://onlinelibrary.wiley.com/journal/21613915",
+  },
+  {
+    name: "Human-Centric Intelligent Systems, Springer",
+    url: "https://link.springer.com/journal/44230",
+  },
+  {
+    name: "PLOS Digital Health, PLOS",
+    url: "https://journals.plos.org/digitalhealth/",
+  },
+  {
+    name: "Frontiers in Nutrition, Frontiers",
+    url: "https://www.frontiersin.org/journals/nutrition",
+  },
+  {
+    name: "Frontiers in Oncology, Frontiers",
+    url: "https://www.frontiersin.org/journals/oncology",
+  },
+  {
+    name: "Computer Methods in Biomechanics and Biomedical Engineering, Taylor & Francis",
+    url: "https://www.tandfonline.com/journals/gcmb20",
+  },
+  {
+    name: "Artificial Intelligence and Applications, Bon View Publishing",
+    url: "https://ojs.bonviewpress.com/index.php/AIA/index", 
+  },
+  {
+    name: "International Journal of Computing and Digital Systems, University of Bahrain, Bahrain",
+    url: "https://ijcds.uob.edu.bh/",
+  },
 ];
 
 const conferenceReviews = [
@@ -124,8 +154,11 @@ const ReviewExperience = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {journalReviews.map((journal, index) => (
-            <div 
+            <a 
               key={index}
+              href={journal.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md"
             >
               <div className="flex items-start">
@@ -135,11 +168,11 @@ const ReviewExperience = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-gray-800 font-medium">{journal.split(',')[0]}</p>
-                  <p className="text-gray-600 text-sm">{journal.split(',')[1]}</p>
+                  <p className="text-gray-800 font-medium">{journal.name.split(',')[0]}</p>
+                  <p className="text-gray-600 text-sm">{journal.name.split(',')[1]}</p>
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
