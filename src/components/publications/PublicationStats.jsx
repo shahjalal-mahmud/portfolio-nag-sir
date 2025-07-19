@@ -61,7 +61,7 @@ const PublicationStats = () => {
 
   return (
     <section
-      id="summary"
+      id="publications"
       className="py-24 px-6 md:px-16 bg-base-100 text-gray-900"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >

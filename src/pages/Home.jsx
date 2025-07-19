@@ -28,10 +28,6 @@ const Home = () => {
       <Experience />
       <PublicationStats />
       <PublicationsTabs />
-      <EditedBooks />
-      <JournalArticles />
-      <ConferenceProceedings />
-      <BookChapters />
       <ReviewExperience />
       <Skills />
       <Projects />
