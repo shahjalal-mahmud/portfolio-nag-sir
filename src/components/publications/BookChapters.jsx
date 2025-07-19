@@ -49,14 +49,21 @@ const BookChapters = () => {
                                                 <h4 className="text-xl font-semibold text-gray-900 leading-snug mb-3">
                                                     {chapter.title}
                                                 </h4>
-                                                
+
                                                 <div className="flex items-start text-sm text-gray-600 mb-4">
                                                     <FaBookOpen className="mt-0.5 mr-2 text-amber-500 flex-shrink-0" />
                                                     <span className="italic">{chapter.book}</span>
                                                 </div>
 
                                                 <p className="text-sm text-gray-700 mb-4">
-                                                    <span className="font-medium">Authors:</span> {chapter.authors}
+                                                    <span className="font-medium">Authors:</span>{" "}
+                                                    {chapter.authors.split(/(Anindya Nag)/).map((part, idx) =>
+                                                        part === "Anindya Nag" ? (
+                                                            <strong key={idx} className="text-gray-900 font-semibold">Anindya Nag</strong>
+                                                        ) : (
+                                                            part
+                                                        )
+                                                    )}
                                                 </p>
 
                                                 <div className="flex flex-wrap gap-2">

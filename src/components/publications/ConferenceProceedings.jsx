@@ -79,7 +79,15 @@ const ConferenceProceedings = () => {
                                         </div>
                                     )}
 
-                                    <p className="text-sm text-gray-700 mb-4">{item.authors}</p>
+                                    <p className="text-sm text-gray-700 mb-4">
+                                        {item.authors.split(/(Anindya Nag)/).map((part, idx) =>
+                                            part === "Anindya Nag" ? (
+                                                <strong key={idx} className="text-gray-900 font-semibold">Anindya Nag</strong>
+                                            ) : (
+                                                part
+                                            )
+                                        )}
+                                    </p>
 
                                     {(item.is_first_author || item.is_corresponding_author) && (
                                         <div className="flex flex-wrap gap-2">

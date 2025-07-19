@@ -57,8 +57,21 @@ const EditedBooks = () => {
 
                                                 <div className="mt-4 space-y-2 text-sm text-gray-600">
                                                     <p className="flex">
-                                                        <span className="font-medium text-gray-700 min-w-[70px]">Authors:</span>
-                                                        <span className="ml-2">{book.authors}</span>
+                                                        <span className="font-medium text-gray-700 min-w-[70px]">Editors:</span>
+                                                        <span className="ml-2">
+                                                            {book.authors.split(/(Anindya Nag)/).map((part, idx) =>
+                                                                part === "Anindya Nag" ? (
+                                                                    <span
+                                                                        key={idx}
+                                                                        className="font-semibold text-gray-900"
+                                                                    >
+                                                                        Anindya Nag
+                                                                    </span>
+                                                                ) : (
+                                                                    part
+                                                                )
+                                                            )}
+                                                        </span>
                                                     </p>
                                                     <p className="flex">
                                                         <span className="font-medium text-gray-700 min-w-[70px]">Publisher:</span>

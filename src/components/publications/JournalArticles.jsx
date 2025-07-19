@@ -65,7 +65,7 @@ const JournalArticles = () => {
                                             {article.title}
                                         </a>
                                     </h3>
-                                    
+
                                     <div className="mt-3 flex items-center text-sm text-blue-600">
                                         <FaQuoteRight className="mr-2 text-xs opacity-70" />
                                         <span className="italic">{article.journal}</span>
@@ -101,7 +101,13 @@ const JournalArticles = () => {
                                     </div>
 
                                     <p className="mt-4 text-sm text-gray-600">
-                                        {article.authors}
+                                        {article.authors.split(/(Anindya Nag)/).map((part, idx) =>
+                                            part === "Anindya Nag" ? (
+                                                <strong key={idx} className="text-gray-900 font-semibold">Anindya Nag</strong>
+                                            ) : (
+                                                part
+                                            )
+                                        )}
                                     </p>
                                 </div>
 
