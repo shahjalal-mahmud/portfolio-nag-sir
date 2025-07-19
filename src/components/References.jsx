@@ -11,7 +11,7 @@ const references = [
   },
   {
     name: "Dr. C Kishor Kumar Reddy",
-    title: "Associate Professor and Head of the Department",
+    title: "Associate Professor",
     institution:
       "Department of Computer Science and Engineering, Stanley College of Engineering & Technology for Women",
     location: "Hyderabad, Telangana, India",

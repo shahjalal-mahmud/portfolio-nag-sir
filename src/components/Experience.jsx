@@ -6,8 +6,10 @@ const Experience = () => {
   const experiences = [
     {
       title: "Lecturer",
-      university:
-        "Northern University of Business & Technology Khulna, Khulna-9100, Bangladesh",
+      university: {
+        name: "Northern University of Business & Technology Khulna, Khulna-9100, Bangladesh",
+        url: "https://nubtkhulna.ac.bd/"
+      },
       period: "March 2024 – Ongoing",
       department: "Department of Computer Science and Engineering",
       courses: [
@@ -20,7 +22,10 @@ const Experience = () => {
     },
     {
       title: "Adjunct Lecturer",
-      university: "North Western University, Khulna-9100, Bangladesh",
+      university: {
+        name: "North Western University, Khulna-9100, Bangladesh",
+        url: "https://nwu.ac.bd/"
+      },
       period: "January 2023 – February 2024",
       department: "Department of Computer Science and Engineering",
       courses: [
@@ -61,7 +66,16 @@ const Experience = () => {
                         <FaUniversity className="inline-block mr-2" />
                         {exp.department}
                       </p>
-                      <p className="text-gray-500 italic">{exp.university}</p>
+                      <p className="text-gray-500 italic">
+                        <a
+                          href={exp.university.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-blue-600 hover:underline"
+                        >
+                          {exp.university.name}
+                        </a>
+                      </p>
                     </div>
                     <div className="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg font-medium">
                       {exp.period}
