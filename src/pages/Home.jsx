@@ -8,7 +8,7 @@ import Navbar from "../components/Navbar";
 import PublicationsTabs from "../components/publications/PublicationsTabs";
 import PublicationStats from "../components/publications/PublicationStats";
 import References from "../components/References";
-import ReviewExperience from "../components/ReviewExperience";
+import ReviewExperience from "../components/review/ReviewExperience";
 import Skills from "../components/Skills";
 import About from "../sections/About";
 import Contact from "../sections/Contact";
