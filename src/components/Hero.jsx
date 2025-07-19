@@ -115,7 +115,7 @@ const Hero = () => {
         {/* Profile Image */}
         <div className="flex-1 flex justify-center">
           <img
-            src="/images/A.jpg"
+            src="/images/a2.jpg"
             alt="Anindya Nag"
             className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-full border-4 border-primary shadow-2xl group-hover:scale-105"
           />
