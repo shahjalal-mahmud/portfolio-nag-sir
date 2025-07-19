@@ -35,9 +35,9 @@ const Hero = () => {
             Northern University of Business and Technology Khulna
           </p>
 
-          <p className="text-sm mb-6 text-gray-700 max-w-lg">
+          {/* <p className="text-sm mb-6 text-gray-700 max-w-lg">
             Bioinformatics • Health Informatics • Neuroscience • Machine Learning • Artificial Intelligence
-          </p>
+          </p> */}
           {/* Location & Contact */}
           <div className="text-sm text-gray-800 space-y-1 mb-6 max-w-xs">
             {/* Interactive Location */}
