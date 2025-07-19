@@ -11,8 +11,10 @@ const Experience = () => {
       period: "March 2024 – Ongoing",
       department: "Department of Computer Science and Engineering",
       courses: [
-        "Object Oriented Programming I",
+        "Artificial Intelligence and Expert systems",
         "Pattern Recognition",
+        "Numerical Methods",
+        "Computer Graphics and Multimedia System",
         "Digital Logic Design and more",
       ],
     },

@@ -43,7 +43,7 @@ const About = () => {
           data-aos-delay="200"
         >
           <img
-            src="/images/aa.jpg"
+            src="/images/cover.jpeg"
             alt="Anindya Nag"
             className="w-80 h-80 sm:w-96 sm:h-96 object-cover rounded-2xl shadow-2xl border-4 border-primary"
           />
