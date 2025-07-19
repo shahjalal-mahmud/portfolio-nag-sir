@@ -75,7 +75,9 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-1">Portfolio</h4>
-                  <p className="font-medium">anindyanag.netlify.app</p>
+                  <a href="https://anindyanag.netlify.app/" target="_blank" rel="noopener noreferrer" className="font-medium">
+                    anindyanag.netlify.app
+                  </a>
                 </div>
               </div>
             </div>
