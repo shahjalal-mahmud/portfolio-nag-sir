@@ -32,7 +32,7 @@ const About = () => {
   return (
     <section
       id="about"
-      className="py-24 px-6 bg-[#f9f9f9] text-gray-900"
+      className="py-24 px-6 text-gray-900"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">

@@ -36,7 +36,7 @@ const Education = () => {
   return (
     <section
       id="education"
-      className="bg-[#f1f5f9] text-gray-900 px-6 pt-16 pb-28"
+      className="text-gray-900 px-6 pt-16 pb-28"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="max-w-6xl mx-auto" data-aos="fade-up" data-aos-delay="100">

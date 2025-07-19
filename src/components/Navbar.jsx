@@ -62,7 +62,7 @@ const Navbar = () => {
     );
 
     return (
-        <header className="sticky top-0 z-50 bg-white text-gray-800 font-bold shadow-md">
+        <header className="sticky top-0 z-50 text-gray-800 font-bold shadow-md bg-white">
             <div className="navbar max-w-7xl mx-auto px-4 flex justify-between items-center py-2">
                 <div className="flex-1">
                     <Link

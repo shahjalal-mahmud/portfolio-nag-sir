@@ -21,7 +21,7 @@ const references = [
 
 const References = () => {
   return (
-    <section id="references" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+    <section id="references" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16">

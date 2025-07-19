@@ -31,7 +31,7 @@ const Experience = () => {
   ];
 
   return (
-    <section id="experience" className="py-16 px-4 lg:px-8 bg-white">
+    <section id="experience" className="py-16 px-4 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-14">
           <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
