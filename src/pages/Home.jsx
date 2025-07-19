@@ -9,6 +9,7 @@ import BookChapters from "../components/publications/BookChapters";
 import ConferenceProceedings from "../components/publications/ConferenceProceedings";
 import EditedBooks from "../components/publications/EditedBooks";
 import JournalArticles from "../components/publications/JournalArticles";
+import PublicationsTabs from "../components/publications/PublicationsTabs";
 import PublicationStats from "../components/publications/PublicationStats";
 import References from "../components/References";
 import ReviewExperience from "../components/ReviewExperience";
@@ -26,6 +27,7 @@ const Home = () => {
       <Education />
       <Experience />
       <PublicationStats />
+      <PublicationsTabs />
       <EditedBooks />
       <JournalArticles />
       <ConferenceProceedings />
