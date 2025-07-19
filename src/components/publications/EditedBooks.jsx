@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaExternalLinkAlt, FaBook} from "react-icons/fa";
+import { FaExternalLinkAlt, FaBook } from "react-icons/fa";
 import { HiOutlineCalendar } from 'react-icons/hi';
 import publicationsData from "./PublicationsData.json";
 
@@ -33,11 +33,10 @@ const EditedBooks = () => {
                             <button
                                 key={year}
                                 onClick={() => setActiveYear(year)}
-                                className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${
-                                    activeYear === year
+                                className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${activeYear === year
                                         ? 'bg-blue-600 text-white shadow-md'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    }`}
                             >
                                 <HiOutlineCalendar className="mr-2" />
                                 {year}
@@ -70,7 +69,7 @@ const EditedBooks = () => {
 
                                     {book.is_first_author && (
                                         <span className="inline-block mt-2 text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
-                                            First/Corresponding Author
+                                            Lead Editor
                                         </span>
                                     )}
 

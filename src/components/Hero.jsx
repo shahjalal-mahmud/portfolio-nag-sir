@@ -46,7 +46,7 @@ const Hero = () => {
               onClick={() => window.open(locationMapUrl, "_blank")}
             >
               <FaMapMarkerAlt className="text-gray-600 flex-shrink-0" />
-              Northern University of Business and Technology Khulna
+              Northern University of Business and Technology Khulna, Khulna-9100, Bangladesh
             </p>
             <p>
               Email:{" "}
