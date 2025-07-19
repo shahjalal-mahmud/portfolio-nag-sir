@@ -14,7 +14,7 @@ const About = () => {
   const toggleExpanded = () => setIsExpanded(!isExpanded);
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
 
-  const shortBio = ` Anindya Nag (NID: 1504091131) obtained an M.Sc. in Computer Science and Engineering from Khulna
+  const shortBio = ` Anindya Nag obtained an M.Sc. in Computer Science and Engineering from Khulna
  University in Khulna, Bangladesh, and a B.Tech. in Computer Science and Engineering from Adamas
  University in Kolkata, India. He is currently a lecturer in the Department of Computer Science and
  Engineering at the Northern University of Business and Technology in Khulna, Bangladesh.`;
