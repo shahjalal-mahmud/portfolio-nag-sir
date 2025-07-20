@@ -81,16 +81,17 @@ const ConferenceProceedings = () => {
                     </p>
                 </div>
 
-                <div className="flex overflow-x-auto pb-4 mb-10 scrollbar-hide">
-                    <div className="flex space-x-2 mx-auto">
+                <div className="mb-10">
+                    <div className="flex flex-wrap justify-center gap-2">
                         {years.map((year) => (
                             <button
                                 key={year}
                                 onClick={() => setActiveYear(year)}
-                                className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${activeYear === year
-                                    ? 'bg-indigo-600 text-white shadow-md'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
+                                className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${
+                                    activeYear === year
+                                        ? 'bg-indigo-600 text-white shadow-md'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
                             >
                                 <HiOutlineCalendar className="mr-2" />
                                 {year}

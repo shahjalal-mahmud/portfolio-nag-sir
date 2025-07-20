@@ -84,14 +84,14 @@ const Contact = () => {
 
             {/* Academic Profiles */}
             <h3 className="text-2xl font-bold text-gray-900 mt-10 mb-6">Academic Profiles</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <a
                 href="https://www.researchgate.net/profile/Anindya-Nag-3"
                 target="_blank"
                 className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
                 <SiResearchgate className="text-green-600 text-xl mr-3" />
-                <span>ResearchGate</span>
+                <span className="truncate">ResearchGate</span>
               </a>
               <a
                 href="https://orcid.org/0000-0001-6518-8233"
@@ -99,7 +99,7 @@ const Contact = () => {
                 className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
                 <SiOrcid className="text-green-700 text-xl mr-3" />
-                <span>ORCID</span>
+                <span className="truncate">ORCID</span>
               </a>
               <a
                 href="https://scholar.google.com/citations?hl=en&user=V4OLVPAAAAAJ&view_op=list_works"
@@ -107,7 +107,7 @@ const Contact = () => {
                 className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
                 <SiGooglescholar className="text-blue-500 text-xl mr-3" />
-                <span>Google Scholar</span>
+                <span className="truncate">Google Scholar</span>
               </a>
               <a
                 href="https://www.scopus.com/authid/detail.uri?authorId=58398246900"
@@ -115,14 +115,15 @@ const Contact = () => {
                 className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
                 <SiScopus className="text-red-500 text-xl mr-3" />
-                <span>Scopus</span>
+                <span className="truncate">Scopus</span>
               </a>
               <a
                 href="https://www.webofscience.com/wos/author/record/ITT-5228-2023"
                 target="_blank"
                 className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
-                <SiClarivate className="text-red-700 text-xl mr-3" /> Web of Science
+                <SiClarivate className="text-red-700 text-xl mr-3" />
+                <span className="truncate">Web of Science</span>
               </a>
               <a
                 href="https://nubtkhulna.ac.bd/sd/273/Anindya%20Nag"
@@ -130,7 +131,7 @@ const Contact = () => {
                 className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
                 <FaGlobe className="text-indigo-600 text-xl mr-3" />
-                <span>Official Website</span>
+                <span className="truncate">Official Website</span>
               </a>
             </div>
           </div>
