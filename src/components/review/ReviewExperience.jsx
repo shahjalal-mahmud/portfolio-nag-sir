@@ -8,9 +8,9 @@ const ReviewExperience = () => {
 
   const tabs = [
     { id: "all", label: "All" },
+    { id: "technical", label: "Program Committee" },
     { id: "journal", label: "Journal Reviews" },
     { id: "conference", label: "Conference Reviews" },
-    { id: "technical", label: "Program Committee" },
   ];
 
   return (
@@ -57,9 +57,9 @@ const ReviewExperience = () => {
 
       {/* Tab Content */}
       <div className="space-y-8">
+        {(activeTab === "all" || activeTab === "technical") && <TechnicalProgramCommittee />}
         {(activeTab === "all" || activeTab === "journal") && <JournalReviews />}
         {(activeTab === "all" || activeTab === "conference") && <ConferenceReviews />}
-        {(activeTab === "all" || activeTab === "technical") && <TechnicalProgramCommittee />}
       </div>
     </section>
   );
