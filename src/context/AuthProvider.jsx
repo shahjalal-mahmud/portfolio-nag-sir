@@ -2,27 +2,39 @@ import { useEffect, useState } from "react";
 import {
   onAuthStateChanged,
   signOut,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth";
 import { auth } from "../firebase";
 import AuthContext from "./AuthContext";
 
-const TEACHER_EMAIL = "mahmud.nubtk@gmail.com"; // Replace with actual email
+const TEACHER_EMAIL = "mahmud.nubtk@gmail.com"; // Your teacher's email
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser && firebaseUser.email === TEACHER_EMAIL) {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (
+        firebaseUser &&
+        firebaseUser.email === TEACHER_EMAIL &&
+        firebaseUser.emailVerified
+      ) {
         setUser(firebaseUser);
       } else {
         setUser(null);
-        if (firebaseUser) signOut(auth); // Log out if not teacher
+        if (firebaseUser) {
+          if (!firebaseUser.emailVerified) {
+            await sendEmailVerification(firebaseUser);
+            alert("Please verify your email address. A verification email has been sent.");
+          }
+          signOut(auth); // Log out if not verified or not teacher
+        }
       }
       setLoading(false);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -33,12 +45,20 @@ const AuthProvider = ({ children }) => {
       }
 
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
+      const currentUser = userCredential.user;
+
+      if (!currentUser.emailVerified) {
+        await sendEmailVerification(currentUser);
+        throw new Error("Email not verified. A verification email has been sent.");
+      }
+
+      return currentUser;
     } catch (error) {
       console.error("Login error:", error);
       throw error;
     }
   };
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -53,7 +73,7 @@ const AuthProvider = ({ children }) => {
     user,
     loading,
     login,
-    logout
+    logout,
   };
 
   return (

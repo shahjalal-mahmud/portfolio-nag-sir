@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
 const Login = () => {
@@ -84,7 +85,7 @@ const Login = () => {
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Teacher Email
+                                Admin Email
                             </label>
                             <div className="mt-1">
                                 <input
@@ -104,7 +105,7 @@ const Login = () => {
                                 htmlFor="password"
                                 className="block text-sm font-medium text-gray-700"
                             >
-                                Password
+                                Admin Password
                             </label>
                             <div className="mt-1">
                                 <input
@@ -137,12 +138,9 @@ const Login = () => {
                             </div>
 
                             <div className="text-sm">
-                                <a
-                                    href="#"
-                                    className="font-medium text-blue-600 hover:text-blue-500"
-                                >
+                                <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
                                     Forgot password?
-                                </a>
+                                </Link>
                             </div>
                         </div>
 
