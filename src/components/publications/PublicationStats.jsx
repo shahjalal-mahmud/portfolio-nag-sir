@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, useAnimation } from "framer-motion";
 import { FaGoogle } from "react-icons/fa";
-import publicationsData from "./PublicationsData.json";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const StatCard = ({ label, value, duration = 3 }) => {
   const [count, setCount] = useState(0);
@@ -57,7 +58,32 @@ const StatCard = ({ label, value, duration = 3 }) => {
 
 
 const PublicationStats = () => {
-  const stats = publicationsData.publications.summary;
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const docRef = doc(db, "publications", "summary");
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setStats(docSnap.data());
+        } else {
+          console.log("No such document!");
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div className="py-24 text-center">Loading...</div>;
+  if (!stats) return <div className="py-24 text-center">No data available</div>;
 
   return (
     <section

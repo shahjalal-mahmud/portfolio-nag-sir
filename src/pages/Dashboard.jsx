@@ -1,3 +1,4 @@
+import DashboardPublicationStats from "../components/dashboard/DashboardPublicationStats";
 import { useAuth } from "../context/useAuth";
 
 const Dashboard = () => {
@@ -24,6 +25,7 @@ const Dashboard = () => {
             </div>
             
             {/* Add your dashboard content here */}
+            <DashboardPublicationStats />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border border-gray-200 rounded-md">
                 <h3 className="font-medium text-gray-700">Edit Publications</h3>
