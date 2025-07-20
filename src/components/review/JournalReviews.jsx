@@ -41,6 +41,10 @@ const journalReviews = [
     name: "International Journal of Computing and Digital Systems, University of Bahrain, Bahrain",
     url: "https://ijcds.uob.edu.bh/",
   },
+  {
+    name: "Discover Artificial Intelligence, Springer Nature",
+    url: "https://link.springer.com/journal/44163",
+  },
 ];
 
 const JournalReviews = () => {

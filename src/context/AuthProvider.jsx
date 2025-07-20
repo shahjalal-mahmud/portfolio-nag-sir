@@ -8,7 +8,11 @@ import {
 import { auth } from "../firebase";
 import AuthContext from "./AuthContext";
 
-const TEACHER_EMAIL = "mahmud.nubtk@gmail.com"; // Your teacher's email
+// Define both authorized emails
+const AUTHORIZED_EMAILS = [
+  "mahmud.nubtk@gmail.com",
+  "anindyanag@ieee.org"
+];
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -18,7 +22,7 @@ const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (
         firebaseUser &&
-        firebaseUser.email === TEACHER_EMAIL &&
+        AUTHORIZED_EMAILS.includes(firebaseUser.email) &&
         firebaseUser.emailVerified
       ) {
         setUser(firebaseUser);
@@ -29,7 +33,7 @@ const AuthProvider = ({ children }) => {
             await sendEmailVerification(firebaseUser);
             alert("Please verify your email address. A verification email has been sent.");
           }
-          signOut(auth); // Log out if not verified or not teacher
+          signOut(auth); // Log out if not verified or not authorized
         }
       }
       setLoading(false);
@@ -40,7 +44,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      if (email !== TEACHER_EMAIL) {
+      if (!AUTHORIZED_EMAILS.includes(email)) {
         throw new Error("Access restricted to authorized users only");
       }
 
