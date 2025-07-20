@@ -1,12 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaExternalLinkAlt, FaMicrophone, FaMapMarkerAlt } from 'react-icons/fa';
 import { HiOutlineCalendar } from 'react-icons/hi';
-import publicationsData from './PublicationsData.json';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const ConferenceProceedings = () => {
-    const proceedings = publicationsData.publications.conference_proceedings;
+    const [proceedings, setProceedings] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [activeYear, setActiveYear] = useState(null);
+
+    useEffect(() => {
+        const fetchProceedings = async () => {
+            try {
+                const proceedingsCollection = collection(db, 'conference_proceedings');
+                const snapshot = await getDocs(proceedingsCollection);
+                
+                const proceedingsData = {};
+                snapshot.forEach(doc => {
+                    if (doc.data().proceedings) {
+                        proceedingsData[doc.id] = doc.data().proceedings;
+                    }
+                });
+
+                setProceedings(proceedingsData);
+                
+                // Set the most recent year as active by default
+                const years = Object.keys(proceedingsData).sort((a, b) => b.localeCompare(a));
+                if (years.length > 0) {
+                    setActiveYear(years[0]);
+                }
+                
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching conference proceedings:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchProceedings();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p>Loading conference proceedings...</p>
+                </div>
+            </section>
+        );
+    }
+
     const years = Object.keys(proceedings).sort((a, b) => b.localeCompare(a));
-    const [activeYear, setActiveYear] = useState(years[0]);
+
+    if (years.length === 0) {
+        return (
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p>No conference proceedings found.</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section

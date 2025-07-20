@@ -1,12 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaExternalLinkAlt, FaRegNewspaper, FaQuoteRight } from 'react-icons/fa';
 import { FiBarChart2 } from 'react-icons/fi';
-import publicationsData from './PublicationsData.json';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const JournalArticles = () => {
-    const journalArticles = publicationsData.publications.journal_articles;
+    const [journalArticles, setJournalArticles] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [activeYear, setActiveYear] = useState(null);
+
+    useEffect(() => {
+        const fetchJournalArticles = async () => {
+            try {
+                const articlesCollection = collection(db, 'journal_articles');
+                const snapshot = await getDocs(articlesCollection);
+                
+                const articlesData = {};
+                snapshot.forEach(doc => {
+                    if (doc.data().articles) {
+                        articlesData[doc.id] = doc.data().articles;
+                    }
+                });
+
+                setJournalArticles(articlesData);
+                
+                // Set the most recent year as active by default
+                const years = Object.keys(articlesData).sort((a, b) => b.localeCompare(a));
+                if (years.length > 0) {
+                    setActiveYear(years[0]);
+                }
+                
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching journal articles:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchJournalArticles();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p>Loading journal articles...</p>
+                </div>
+            </section>
+        );
+    }
+
     const years = Object.keys(journalArticles).sort((a, b) => b.localeCompare(a));
-    const [activeYear, setActiveYear] = useState(years[0]);
+
+    if (years.length === 0) {
+        return (
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p>No journal articles found.</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section
@@ -48,7 +102,7 @@ const JournalArticles = () => {
                 </div>
 
                 <div className="space-y-6">
-                    {journalArticles[activeYear].map((article, index) => (
+                    {journalArticles[activeYear]?.map((article, index) => (
                         <div
                             key={index}
                             className="border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm"

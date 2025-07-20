@@ -1,12 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaBookOpen, FaExternalLinkAlt } from 'react-icons/fa';
 import { HiOutlineCalendar } from 'react-icons/hi';
-import PublicationsData from './PublicationsData.json';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const BookChapters = () => {
-    const { book_chapters } = PublicationsData.publications;
-    const years = Object.keys(book_chapters).sort((a, b) => b.localeCompare(a));
-    const [activeYear, setActiveYear] = useState(years[0]);
+    const [bookChapters, setBookChapters] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [activeYear, setActiveYear] = useState(null);
+
+    useEffect(() => {
+        const fetchBookChapters = async () => {
+            try {
+                const chaptersCollection = collection(db, 'book_chapters');
+                const snapshot = await getDocs(chaptersCollection);
+                
+                const chaptersData = {};
+                snapshot.forEach(doc => {
+                    if (doc.data().chapters) {
+                        chaptersData[doc.id] = doc.data().chapters;
+                    }
+                });
+
+                setBookChapters(chaptersData);
+                
+                // Set the most recent year as active by default
+                const years = Object.keys(chaptersData).sort((a, b) => b.localeCompare(a));
+                if (years.length > 0) {
+                    setActiveYear(years[0]);
+                }
+                
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching book chapters:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchBookChapters();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p>Loading book chapters...</p>
+                </div>
+            </section>
+        );
+    }
+
+    const years = Object.keys(bookChapters).sort((a, b) => b.localeCompare(a));
+
+    if (years.length === 0) {
+        return (
+            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
+                <div className="max-w-7xl mx-auto text-center">
+                    <p>No book chapters found.</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section
@@ -41,7 +95,7 @@ const BookChapters = () => {
                                 <HiOutlineCalendar className="mr-2" />
                                 {year}
                                 <span className="ml-2 text-xs bg-white/20 rounded-full px-2 py-0.5">
-                                    {book_chapters[year]?.length || 0}
+                                    {bookChapters[year]?.length || 0}
                                 </span>
                             </button>
                         ))}
@@ -49,7 +103,7 @@ const BookChapters = () => {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                    {book_chapters[activeYear]?.map((chapter, index) => (
+                    {bookChapters[activeYear]?.map((chapter, index) => (
                         <div
                             key={index}
                             className="border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm"
