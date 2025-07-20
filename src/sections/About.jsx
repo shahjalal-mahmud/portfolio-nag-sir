@@ -161,7 +161,6 @@ const About = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
     </section>
   );
 };
