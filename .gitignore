@@ -7,18 +7,51 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependency directories
+node_modules/
+
+# Build directories
+dist/
+dist-ssr/
+.firebase/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Firebase service account key
+firestore-scripts/serviceAccountKey.json
+firestore_scripts/serviceAccountKey.json
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+.vscode/
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Local development files
+*.local
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Vite cache
+.temp/
+.cache/
