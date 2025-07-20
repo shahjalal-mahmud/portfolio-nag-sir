@@ -8,6 +8,40 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+async function deleteAllData() {
+  try {
+    console.log("🗑️ Starting deletion of all existing data...");
+    
+    // List of all collections to clear
+    const collections = [
+      'publications',
+      'edited_books',
+      'journal_articles',
+      'conference_proceedings',
+      'book_chapters'
+    ];
+
+    // Delete all documents in each collection
+    for (const collectionName of collections) {
+      const collectionRef = db.collection(collectionName);
+      const snapshot = await collectionRef.get();
+      
+      const batch = db.batch();
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      
+      await batch.commit();
+      console.log(`✅ Deleted all documents from ${collectionName}`);
+    }
+    
+    console.log("🔥 All existing data deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    throw error; // Stop the process if deletion fails
+  }
+}
+
 async function importData() {
   try {
     // 1. Import summary
@@ -29,16 +63,16 @@ async function importData() {
       batch.set(ref, { articles });
     }
 
-    // Conference Proceedings (fixed variable name)
+    // Conference Proceedings
     for (const [year, proceedings] of Object.entries(publicationsData.publications.conference_proceedings)) {
       const ref = db.collection("conference_proceedings").doc(year);
-      batch.set(ref, { proceedings }); // Changed from 'articles' to 'proceedings'
+      batch.set(ref, { proceedings }); // Fixed variable name to match your structure
     }
 
-    // Book Chapters (fixed structure)
+    // Book Chapters
     for (const [year, chapters] of Object.entries(publicationsData.publications.book_chapters)) {
       const ref = db.collection("book_chapters").doc(year);
-      batch.set(ref, { chapters }); // Changed from 'book' to 'chapters'
+      batch.set(ref, { chapters }); // Fixed variable name to match your structure
     }
 
     await batch.commit();
@@ -48,4 +82,10 @@ async function importData() {
   }
 }
 
-importData();
+async function run() {
+  await deleteAllData();
+  await importData();
+  process.exit();
+}
+
+run();
