@@ -4,7 +4,8 @@ import {
   FaEnvelope,
   FaDownload,
   FaGraduationCap,
-  FaEdit
+  FaEdit,
+  FaUpload
 } from "react-icons/fa";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,6 +23,8 @@ const About = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editField, setEditField] = useState('');
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
   const [tempValues, setTempValues] = useState({
     shortBio: '',
     fullBio: '',
@@ -41,6 +44,13 @@ const About = () => {
 
         if (docSnap.exists()) {
           setAboutData(docSnap.data());
+          const data = docSnap.data();
+          setAboutData(data);
+          // Set the image URL if it exists in Firestore
+          if (data.aboutImageUrl) {
+            setImageUrl(data.aboutImageUrl);
+          }
+
         } else {
           setAboutData({
             shortBio: `Anindya Nag obtained an M.Sc. in Computer Science and Engineering from Khulna University...`,
@@ -127,6 +137,27 @@ const About = () => {
     }
   };
 
+  const handleImageUpdate = async () => {
+    if (!imageUrl) return;
+
+    try {
+      const docRef = doc(db, "portfolio", "about");
+      await updateDoc(docRef, {
+        aboutImageUrl: imageUrl
+      });
+
+      // Update local state
+      setAboutData(prev => ({
+        ...prev,
+        aboutImageUrl: imageUrl
+      }));
+
+      setIsImageModalOpen(false);
+    } catch (error) {
+      console.error("Error updating about image:", error);
+    }
+  };
+
   if (loading) {
     return <LoadingAnimation />;
   }
@@ -145,16 +176,19 @@ const About = () => {
         {/* Profile Image */}
         <div className="w-full md:w-1/2 flex justify-center relative">
           <img
-            src="/images/cover.jpeg"
+            src={imageUrl || "/images/cover.jpeg"}
             alt="Anindya Nag"
             className="w-80 h-80 sm:w-96 sm:h-96 object-cover rounded-2xl shadow-2xl border-4 border-primary"
+            onError={(e) => {
+              e.target.src = "/images/cover.jpeg"; // Fallback image if URL is invalid
+            }}
           />
           {user && (
             <button
               className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-all"
-              onClick={() => console.log("Edit image clicked")}
+              onClick={() => setIsImageModalOpen(true)}
             >
-              <FaEdit className="text-blue-600" size={16} />
+              <FaUpload className="text-blue-600" size={16} />
             </button>
           )}
         </div>
@@ -392,6 +426,59 @@ const About = () => {
                 className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      {/* Image Update Modal */}
+      <Modal isOpen={isImageModalOpen} onClose={() => setIsImageModalOpen(false)}>
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Update About Image
+            </h3>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Image URL (from ImageBB)
+              </label>
+              <input
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://i.ibb.co/..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+            </div>
+
+            {imageUrl && (
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                  onError={(e) => {
+                    e.target.src = "/images/cover.jpeg"; // Fallback image if URL is invalid
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsImageModalOpen(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleImageUpdate}
+                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={!imageUrl}
+              >
+                Update Image
               </button>
             </div>
           </div>
