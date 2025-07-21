@@ -55,8 +55,12 @@ async function initHeroData() {
         href: "https://github.com/AnindyaNag",
         icon: "github",
         label: "GitHub",
-      }
-      // Add all other social links here
+      }, 
+      {
+        href: "https://anindyanag.netlify.app/",
+        icon: "globe",
+        label: "Personal Portfolio"
+      },
     ]
   };
 

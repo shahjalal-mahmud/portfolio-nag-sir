@@ -73,7 +73,12 @@ const Hero = () => {
                 href: "https://github.com/AnindyaNag",
                 icon: "github",
                 label: "GitHub",
-              }
+              },
+              {
+                href: "https://anindyanag.netlify.app/",
+                icon: "globe",
+                label: "Personal Portfolio"
+              },
             ]
           });
         }
