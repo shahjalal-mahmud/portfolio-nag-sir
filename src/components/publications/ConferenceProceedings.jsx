@@ -120,7 +120,7 @@ const ConferenceProceedings = () => {
                 if (yearDoc.exists()) {
                     const existingProceedings = yearDoc.data().proceedings || [];
                     await updateDoc(yearDocRef, {
-                        proceedings: [...existingProceedings, proceedingData]
+                        proceedings: [proceedingData, ...existingProceedings]
                     });
                 } else {
                     await setDoc(yearDocRef, {

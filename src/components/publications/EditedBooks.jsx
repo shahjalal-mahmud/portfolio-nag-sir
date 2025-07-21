@@ -116,7 +116,7 @@ const EditedBooks = () => {
                 if (yearDoc.exists()) {
                     const existingBooks = yearDoc.data().books || [];
                     await updateDoc(yearDocRef, {
-                        books: [...existingBooks, bookData]
+                        books: [bookData, ...existingBooks]
                     });
                 } else {
                     await setDoc(yearDocRef, {

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-scroll";
-import { NavLink } from "react-router-dom"; // Add this import
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { FiMenu, FiX, FiChevronDown, FiLogIn, FiLogOut } from "react-icons/fi"; // Added icons
+import { FiMenu, FiX, FiChevronDown, FiLogIn, FiLogOut } from "react-icons/fi";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
-    const { user, logout } = useAuth(); // Add logout from useAuth
+    const { user, logout } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [active, setActive] = useState("hero");
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -23,7 +23,7 @@ const Navbar = () => {
                 { name: "Review Experience", to: "review-experience" },
             ],
         },
-        { name: "Publications", to: "publications"},
+        { name: "Publications", to: "publications" },
         {
             name: "Portfolio",
             sub: [
@@ -126,23 +126,15 @@ const Navbar = () => {
                         )
                     )}
 
-                    {/* Add Login/Logout Button for Desktop */}
+                    {/* Login/Logout Button for Desktop */}
                     {user ? (
-                        <div className="flex items-center gap-2 ml-4">
-                            <NavLink
-                                to="/dashboard"
-                                className="px-3 py-2 rounded-md bg-green-100 text-green-800 hover:bg-green-200 transition-colors flex items-center gap-1"
-                            >
-                                <span>Dashboard</span>
-                            </NavLink>
-                            <button
-                                onClick={handleLogout}
-                                className="px-3 py-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors flex items-center gap-1"
-                            >
-                                <FiLogOut className="text-sm" />
-                                <span>Logout</span>
-                            </button>
-                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="ml-4 px-3 py-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors flex items-center gap-1"
+                        >
+                            <FiLogOut className="text-sm" />
+                            <span>Logout</span>
+                        </button>
                     ) : (
                         <NavLink
                             to="/login"
@@ -212,25 +204,16 @@ const Navbar = () => {
                             )
                         )}
 
-                        {/* Add Login/Logout Button for Mobile */}
+                        {/* Login/Logout Button for Mobile */}
                         <div className="border-t border-gray-200 pt-4 mt-4">
                             {user ? (
-                                <>
-                                    <NavLink
-                                        to="/dashboard"
-                                        onClick={() => setIsOpen(false)}
-                                        className="block w-full px-4 py-2 rounded-md bg-green-100 text-green-800 hover:bg-green-200 transition-colors mb-2"
-                                    >
-                                        Dashboard
-                                    </NavLink>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full px-4 py-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors text-left items-center gap-2"
-                                    >
-                                        <FiLogOut className="text-sm" />
-                                        <span>Logout</span>
-                                    </button>
-                                </>
+                                <button
+                                    onClick={handleLogout}
+                                    className="block w-full px-4 py-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors text-left items-center gap-2"
+                                >
+                                    <FiLogOut className="text-sm" />
+                                    <span>Logout</span>
+                                </button>
                             ) : (
                                 <NavLink
                                     to="/login"
