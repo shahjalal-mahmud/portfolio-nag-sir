@@ -252,7 +252,7 @@ const Hero = () => {
             <img
               src="/images/a2.jpg"
               alt="Anindya Nag"
-              className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 object-cover rounded-full border-4 border-white shadow-xl transition-all duration-300 hover:shadow-2xl"
+              className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 object-cover rounded-full border-4 border-blue-600 shadow-xl transition-all duration-300 hover:shadow-2xl"
             />
             {user && (
               <button
