@@ -1,34 +1,140 @@
+import { useState, useEffect } from "react";
 import {
   FaMapMarkerAlt,
   FaEnvelope,
   FaDownload,
   FaGraduationCap,
+  FaEdit
 } from "react-icons/fa";
-import { useState } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useAuth } from '../context/useAuth';
+import Modal from '../components/hero/Modal';
+import LoadingAnimation from '../components/LoadingAnimation';
 
 const About = () => {
+  const { user } = useAuth();
+  const [aboutData, setAboutData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
-  const toggleExpanded = () => setIsExpanded(!isExpanded);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editField, setEditField] = useState('');
+  const [tempValues, setTempValues] = useState({
+    shortBio: '',
+    fullBio: '',
+    position: '',
+    location: '',
+    email: '',
+    skills: []
+  });
+
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
 
-  const shortBio = ` Anindya Nag obtained an M.Sc. in Computer Science and Engineering from Khulna
- University in Khulna, Bangladesh, and a B.Tech. in Computer Science and Engineering from Adamas
- University in Kolkata, India. He is currently a lecturer in the Department of Computer Science and
- Engineering at the Northern University of Business and Technology in Khulna, Bangladesh.`;
+  useEffect(() => {
+    const fetchAboutData = async () => {
+      try {
+        const docRef = doc(db, "portfolio", "about");
+        const docSnap = await getDoc(docRef);
 
-  const fullBio = `His research
- focuses on health informatics, medical Internet of Things, neuroscience, and machine learning. He serves as
- a reviewer for numerous prestigious journals and international conferences. He has authored and
- co-authored about 67 publications, including journal articles, conference papers, book chapters, and has
- co-edited nine books.`;
+        if (docSnap.exists()) {
+          setAboutData(docSnap.data());
+        } else {
+          setAboutData({
+            shortBio: `Anindya Nag obtained an M.Sc. in Computer Science and Engineering from Khulna University...`,
+            fullBio: `His research focuses on health informatics, medical Internet of Things...`,
+            contactInfo: {
+              position: "Lecturer, NUBTK",
+              location: "Shib Bari Circle, Sonadanga, Khulna-9100",
+              email: "anindyanag@ieee.org",
+              cvLink: "/cv/Anindya_Nag_CV.pdf"
+            },
+            skills: [
+              "Python", "C", "C++", "NumPy", "Pandas", "SciPy", "Matplotlib",
+              "LaTex", "MySQL Workbench", "Google Colab", "PyCharm"
+            ]
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching about data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const skills = [
-    "Python", "C", "C++", "NumPy", "Pandas", "SciPy", "Matplotlib",
-    "LaTex", "MySQL Workbench", "Google Colab", "PyCharm",
-  ];
+    fetchAboutData();
+  }, []);
+
+  const toggleExpanded = () => setIsExpanded(!isExpanded);
+
+  const handleEditClick = (field, value) => {
+    setEditField(field);
+    if (field === 'bio') {
+      setTempValues({
+        ...tempValues,
+        shortBio: aboutData.shortBio,
+        fullBio: aboutData.fullBio
+      });
+    } else if (field === 'skills') {
+      setTempValues({
+        ...tempValues,
+        skills: aboutData.skills.join(', ') // Store as string for editing
+      });
+    } else {
+      setTempValues({
+        ...tempValues,
+        [field]: value
+      });
+    }
+    setIsEditing(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      const docRef = doc(db, "portfolio", "about");
+      let updateData = {};
+
+      if (editField === 'bio') {
+        updateData = {
+          shortBio: tempValues.shortBio,
+          fullBio: tempValues.fullBio
+        };
+      } else if (editField === 'skills') {
+        updateData = {
+          skills: tempValues.skills.split(',').map(skill => skill.trim())
+        };
+      } else {
+        updateData = {
+          contactInfo: {
+            ...aboutData.contactInfo,
+            [editField]: tempValues[editField]
+          }
+        };
+      }
+
+      await updateDoc(docRef, updateData);
+
+      setAboutData(prev => ({
+        ...prev,
+        ...updateData
+      }));
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating about data:", error);
+    }
+  };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
+
+  if (!aboutData) {
+    return <div className="text-center py-12 text-gray-500">No data available</div>;
+  }
+
   return (
     <section
       id="about"
@@ -37,28 +143,43 @@ const About = () => {
     >
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
         {/* Profile Image */}
-        <div
-          className="w-full md:w-1/2 flex justify-center"
-          data-aos="fade-up"
-          data-aos-delay="200"
-        >
+        <div className="w-full md:w-1/2 flex justify-center relative">
           <img
             src="/images/cover.jpeg"
             alt="Anindya Nag"
             className="w-80 h-80 sm:w-96 sm:h-96 object-cover rounded-2xl shadow-2xl border-4 border-primary"
           />
+          {user && (
+            <button
+              className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-all"
+              onClick={() => console.log("Edit image clicked")}
+            >
+              <FaEdit className="text-blue-600" size={16} />
+            </button>
+          )}
         </div>
 
         {/* About Text */}
-        <div className="w-full md:w-1/2 space-y-6 text-center md:text-left" data-aos="fade-left">
-          <h2 className="text-4xl font-extrabold">About Me</h2>
+        <div className="w-full md:w-1/2 space-y-6 text-center md:text-left relative">
+          <div className="flex items-center justify-center md:justify-start gap-3">
+            <h2 className="text-4xl font-extrabold">About Me</h2>
+            {user && (
+              <button
+                onClick={() => handleEditClick('bio', '')}
+                className="text-gray-400 hover:text-blue-600 transition-colors"
+                aria-label="Edit bio"
+              >
+                <FaEdit size={20} />
+              </button>
+            )}
+          </div>
 
           <p className="text-md sm:text-lg text-gray-700 leading-relaxed">
-            {shortBio}
+            {aboutData.shortBio}
             {!isDesktop && isExpanded && (
               <>
                 <br /><br />
-                {fullBio}
+                {aboutData.fullBio}
               </>
             )}
           </p>
@@ -74,33 +195,80 @@ const About = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mt-4">
             <div className="flex items-center gap-3">
               <FaGraduationCap className="text-primary" />
-              <span>Lecturer, NUBTK</span>
+              <span>{aboutData.contactInfo.position}</span>
+              {user && (
+                <button
+                  onClick={() => handleEditClick('position', aboutData.contactInfo.position)}
+                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
+                  aria-label="Edit position"
+                >
+                  <FaEdit size={14} />
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <FaMapMarkerAlt className="text-primary" />
-              <span>Shib Bari Circle, Sonadanga, Khulna-9100</span>
+              <span>{aboutData.contactInfo.location}</span>
+              {user && (
+                <button
+                  onClick={() => handleEditClick('location', aboutData.contactInfo.location)}
+                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
+                  aria-label="Edit location"
+                >
+                  <FaEdit size={14} />
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <FaEnvelope className="text-primary" />
-              <span>anindyanag@ieee.org</span>
+              <span>{aboutData.contactInfo.email}</span>
+              {user && (
+                <button
+                  onClick={() => handleEditClick('email', aboutData.contactInfo.email)}
+                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
+                  aria-label="Edit email"
+                >
+                  <FaEdit size={14} />
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <FaDownload className="text-primary" />
               <a
-                href="/cv/Anindya_Nag_CV.pdf"
+                href={aboutData.contactInfo.cvLink}
                 download="AnindyaNag_CV.pdf"
                 className="underline hover:text-primary transition"
               >
                 Download CV
               </a>
+              {user && (
+                <button
+                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
+                  onClick={() => console.log("Edit CV clicked")}
+                  aria-label="Edit CV"
+                >
+                  <FaEdit size={14} />
+                </button>
+              )}
             </div>
           </div>
 
           {/* Skills */}
           <div className="pt-6">
-            <h3 className="text-xl font-semibold mb-3">Skills & Tech Stack</h3>
-            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-              {skills.map((skill, idx) => (
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <h3 className="text-xl font-semibold">Skills & Tech Stack</h3>
+              {user && (
+                <button
+                  onClick={() => handleEditClick('skills', aboutData.skills)}
+                  className="text-gray-400 hover:text-blue-600 transition-colors"
+                  aria-label="Edit skills"
+                >
+                  <FaEdit size={18} />
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center md:justify-start mt-3">
+              {aboutData.skills.map((skill, idx) => (
                 <motion.span
                   key={idx}
                   whileHover={{ scale: 1.08 }}
@@ -139,12 +307,12 @@ const About = () => {
               </button>
               <h3 className="text-2xl font-bold">Full Biography</h3>
               <p className="text-base leading-relaxed text-gray-800">
-                {shortBio}<br /><br />{fullBio}
+                {aboutData.shortBio}<br /><br />{aboutData.fullBio}
               </p>
               <div>
                 <h4 className="text-xl font-semibold mb-3">Skills & Tech Stack</h4>
                 <div className="flex flex-wrap gap-2">
-                  {skills.map((skill, idx) => (
+                  {aboutData.skills.map((skill, idx) => (
                     <motion.span
                       key={idx}
                       whileHover={{ scale: 1.08 }}
@@ -162,6 +330,73 @@ const About = () => {
         )}
       </AnimatePresence>
 
+      {/* Edit Modal */}
+      <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Edit {editField === 'bio' ? 'Biography' : editField === 'skills' ? 'Skills' : editField}
+            </h3>
+
+            {editField === 'bio' ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Short Bio</label>
+                  <textarea
+                    value={tempValues.shortBio}
+                    onChange={(e) => setTempValues({ ...tempValues, shortBio: e.target.value })}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    rows={4}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Bio</label>
+                  <textarea
+                    value={tempValues.fullBio}
+                    onChange={(e) => setTempValues({ ...tempValues, fullBio: e.target.value })}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    rows={6}
+                  />
+                </div>
+              </div>
+            ) : editField === 'skills' ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Skills (comma separated)
+                </label>
+                <textarea
+                  value={tempValues.skills}
+                  onChange={(e) => setTempValues({ ...tempValues, skills: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  rows={4}
+                />
+              </div>
+            ) : (
+              <input
+                type="text"
+                value={tempValues[editField]}
+                onChange={(e) => setTempValues({ ...tempValues, [editField]: e.target.value })}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+            )}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </section>
   );
 };

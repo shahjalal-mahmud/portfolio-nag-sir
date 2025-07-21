@@ -2,7 +2,7 @@ import Certifications from "../components/Certifications";
 import Education from "../components/Education";
 import Experience from "../components/Experience";
 import Footer from "../components/Footer";
-import Hero from "../components/Hero";
+import Hero from "../components/hero/Hero";
 import MembershipsAndAwards from "../components/MembershipsAndAwards";
 import Navbar from "../components/Navbar";
 import PublicationsTabs from "../components/publications/PublicationsTabs";

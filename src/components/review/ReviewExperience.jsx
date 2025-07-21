@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import JournalReviews from "./JournalReviews";
 import ConferenceReviews from "./ConferenceReviews";
 import TechnicalProgramCommittee from "./TechnicalProgramCommittee";
+import JournalEditorialBoard from "./JournalEditorialBoard";
 
 const ReviewExperience = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -11,6 +12,7 @@ const ReviewExperience = () => {
     { id: "technical", label: "Program Committee" },
     { id: "journal", label: "Journal Reviews" },
     { id: "conference", label: "Conference Reviews" },
+    { id: "editorial", label: "Editorial Board"}
   ];
 
   return (
@@ -60,6 +62,7 @@ const ReviewExperience = () => {
         {(activeTab === "all" || activeTab === "technical") && <TechnicalProgramCommittee />}
         {(activeTab === "all" || activeTab === "journal") && <JournalReviews />}
         {(activeTab === "all" || activeTab === "conference") && <ConferenceReviews />}
+        {(activeTab === "all" || activeTab === "editorial") && <JournalEditorialBoard />}
       </div>
     </section>
   );
