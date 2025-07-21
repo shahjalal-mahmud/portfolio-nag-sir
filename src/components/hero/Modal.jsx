@@ -23,7 +23,7 @@ const Modal = ({ isOpen, onClose, children }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -40,7 +40,7 @@ const Modal = ({ isOpen, onClose, children }) => {
 
           {/* Modal content */}
           <motion.div
-            className="relative z-10 w-full max-w-xl"
+            className="relative z-10 w-full max-w-md mx-2 sm:max-w-xl md:max-w-2xl overflow-y-auto max-h-[90vh]"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 20, opacity: 0 }}
