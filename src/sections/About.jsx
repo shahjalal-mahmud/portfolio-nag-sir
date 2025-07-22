@@ -293,12 +293,12 @@ const About = () => {
                     /^https:\/\/drive\.google\.com\/file\/d\/([^/]+).*$/,
                     'https://drive.google.com/uc?export=download&id=$1'
                   )
-                  : '#'
+                  : '/cv/Anindya_Nag_CV.pdf' // Fallback to public folder file
                 }
                 download="AnindyaNag_CV.pdf"
                 className="underline hover:text-primary transition"
-                target="_blank"
-                rel="noopener noreferrer"
+                target="_self"
+                rel={aboutData.contactInfo.cvLink ? 'noopener noreferrer' : ''}
               >
                 Download CV
               </a>
