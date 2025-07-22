@@ -2,18 +2,27 @@ import { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { FaPlus, FaTrash } from "react-icons/fa";
-// eslint-disable-next-line no-unused-vars
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from '../components/common/Toast';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
 const Education = () => {
   const { user } = useAuth();
   const [educationData, setEducationData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [toast, setToast] = useState({
+    show: false,
+    message: '',
+    type: '' // 'success' or 'error'
+  });
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+
   const [newEducation, setNewEducation] = useState({
     title: '',
     institution: '',
@@ -22,6 +31,15 @@ const Education = () => {
     result: '',
     courses: ''
   });
+
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast(prev => ({ ...prev, show: false })), 5000);
+  };
+
+  const closeToast = () => {
+    setToast(prev => ({ ...prev, show: false }));
+  };
 
   useEffect(() => {
     const fetchEducationData = async () => {
@@ -69,6 +87,7 @@ const Education = () => {
         }
       } catch (error) {
         console.error("Error fetching education data:", error);
+        showToast('Failed to load education data', 'error');
       } finally {
         setLoading(false);
       }
@@ -79,25 +98,21 @@ const Education = () => {
 
   const handleAddEducation = async () => {
     if (!newEducation.title || !newEducation.institution || !newEducation.year || !newEducation.result) {
-      alert('Please fill in all required fields');
+      showToast('Please fill in all required fields', 'error');
       return;
     }
 
     try {
       const docRef = doc(db, "portfolio", "education");
-      // Get current data first
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data().items : [];
 
-      // Create new array with new item at the beginning
       const updatedData = [newEducation, ...currentData];
 
-      // Update the document with the new array
       await updateDoc(docRef, {
         items: updatedData
       });
 
-      // Update local state with new item at the top
       setEducationData(prev => [newEducation, ...prev]);
       setShowAddModal(false);
       setNewEducation({
@@ -108,21 +123,31 @@ const Education = () => {
         result: '',
         courses: ''
       });
+      showToast('Education added successfully!', 'success');
     } catch (error) {
       console.error("Error adding education:", error);
+      showToast('Failed to add education. Please try again.', 'error');
     }
   };
 
-  const handleDeleteEducation = async (index) => {
+  const handleDeleteClick = (index) => {
+    setItemToDelete(index);
+    setShowConfirmModal(true);
+  };
+
+  const handleDeleteEducation = async () => {
     try {
       const docRef = doc(db, "portfolio", "education");
       await updateDoc(docRef, {
-        items: arrayRemove(educationData[index])
+        items: arrayRemove(educationData[itemToDelete])
       });
 
-      setEducationData(prev => prev.filter((_, i) => i !== index));
+      setEducationData(prev => prev.filter((_, i) => i !== itemToDelete));
+      setShowConfirmModal(false);
+      showToast('Education deleted successfully!', 'success');
     } catch (error) {
       console.error("Error deleting education:", error);
+      showToast('Failed to delete education. Please try again.', 'error');
     }
   };
 
@@ -176,9 +201,9 @@ const Education = () => {
                     className={`bg-white shadow-md rounded-xl p-6 w-full lg:w-[45%] z-10 relative ${isLeft ? "lg:mr-auto" : "lg:ml-auto"
                       }`}
                   >
-                    {user && ( // Show delete button for all cards when user is admin
+                    {user && (
                       <button
-                        onClick={() => handleDeleteEducation(idx)}
+                        onClick={() => handleDeleteClick(idx)}
                         className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors"
                         aria-label="Delete education"
                       >
@@ -216,7 +241,7 @@ const Education = () => {
         </div>
       </div>
 
-      {/* Add Education Modal - Now fully responsive */}
+      {/* Add Education Modal */}
       <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md md:max-w-2xl mx-2 my-4 md:my-8">
           <div className="p-4 sm:p-6">
@@ -309,6 +334,26 @@ const Education = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Confirmation Modal for Delete */}
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleDeleteEducation}
+        message="Are you sure you want to delete this education entry? This action cannot be undone."
+        confirmText="Delete"
+        confirmColor="red"
+        title="Delete Education"
+      />
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={closeToast} 
+        />
+      )}
     </section>
   );
 };

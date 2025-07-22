@@ -15,6 +15,7 @@ import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from '../components/common/Toast';
 
 const About = () => {
   const { user } = useAuth();
@@ -27,6 +28,15 @@ const About = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
   const [cvUrl, setCVUrl] = useState(aboutData?.contactInfo?.cvLink || '');
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast(prev => ({ ...prev, show: false })), 5000);
+  };
+
+  const closeToast = () => {
+    setToast(prev => ({ ...prev, show: false }));
+  };
   const [tempValues, setTempValues] = useState({
     shortBio: '',
     fullBio: '',
@@ -135,13 +145,18 @@ const About = () => {
       }));
 
       setIsEditing(false);
+      showToast(`${editField === 'bio' ? 'Biography' : editField} updated successfully!`, 'success');
     } catch (error) {
       console.error("Error updating about data:", error);
+      showToast(`Failed to update ${editField === 'bio' ? 'biography' : editField}. Please try again.`, 'error');
     }
   };
 
   const handleImageUpdate = async () => {
-    if (!imageUrl) return;
+    if (!imageUrl) {
+      showToast('Please provide an image URL', 'error');
+      return;
+    }
 
     try {
       const docRef = doc(db, "portfolio", "about");
@@ -149,15 +164,16 @@ const About = () => {
         aboutImageUrl: imageUrl
       });
 
-      // Update local state
       setAboutData(prev => ({
         ...prev,
         aboutImageUrl: imageUrl
       }));
 
       setIsImageModalOpen(false);
+      showToast('Profile image updated successfully!', 'success');
     } catch (error) {
       console.error("Error updating about image:", error);
+      showToast('Failed to update profile image. Please try again.', 'error');
     }
   };
 
@@ -553,8 +569,10 @@ const About = () => {
                     }));
 
                     setIsCVModalOpen(false);
+                    showToast('CV link updated successfully!', 'success');
                   } catch (error) {
                     console.error("Error updating CV link:", error);
+                    showToast('Failed to update CV link. Please try again.', 'error');
                   }
                 }}
                 className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
@@ -566,6 +584,13 @@ const About = () => {
           </div>
         </div>
       </Modal>
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={closeToast}
+        />
+      )}
     </section>
   );
 };
