@@ -202,7 +202,7 @@ const Experience = () => {
             </button>
           )}
         </div>
-        
+
         <div className="relative">
           <div className="hidden md:block absolute left-8 top-0 h-full w-1 bg-gray-200"></div>
 
@@ -214,10 +214,10 @@ const Experience = () => {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="bg-white md:ml-24 p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 relative"
+                  className="group bg-white md:ml-24 p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 relative"
                 >
                   {user && (
-                    <div className="absolute top-2 right-2 flex gap-2">
+                    <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       <button
                         onClick={() => handleEditExperience(idx)}
                         className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -234,7 +234,6 @@ const Experience = () => {
                       </button>
                     </div>
                   )}
-                  
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-1">

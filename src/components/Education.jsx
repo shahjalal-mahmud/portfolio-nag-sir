@@ -198,13 +198,12 @@ const Education = () => {
                   <motion.div
                     whileHover={{ scale: 1.03 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className={`bg-white shadow-md rounded-xl p-6 w-full lg:w-[45%] z-10 relative ${isLeft ? "lg:mr-auto" : "lg:ml-auto"
-                      }`}
+                    className={`group bg-white shadow-md rounded-xl p-6 w-full lg:w-[45%] z-10 relative ${isLeft ? "lg:mr-auto" : "lg:ml-auto"}`}
                   >
                     {user && (
                       <button
                         onClick={() => handleDeleteClick(idx)}
-                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors"
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors opacity-0 group-hover:opacity-100"
                         aria-label="Delete education"
                       >
                         <FaTrash size={16} />
@@ -348,10 +347,10 @@ const Education = () => {
 
       {/* Toast Notification */}
       {toast.show && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
-          onClose={closeToast} 
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={closeToast}
         />
       )}
     </section>
