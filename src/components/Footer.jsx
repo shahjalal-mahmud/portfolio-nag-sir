@@ -13,8 +13,25 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiClarivate, SiGooglescholar, SiOrcid, SiResearchgate, SiScopus } from "react-icons/si";
+import useHeroData from '../../hooks/useHeroData';
+import LoadingAnimation from './LoadingAnimation';
+
 
 const Footer = () => {
+    const { heroData, loading, error } = useHeroData();
+
+    if (loading) {
+        <LoadingAnimation />
+    }
+
+    if (error) {
+        return <div className="text-center py-12 text-red-500">Error loading footer data</div>;
+    }
+
+    if (!heroData) {
+        return <div className="text-center py-12 text-gray-500">No footer data available</div>;
+    }
+
     return (
         <footer className="bg-white border-t border-gray-200 pt-12 pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,29 +43,32 @@ const Footer = () => {
                             <div className="bg-blue-100 p-2 rounded-full mr-3">
                                 <FaUniversity className="text-blue-600 text-lg" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900">Anindya Nag</h3>
+                            <h3 className="text-xl font-bold text-gray-900">{heroData.name}</h3>
                         </div>
 
                         <div className="space-y-3">
                             <div className="flex items-start">
                                 <FaMapMarkerAlt className="text-gray-500 mt-1 mr-3 flex-shrink-0" />
-                                <p className="text-gray-600">
-                                    Lecturer, Department of CSE<br />
-                                    Northern University of Business and Technology<br />
-                                    Khulna-9210, Bangladesh
-                                </p>
+                                <a
+                                    href={heroData.location.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-600 hover:text-blue-600 hover:underline"
+                                >
+                                    {heroData.location.text}
+                                </a>
                             </div>
 
                             <div className="flex items-center">
                                 <FaEnvelope className="text-gray-500 mr-3" />
-                                <a href="mailto:anindyanag@ieee.org" className="text-blue-600 hover:underline">
-                                    anindyanag@ieee.org
+                                <a href={`mailto:${heroData.email}`} className="text-blue-600 hover:underline">
+                                    {heroData.email}
                                 </a>
                             </div>
 
                             <div className="flex items-center">
                                 <FaPhone className="text-gray-500 mr-3" />
-                                <span className="text-gray-600">+880 1795617168</span>
+                                <span className="text-gray-600">{heroData.phone}</span>
                             </div>
                         </div>
                     </div>
