@@ -86,7 +86,7 @@ const PublicationStats = () => {
 
   useEffect(() => {
     const docRef = doc(db, "publications", "summary");
-    
+
     if (user) {
       // For admin, use real-time updates
       const unsubscribe = onSnapshot(docRef, (doc) => {
@@ -120,8 +120,8 @@ const PublicationStats = () => {
     const { name, value } = e.target;
     setEditStats(prev => ({
       ...prev,
-      [name]: name.endsWith("_articles") || name.endsWith("_index") || name === "citations" 
-        ? parseInt(value) || 0 
+      [name]: name.endsWith("_articles") || name.endsWith("_index") || name === "citations"
+        ? parseInt(value) || 0
         : value
     }));
   };
@@ -181,7 +181,7 @@ const PublicationStats = () => {
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Publication Summary
         </h2>
-        
+
         {isEditing ? (
           <div className="mb-10">
             <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -8,6 +8,8 @@ import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from './common/Toast';
+import ConfirmationModal from './common/ConfirmationModal';
 
 const Experience = () => {
   const { user } = useAuth();
@@ -15,6 +17,9 @@ const Experience = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [newExperience, setNewExperience] = useState({
     title: '',
     university: {
@@ -26,6 +31,36 @@ const Experience = () => {
     courses: []
   });
 
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 5000);
+  };
+
+  const handleDeleteClick = (index) => {
+    setItemToDelete(index);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete === null) return;
+
+    try {
+      const docRef = doc(db, "portfolio", "experience");
+      await updateDoc(docRef, {
+        items: arrayRemove(experienceData[itemToDelete])
+      });
+
+      setExperienceData(prev => prev.filter((_, i) => i !== itemToDelete));
+      showToast('Experience deleted successfully', 'success');
+    } catch (error) {
+      console.error("Error deleting experience:", error);
+      showToast('Failed to delete experience', 'error');
+    } finally {
+      setShowDeleteModal(false);
+      setItemToDelete(null);
+    }
+  };
+
   useEffect(() => {
     const fetchExperienceData = async () => {
       try {
@@ -35,7 +70,6 @@ const Experience = () => {
         if (docSnap.exists()) {
           setExperienceData(docSnap.data().items || []);
         } else {
-          // Fallback data if document doesn't exist
           const fallbackData = [
             {
               title: "Lecturer",
@@ -73,6 +107,7 @@ const Experience = () => {
         }
       } catch (error) {
         console.error("Error fetching experience data:", error);
+        showToast('Failed to load experience data', 'error');
       } finally {
         setLoading(false);
       }
@@ -83,32 +118,29 @@ const Experience = () => {
 
   const handleAddExperience = async () => {
     if (!newExperience.title || !newExperience.university.name || !newExperience.period || !newExperience.department) {
-      alert('Please fill in all required fields');
+      showToast('Please fill in all required fields', 'error');
       return;
     }
 
     try {
       const docRef = doc(db, "portfolio", "experience");
-      // Get current data first
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data().items : [];
 
       let updatedData;
       if (editingIndex !== null) {
-        // If editing, replace the item at editingIndex
         updatedData = [...currentData];
         updatedData[editingIndex] = newExperience;
+        showToast('Experience updated successfully', 'success');
       } else {
-        // If adding new, prepend the new item
         updatedData = [newExperience, ...currentData];
+        showToast('Experience added successfully', 'success');
       }
 
-      // Update the document with the new array
       await updateDoc(docRef, {
         items: updatedData
       });
 
-      // Update local state
       setExperienceData(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
@@ -124,19 +156,7 @@ const Experience = () => {
       });
     } catch (error) {
       console.error("Error adding/updating experience:", error);
-    }
-  };
-
-  const handleDeleteExperience = async (index) => {
-    try {
-      const docRef = doc(db, "portfolio", "experience");
-      await updateDoc(docRef, {
-        items: arrayRemove(experienceData[index])
-      });
-
-      setExperienceData(prev => prev.filter((_, i) => i !== index));
-    } catch (error) {
-      console.error("Error deleting experience:", error);
+      showToast('Failed to save experience', 'error');
     }
   };
 
@@ -182,14 +202,13 @@ const Experience = () => {
             </button>
           )}
         </div>
+        
         <div className="relative">
-          {/* Timeline bar */}
           <div className="hidden md:block absolute left-8 top-0 h-full w-1 bg-gray-200"></div>
 
           <div className="space-y-10">
             {experienceData.map((exp, idx) => (
               <div key={idx} className="relative">
-                {/* Timeline dot */}
                 <div className="hidden md:block absolute left-8 transform -translate-x-1/2 -translate-y-1/2 top-12 w-5 h-5 rounded-full bg-blue-600 border-4 border-white z-10"></div>
 
                 <motion.div
@@ -207,7 +226,7 @@ const Experience = () => {
                         <FaEdit size={16} />
                       </button>
                       <button
-                        onClick={() => handleDeleteExperience(idx)}
+                        onClick={() => handleDeleteClick(idx)}
                         className="text-red-500 hover:text-red-700 transition-colors"
                         aria-label="Delete experience"
                       >
@@ -215,6 +234,7 @@ const Experience = () => {
                       </button>
                     </div>
                   )}
+                  
                   <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900 mb-1">
@@ -303,6 +323,7 @@ const Experience = () => {
                   onChange={(e) => setNewExperience({ ...newExperience, title: e.target.value })}
                   className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="e.g., Lecturer"
+                  required
                 />
               </div>
 
@@ -320,6 +341,7 @@ const Experience = () => {
                   })}
                   className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="e.g., Northern University of Business & Technology Khulna"
+                  required
                 />
               </div>
 
@@ -348,6 +370,7 @@ const Experience = () => {
                   onChange={(e) => setNewExperience({ ...newExperience, period: e.target.value })}
                   className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="e.g., March 2024 – Ongoing"
+                  required
                 />
               </div>
 
@@ -359,6 +382,7 @@ const Experience = () => {
                   onChange={(e) => setNewExperience({ ...newExperience, department: e.target.value })}
                   className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="e.g., Department of Computer Science and Engineering"
+                  required
                 />
               </div>
 
@@ -424,6 +448,29 @@ const Experience = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ show: false, message: '', type: '' })}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Experience"
+        message="Are you sure you want to delete this experience? This action cannot be undone."
+        confirmText="Delete"
+        confirmColor="red"
+      />
     </section>
   );
 };
