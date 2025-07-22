@@ -5,6 +5,8 @@ import { collection, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc } from "
 import { db } from "../../firebase";
 import { useAuth } from '../../context/useAuth';
 import Modal from "../common/Modal";
+import Toast from "../common/Toast";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 const EditedBooks = () => {
     const { user } = useAuth();
@@ -12,7 +14,15 @@ const EditedBooks = () => {
     const [loading, setLoading] = useState(true);
     const [activeYear, setActiveYear] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [bookToDelete, setBookToDelete] = useState(null);
     const [currentBook, setCurrentBook] = useState(null);
+    const [toast, setToast] = useState({
+        show: false,
+        message: '',
+        type: 'success'
+    });
+    const [hoveredBook, setHoveredBook] = useState(null);
     const [formData, setFormData] = useState({
         year: "",
         title: "",
@@ -24,38 +34,57 @@ const EditedBooks = () => {
         status: ""
     });
 
+    // Close toast after 5 seconds
     useEffect(() => {
-        const fetchEditedBooks = async () => {
-            try {
-                const booksCollection = collection(db, "edited_books");
-                const snapshot = await getDocs(booksCollection);
-                
-                const booksData = {};
-                snapshot.forEach(doc => {
-                    booksData[doc.id] = doc.data().books.map((book, index) => ({
-                        ...book,
-                        docId: doc.id,
-                        bookIndex: index
-                    }));
-                });
-                
-                setEditedBooks(booksData);
-                
-                // Set the most recent year as active by default
-                const years = Object.keys(booksData).sort((a, b) => b.localeCompare(a));
-                if (years.length > 0) {
-                    setActiveYear(years[0]);
-                }
-                
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching edited books:", error);
-                setLoading(false);
-            }
-        };
+        if (toast.show) {
+            const timer = setTimeout(() => {
+                setToast({ ...toast, show: false });
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [toast]);
 
+    const fetchEditedBooks = async () => {
+        try {
+            const booksCollection = collection(db, "edited_books");
+            const snapshot = await getDocs(booksCollection);
+
+            const booksData = {};
+            snapshot.forEach(doc => {
+                booksData[doc.id] = doc.data().books.map((book, index) => ({
+                    ...book,
+                    docId: doc.id,
+                    bookIndex: index
+                }));
+            });
+
+            setEditedBooks(booksData);
+
+            // Set the most recent year as active by default
+            const years = Object.keys(booksData).sort((a, b) => b.localeCompare(a));
+            if (years.length > 0) {
+                setActiveYear(years[0]);
+            }
+
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching edited books:", error);
+            setLoading(false);
+            showToast('Failed to fetch books', 'error');
+        }
+    };
+
+    useEffect(() => {
         fetchEditedBooks();
     }, []);
+
+    const showToast = (message, type = 'success') => {
+        setToast({
+            show: true,
+            message,
+            type
+        });
+    };
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -108,6 +137,7 @@ const EditedBooks = () => {
                         await updateDoc(yearDocRef, { books });
                     }
                 }
+                showToast('Book updated successfully');
             } else {
                 // Adding a new book
                 const yearDocRef = doc(db, "edited_books", formData.year);
@@ -123,6 +153,7 @@ const EditedBooks = () => {
                         books: [bookData]
                     });
                 }
+                showToast('Book added successfully');
             }
 
             setIsModalOpen(false);
@@ -137,24 +168,12 @@ const EditedBooks = () => {
                 is_first_author: false,
                 status: ""
             });
+
             // Refresh data
-            setLoading(true);
-            const booksCollection = collection(db, "edited_books");
-            const snapshot = await getDocs(booksCollection);
-            
-            const booksData = {};
-            snapshot.forEach(doc => {
-                booksData[doc.id] = doc.data().books.map((book, index) => ({
-                    ...book,
-                    docId: doc.id,
-                    bookIndex: index
-                }));
-            });
-            
-            setEditedBooks(booksData);
-            setLoading(false);
+            await fetchEditedBooks();
         } catch (error) {
             console.error("Error saving book:", error);
+            showToast('Failed to save book', 'error');
         }
     };
 
@@ -173,43 +192,40 @@ const EditedBooks = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (docId, bookIndex) => {
-        if (window.confirm("Are you sure you want to delete this book?")) {
-            try {
-                const yearDocRef = doc(db, "edited_books", docId);
-                const yearDoc = await getDoc(yearDocRef);
+    const handleDeleteClick = (book) => {
+        setBookToDelete(book);
+        setIsDeleteModalOpen(true);
+    };
 
-                if (yearDoc.exists()) {
-                    const books = [...yearDoc.data().books];
-                    books.splice(bookIndex, 1);
+    const handleDeleteConfirm = async () => {
+        if (!bookToDelete) return;
 
-                    // If last book in year, delete the entire year document
-                    if (books.length === 0) {
-                        await deleteDoc(yearDocRef);
-                    } else {
-                        await updateDoc(yearDocRef, { books });
-                    }
-                    
-                    // Refresh data
-                    setLoading(true);
-                    const booksCollection = collection(db, "edited_books");
-                    const snapshot = await getDocs(booksCollection);
-                    
-                    const booksData = {};
-                    snapshot.forEach(doc => {
-                        booksData[doc.id] = doc.data().books.map((book, index) => ({
-                            ...book,
-                            docId: doc.id,
-                            bookIndex: index
-                        }));
-                    });
-                    
-                    setEditedBooks(booksData);
-                    setLoading(false);
+        try {
+            const { docId, bookIndex } = bookToDelete;
+            const yearDocRef = doc(db, "edited_books", docId);
+            const yearDoc = await getDoc(yearDocRef);
+
+            if (yearDoc.exists()) {
+                const books = [...yearDoc.data().books];
+                books.splice(bookIndex, 1);
+
+                // If last book in year, delete the entire year document
+                if (books.length === 0) {
+                    await deleteDoc(yearDocRef);
+                } else {
+                    await updateDoc(yearDocRef, { books });
                 }
-            } catch (error) {
-                console.error("Error deleting book:", error);
+
+                // Refresh data
+                await fetchEditedBooks();
+                showToast('Book deleted successfully');
             }
+        } catch (error) {
+            console.error("Error deleting book:", error);
+            showToast('Failed to delete book', 'error');
+        } finally {
+            setIsDeleteModalOpen(false);
+            setBookToDelete(null);
         }
     };
 
@@ -246,6 +262,26 @@ const EditedBooks = () => {
             className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900"
             style={{ fontFamily: "'Inter', sans-serif" }}
         >
+            {/* Toast Notification */}
+            {toast.show && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast({ ...toast, show: false })}
+                />
+            )}
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDeleteConfirm}
+                title="Delete Book"
+                message="Are you sure you want to delete this book? This action cannot be undone."
+                confirmText="Delete"
+                confirmColor="red"
+            />
+
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
                     <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-blue-50 text-blue-600">
@@ -268,8 +304,8 @@ const EditedBooks = () => {
                                         key={year}
                                         onClick={() => setActiveYear(year)}
                                         className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${activeYear === year
-                                                ? 'bg-blue-600 text-white shadow-md'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            ? 'bg-blue-600 text-white shadow-md'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
                                         <HiOutlineCalendar className="mr-2" />
@@ -300,9 +336,11 @@ const EditedBooks = () => {
                             <div
                                 key={index}
                                 className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm"
+                                onMouseEnter={() => setHoveredBook(index)}
+                                onMouseLeave={() => setHoveredBook(null)}
                             >
                                 {user && (
-                                    <div className="absolute top-4 right-4 flex space-x-2">
+                                    <div className={`absolute top-4 right-4 flex space-x-2 transition-opacity duration-200 ${hoveredBook === index ? 'opacity-100' : 'opacity-0'}`}>
                                         <button
                                             onClick={() => handleEdit(book)}
                                             className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
@@ -311,7 +349,7 @@ const EditedBooks = () => {
                                             <FaEdit />
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(book.docId, book.bookIndex)}
+                                            onClick={() => handleDeleteClick(book)}
                                             className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
                                             title="Delete"
                                         >
