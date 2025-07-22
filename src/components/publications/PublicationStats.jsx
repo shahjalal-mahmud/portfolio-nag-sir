@@ -5,6 +5,7 @@ import { FaGoogle, FaEdit, FaSave } from "react-icons/fa";
 import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useAuth } from '../../context/useAuth';
+import Toast from '../common/Toast';
 
 const StatCard = ({ label, value, duration = 3, isEditing = false, onChange }) => {
   const [count, setCount] = useState(0);
@@ -74,6 +75,7 @@ const PublicationStats = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
   const [editStats, setEditStats] = useState({
     total_articles: 0,
     first_author_articles: 0,
@@ -83,6 +85,11 @@ const PublicationStats = () => {
     google_scholar_link: "",
     as_of_date: ""
   });
+
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: '' }), 5000);
+  };
 
   useEffect(() => {
     const docRef = doc(db, "publications", "summary");
@@ -95,6 +102,10 @@ const PublicationStats = () => {
           setStats(data);
           setEditStats(data);
         }
+        setLoading(false);
+      }, (error) => {
+        console.error("Error fetching data:", error);
+        showToast('Failed to load publication data', 'error');
         setLoading(false);
       });
       return () => unsubscribe();
@@ -109,6 +120,7 @@ const PublicationStats = () => {
           setLoading(false);
         } catch (error) {
           console.error("Error fetching data:", error);
+          showToast('Failed to load publication data', 'error');
           setLoading(false);
         }
       };
@@ -138,9 +150,10 @@ const PublicationStats = () => {
     try {
       await setDoc(doc(db, "publications", "summary"), editStats);
       setIsEditing(false);
+      showToast('Publication stats updated successfully', 'success');
     } catch (error) {
       console.error("Error updating document:", error);
-      alert("Failed to update publication stats");
+      showToast('Failed to update publication stats', 'error');
     }
   };
 
@@ -258,6 +271,13 @@ const PublicationStats = () => {
           />
         </div>
       </div>
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ show: false, message: '', type: '' })}
+        />
+      )}
     </section>
   );
 };
