@@ -7,6 +7,8 @@ import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from '../hero/Modal';
 import LoadingAnimation from '.././LoadingAnimation';
+import Toast from '../common/Toast';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 const ConferenceReviews = () => {
   const { user } = useAuth();
@@ -14,6 +16,11 @@ const ConferenceReviews = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState(null);
   const [newConferenceReview, setNewConferenceReview] = useState({
     name: '',
     date: '',
@@ -134,7 +141,9 @@ const ConferenceReviews = () => {
     if (!newConferenceReview.name || !newConferenceReview.date ||
       !newConferenceReview.title || !newConferenceReview.location ||
       !newConferenceReview.publisher) {
-      alert('Please fill in all required fields');
+      setToastMessage('Please fill in all required fields');
+      setToastType('error');
+      setShowToast(true);
       return;
     }
 
@@ -148,7 +157,7 @@ const ConferenceReviews = () => {
         updatedData = [...currentData];
         updatedData[editingIndex] = newConferenceReview;
       } else {
-        updatedData = [newConferenceReview, ...currentData]; // Add to Top
+        updatedData = [newConferenceReview, ...currentData];
       }
 
       await updateDoc(docRef, { items: updatedData });
@@ -162,21 +171,43 @@ const ConferenceReviews = () => {
         location: '',
         publisher: ''
       });
+      setToastMessage(editingIndex !== null ? 'Conference review updated successfully' : 'Conference review added successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error updating conference reviews:", error);
+      setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} conference review`);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
-  const handleDeleteConferenceReview = async (index) => {
+  const handleDeleteConferenceReview = (index) => {
+    setReviewToDelete(index);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (reviewToDelete === null) return;
+
     try {
       const docRef = doc(db, "portfolio", "conferenceReviews");
       await updateDoc(docRef, {
-        items: arrayRemove(conferenceReviews[index])
+        items: arrayRemove(conferenceReviews[reviewToDelete])
       });
 
-      setConferenceReviews(prev => prev.filter((_, i) => i !== index));
+      setConferenceReviews(prev => prev.filter((_, i) => i !== reviewToDelete));
+      setToastMessage('Conference review deleted successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting conference review:", error);
+      setToastMessage('Failed to delete conference review');
+      setToastType('error');
+      setShowToast(true);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setReviewToDelete(null);
     }
   };
 
@@ -226,20 +257,20 @@ const ConferenceReviews = () => {
             key={index}
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md relative"
+            className="bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md relative group"
           >
             {user && (
-              <div className="absolute top-4 right-4 flex gap-2">
+              <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button
                   onClick={() => handleEditConferenceReview(index)}
-                  className="text-blue-600 hover:text-blue-800 transition-colors"
+                  className="text-blue-600 hover:text-blue-800 transition-colors bg-white p-1 rounded"
                   aria-label="Edit conference review"
                 >
                   <FaEdit size={14} />
                 </button>
                 <button
                   onClick={() => handleDeleteConferenceReview(index)}
-                  className="text-red-500 hover:text-red-700 transition-colors"
+                  className="text-red-500 hover:text-red-700 transition-colors bg-white p-1 rounded"
                   aria-label="Delete conference review"
                 >
                   <FaTrash size={14} />
@@ -375,6 +406,24 @@ const ConferenceReviews = () => {
           </div>
         </div>
       </Modal>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this conference review?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="red"
+        title="Delete Conference Review"
+      />
     </div>
   );
 };

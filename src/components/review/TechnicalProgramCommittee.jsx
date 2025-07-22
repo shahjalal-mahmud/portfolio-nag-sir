@@ -7,6 +7,8 @@ import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from '../hero/Modal';
 import LoadingAnimation from '.././LoadingAnimation';
+import Toast from '../common/Toast';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 const fallbackTechnicalProgram = [
   {
@@ -24,6 +26,11 @@ const TechnicalProgramCommittee = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [programToDelete, setProgramToDelete] = useState(null);
   const [newProgram, setNewProgram] = useState({
     name: '',
     date: '',
@@ -57,7 +64,9 @@ const TechnicalProgramCommittee = () => {
 
   const handleAddProgram = async () => {
     if (!newProgram.name || !newProgram.date || !newProgram.title || !newProgram.location || !newProgram.publisher) {
-      alert('Please fill in all required fields');
+      setToastMessage('Please fill in all required fields');
+      setToastType('error');
+      setShowToast(true);
       return;
     }
 
@@ -71,7 +80,6 @@ const TechnicalProgramCommittee = () => {
         updatedData = [...currentData];
         updatedData[editingIndex] = newProgram;
       } else {
-        // Add new item to the top
         updatedData = [newProgram, ...currentData];
       }
 
@@ -86,21 +94,43 @@ const TechnicalProgramCommittee = () => {
         location: '',
         publisher: ''
       });
+      setToastMessage(editingIndex !== null ? 'Program updated successfully' : 'Program added successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error updating technical programs:", error);
+      setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} program`);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
-  const handleDeleteProgram = async (index) => {
+  const handleDeleteProgram = (index) => {
+    setProgramToDelete(index);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (programToDelete === null) return;
+
     try {
       const docRef = doc(db, "portfolio", "technicalPrograms");
       await updateDoc(docRef, {
-        items: arrayRemove(technicalPrograms[index])
+        items: arrayRemove(technicalPrograms[programToDelete])
       });
 
-      setTechnicalPrograms(prev => prev.filter((_, i) => i !== index));
+      setTechnicalPrograms(prev => prev.filter((_, i) => i !== programToDelete));
+      setToastMessage('Program deleted successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting technical program:", error);
+      setToastMessage('Failed to delete program');
+      setToastType('error');
+      setShowToast(true);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setProgramToDelete(null);
     }
   };
 
@@ -123,7 +153,7 @@ const TechnicalProgramCommittee = () => {
             {technicalPrograms.length} Conference{technicalPrograms.length !== 1 ? 's' : ''}
           </div>
         </div>
-        
+
         {user && (
           <button
             onClick={() => {
@@ -143,17 +173,17 @@ const TechnicalProgramCommittee = () => {
           </button>
         )}
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {technicalPrograms.map((conf, index) => (
           <motion.div
             key={index}
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="relative"
+            className="relative group"
           >
             {user && (
-              <div className="absolute top-2 right-2 flex gap-2 z-10">
+              <div className="absolute top-2 right-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -185,23 +215,23 @@ const TechnicalProgramCommittee = () => {
                   {conf.date}
                 </span>
               </div>
-              
+
               <p className="text-gray-800 mb-3">{conf.title}</p>
-              
+
               <div className="flex items-center text-sm text-gray-600 mb-2">
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
                 {conf.location}
               </div>
-              
+
               <div className="flex items-center text-sm text-gray-600">
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                 </svg>
                 <span>Published by <span className="font-medium">{conf.publisher}</span></span>
               </div>
-              
+
               <div className="mt-4 pt-3 border-t border-gray-100">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   Technical Program Committee Member
@@ -314,6 +344,24 @@ const TechnicalProgramCommittee = () => {
           </div>
         </div>
       </Modal>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this program?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="red"
+        title="Delete Program"
+      />
     </div>
   );
 };

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { FaPlus, FaTrash, FaEdit} from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from '../hero/Modal';
 import LoadingAnimation from '.././LoadingAnimation';
+import Toast from '../common/Toast';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 const fallbackEditorialBoard = [];
 
@@ -16,6 +18,11 @@ const JournalEditorialBoard = () => {
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingIndex, setEditingIndex] = useState(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('success');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [boardToDelete, setBoardToDelete] = useState(null);
     const [newBoard, setNewBoard] = useState({
         title: '',
         url: '',
@@ -50,7 +57,9 @@ const JournalEditorialBoard = () => {
 
     const handleAddBoard = async () => {
         if (!newBoard.title || !newBoard.publisher || !newBoard.joiningDate) {
-            alert('Please fill in all required fields');
+            setToastMessage('Please fill in all required fields');
+            setToastType('error');
+            setShowToast(true);
             return;
         }
 
@@ -64,7 +73,6 @@ const JournalEditorialBoard = () => {
                 updatedData = [...currentData];
                 updatedData[editingIndex] = newBoard;
             } else {
-                // Add new item to the top
                 updatedData = [newBoard, ...currentData];
             }
 
@@ -80,21 +88,43 @@ const JournalEditorialBoard = () => {
                 impactFactor: '',
                 role: ''
             });
+            setToastMessage(editingIndex !== null ? 'Editorial board updated successfully' : 'Editorial board added successfully');
+            setToastType('success');
+            setShowToast(true);
         } catch (error) {
             console.error("Error updating editorial boards:", error);
+            setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} editorial board`);
+            setToastType('error');
+            setShowToast(true);
         }
     };
 
-    const handleDeleteBoard = async (index) => {
+    const handleDeleteBoard = (index) => {
+        setBoardToDelete(index);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (boardToDelete === null) return;
+
         try {
             const docRef = doc(db, "portfolio", "journalEditorialBoards");
             await updateDoc(docRef, {
-                items: arrayRemove(editorialBoards[index])
+                items: arrayRemove(editorialBoards[boardToDelete])
             });
 
-            setEditorialBoards(prev => prev.filter((_, i) => i !== index));
+            setEditorialBoards(prev => prev.filter((_, i) => i !== boardToDelete));
+            setToastMessage('Editorial board membership deleted successfully');
+            setToastType('success');
+            setShowToast(true);
         } catch (error) {
             console.error("Error deleting editorial board:", error);
+            setToastMessage('Failed to delete editorial board membership');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setIsDeleteModalOpen(false);
+            setBoardToDelete(null);
         }
     };
 
@@ -158,10 +188,10 @@ const JournalEditorialBoard = () => {
                             key={index}
                             whileHover={{ scale: 1.02 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className="relative"
+                            className="relative group"
                         >
                             {user && (
-                                <div className="absolute top-2 right-2 flex gap-2 z-10">
+                                <div className="absolute top-2 right-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <button
                                         onClick={(e) => {
                                             e.preventDefault();
@@ -348,6 +378,24 @@ const JournalEditorialBoard = () => {
                     </div>
                 </div>
             </Modal>
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                message="Are you sure you want to delete this editorial board membership?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="red"
+                title="Delete Editorial Board Membership"
+            />
         </div>
     );
 };

@@ -7,6 +7,8 @@ import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from '../hero/Modal';
 import LoadingAnimation from '.././LoadingAnimation';
+import Toast from '../common/Toast';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 const JournalReviews = () => {
   const { user } = useAuth();
@@ -14,6 +16,11 @@ const JournalReviews = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState(null);
   const [newJournalReview, setNewJournalReview] = useState({
     name: '',
     url: '',
@@ -90,7 +97,9 @@ const JournalReviews = () => {
 
   const handleAddJournalReview = async () => {
     if (!newJournalReview.name || !newJournalReview.url) {
-      alert('Please fill in all required fields');
+      setToastMessage('Please fill in all required fields');
+      setToastType('error');
+      setShowToast(true);
       return;
     }
 
@@ -104,7 +113,6 @@ const JournalReviews = () => {
         updatedData = [...currentData];
         updatedData[editingIndex] = newJournalReview;
       } else {
-        // Add new item to the top
         updatedData = [newJournalReview, ...currentData];
       }
 
@@ -116,21 +124,43 @@ const JournalReviews = () => {
         name: '',
         url: ''
       });
+      setToastMessage(editingIndex !== null ? 'Journal review updated successfully' : 'Journal review added successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error updating journal reviews:", error);
+      setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} journal review`);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
-  const handleDeleteJournalReview = async (index) => {
+  const handleDeleteJournalReview = (index) => {
+    setReviewToDelete(index);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (reviewToDelete === null) return;
+
     try {
       const docRef = doc(db, "portfolio", "journalReviews");
       await updateDoc(docRef, {
-        items: arrayRemove(journalReviews[index])
+        items: arrayRemove(journalReviews[reviewToDelete])
       });
 
-      setJournalReviews(prev => prev.filter((_, i) => i !== index));
+      setJournalReviews(prev => prev.filter((_, i) => i !== reviewToDelete));
+      setToastMessage('Journal review deleted successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting journal review:", error);
+      setToastMessage('Failed to delete journal review');
+      setToastType('error');
+      setShowToast(true);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setReviewToDelete(null);
     }
   };
 
@@ -177,10 +207,10 @@ const JournalReviews = () => {
             key={index}
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="relative"
+            className="relative group"
           >
             {user && (
-              <div className="absolute top-2 right-2 flex gap-2 z-10">
+              <div className="absolute top-2 right-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -291,6 +321,24 @@ const JournalReviews = () => {
           </div>
         </div>
       </Modal>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this journal review?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="red"
+        title="Delete Journal Review"
+      />
     </div>
   );
 };
