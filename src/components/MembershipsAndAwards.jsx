@@ -7,6 +7,8 @@ import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from './common/Toast';
+import ConfirmationModal from './common/ConfirmationModal';
 
 const MembershipsAndAwards = () => {
   const { user } = useAuth();
@@ -17,6 +19,16 @@ const MembershipsAndAwards = () => {
   const [showAwardModal, setShowAwardModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [editingType, setEditingType] = useState(null);
+  const [toast, setToast] = useState({
+    show: false,
+    message: '',
+    type: '' // 'success' or 'error'
+  });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState({
+    index: null,
+    type: null
+  });
   const [newMembership, setNewMembership] = useState({
     organization: '',
     period: '',
@@ -91,7 +103,11 @@ const MembershipsAndAwards = () => {
 
   const handleAddMembership = async () => {
     if (!newMembership.organization || !newMembership.period || !newMembership.role) {
-      alert('Please fill in all required fields');
+      setToast({
+        show: true,
+        message: 'Please fill in all required fields',
+        type: 'error'
+      });
       return;
     }
 
@@ -114,14 +130,29 @@ const MembershipsAndAwards = () => {
       setEditingIndex(null);
       setEditingType(null);
       setNewMembership({ organization: '', period: '', role: '' });
+
+      setToast({
+        show: true,
+        message: editingIndex !== null ? 'Membership updated successfully' : 'Membership added successfully',
+        type: 'success'
+      });
     } catch (error) {
       console.error("Error updating memberships:", error);
+      setToast({
+        show: true,
+        message: editingIndex !== null ? 'Failed to update membership' : 'Failed to add membership',
+        type: 'error'
+      });
     }
   };
 
   const handleAddAward = async () => {
     if (!newAward.title || !newAward.session || !newAward.description) {
-      alert('Please fill in all required fields');
+      setToast({
+        show: true,
+        message: 'Please fill in all required fields',
+        type: 'error'
+      });
       return;
     }
 
@@ -144,27 +175,19 @@ const MembershipsAndAwards = () => {
       setEditingIndex(null);
       setEditingType(null);
       setNewAward({ title: '', session: '', description: '' });
+
+      setToast({
+        show: true,
+        message: editingIndex !== null ? 'Award updated successfully' : 'Award added successfully',
+        type: 'success'
+      });
     } catch (error) {
       console.error("Error updating awards:", error);
-    }
-  };
-
-  const handleDeleteItem = async (index, type) => {
-    try {
-      const docRef = doc(db, "portfolio", type === 'membership' ? "memberships" : "awards");
-      const itemToDelete = type === 'membership' ? memberships[index] : awards[index];
-
-      await updateDoc(docRef, {
-        items: arrayRemove(itemToDelete)
+      setToast({
+        show: true,
+        message: editingIndex !== null ? 'Failed to update award' : 'Failed to add award',
+        type: 'error'
       });
-
-      if (type === 'membership') {
-        setMemberships(prev => prev.filter((_, i) => i !== index));
-      } else {
-        setAwards(prev => prev.filter((_, i) => i !== index));
-      }
-    } catch (error) {
-      console.error("Error deleting item:", error);
     }
   };
 
@@ -243,7 +266,10 @@ const MembershipsAndAwards = () => {
                         <FaEdit size={14} />
                       </button>
                       <button
-                        onClick={() => handleDeleteItem(index, 'membership')}
+                        onClick={() => {
+                          setItemToDelete({ index, type: 'membership' });
+                          setShowDeleteModal(true);
+                        }}
                         className="text-red-500 hover:text-red-700 transition-colors"
                         aria-label="Delete membership"
                       >
@@ -310,9 +336,12 @@ const MembershipsAndAwards = () => {
                         <FaEdit size={14} />
                       </button>
                       <button
-                        onClick={() => handleDeleteItem(index, 'award')}
+                        onClick={() => {
+                          setItemToDelete({ index, type: 'award' });
+                          setShowDeleteModal(true);
+                        }}
                         className="text-red-500 hover:text-red-700 transition-colors"
-                        aria-label="Delete award"
+                        aria-label="Delete membership"
                       >
                         <FaTrash size={14} />
                       </button>
@@ -467,6 +496,53 @@ const MembershipsAndAwards = () => {
           </div>
         </div>
       </Modal>
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          try {
+            const { index, type } = itemToDelete;
+            const docRef = doc(db, "portfolio", type === 'membership' ? "memberships" : "awards");
+            const itemToRemove = type === 'membership' ? memberships[index] : awards[index];
+
+            await updateDoc(docRef, {
+              items: arrayRemove(itemToRemove)
+            });
+
+            if (type === 'membership') {
+              setMemberships(prev => prev.filter((_, i) => i !== index));
+            } else {
+              setAwards(prev => prev.filter((_, i) => i !== index));
+            }
+
+            setToast({
+              show: true,
+              message: 'Item deleted successfully',
+              type: 'success'
+            });
+          } catch (error) {
+            console.error("Error deleting item:", error);
+            setToast({
+              show: true,
+              message: 'Failed to delete item',
+              type: 'error'
+            });
+          } finally {
+            setShowDeleteModal(false);
+          }
+        }}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this item?"
+        confirmText="Delete"
+        confirmColor="red"
+      />
     </section>
   );
 };

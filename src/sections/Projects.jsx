@@ -7,6 +7,8 @@ import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from '../components/common/Toast';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
 const Projects = () => {
   const { user } = useAuth();
@@ -14,6 +16,11 @@ const Projects = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
   const [newProject, setNewProject] = useState({
     title: '',
     date: '',
@@ -86,32 +93,26 @@ const Projects = () => {
 
   const handleAddProject = async () => {
     if (!newProject.title || !newProject.date || !newProject.description) {
-      alert('Please fill in all required fields');
+      setToastMessage('Please fill in all required fields');
+      setToastType('error');
+      setShowToast(true);
       return;
     }
 
     try {
       const docRef = doc(db, "portfolio", "projects");
-      // Get current data first
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data().items : [];
 
       let updatedData;
       if (editingIndex !== null) {
-        // If editing, replace the item at editingIndex
         updatedData = [...currentData];
         updatedData[editingIndex] = newProject;
       } else {
-        // If adding new, prepend the new item
         updatedData = [newProject, ...currentData];
       }
 
-      // Update the document with the new array
-      await updateDoc(docRef, {
-        items: updatedData
-      });
-
-      // Update local state
+      await updateDoc(docRef, { items: updatedData });
       setProjectsData(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
@@ -121,21 +122,43 @@ const Projects = () => {
         description: '',
         links: []
       });
+      setToastMessage(editingIndex !== null ? 'Project updated successfully' : 'Project added successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error adding/updating project:", error);
+      setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} project`);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
-  const handleDeleteProject = async (index) => {
+  const handleDeleteProject = (index) => {
+    setProjectToDelete(index);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (projectToDelete === null) return;
+
     try {
       const docRef = doc(db, "portfolio", "projects");
       await updateDoc(docRef, {
-        items: arrayRemove(projectsData[index])
+        items: arrayRemove(projectsData[projectToDelete])
       });
 
-      setProjectsData(prev => prev.filter((_, i) => i !== index));
+      setProjectsData(prev => prev.filter((_, i) => i !== projectToDelete));
+      setToastMessage('Project deleted successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting project:", error);
+      setToastMessage('Failed to delete project');
+      setToastType('error');
+      setShowToast(true);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setProjectToDelete(null);
     }
   };
 
@@ -198,17 +221,17 @@ const Projects = () => {
               className="group relative bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden"
             >
               {user && (
-                <div className="absolute top-4 right-4 flex gap-2">
+                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <button
                     onClick={() => handleEditProject(index)}
-                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-blue-600 hover:text-blue-800 transition-colors bg-white p-1 rounded"
                     aria-label="Edit project"
                   >
                     <FaEdit size={16} />
                   </button>
                   <button
                     onClick={() => handleDeleteProject(index)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
+                    className="text-red-500 hover:text-red-700 transition-colors bg-white p-1 rounded"
                     aria-label="Delete project"
                   >
                     <FaTrash size={16} />
@@ -216,22 +239,22 @@ const Projects = () => {
                 </div>
               )}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-300"></div>
-              
+
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{project.title}</h3>
-                  
+
                   <div className="flex items-center text-gray-500 mb-4">
                     <FaRegCalendarAlt className="mr-2 text-blue-500" />
                     <span className="text-sm">{project.date}</span>
                   </div>
-                  
+
                   <p className="text-gray-700 leading-relaxed mb-4">
                     {project.description}
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex flex-wrap gap-3 mt-4">
                 {project.links?.map((link, i) => (
                   <a
@@ -239,11 +262,10 @@ const Projects = () => {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`inline-flex items-center px-4 py-2 rounded-md ${
-                      link.name.toLowerCase() === 'github' 
-                        ? 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-                        : 'bg-blue-100 hover:bg-blue-200 text-blue-800'
-                    } transition-colors duration-200`}
+                    className={`inline-flex items-center px-4 py-2 rounded-md ${link.name.toLowerCase() === 'github'
+                      ? 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                      : 'bg-blue-100 hover:bg-blue-200 text-blue-800'
+                      } transition-colors duration-200`}
                   >
                     {link.name.toLowerCase() === 'github' ? (
                       <FaGithub className="mr-2" />
@@ -383,6 +405,24 @@ const Projects = () => {
           </div>
         </div>
       </Modal>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this project?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="red"
+        title="Delete Project"
+      />
     </section>
   );
 };

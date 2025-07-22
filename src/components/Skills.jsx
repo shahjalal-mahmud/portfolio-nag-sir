@@ -7,6 +7,8 @@ import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from './common/Toast';
+import ConfirmationModal from './common/ConfirmationModal';
 
 const Skills = () => {
   const { user } = useAuth();
@@ -14,6 +16,11 @@ const Skills = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [skillToDelete, setSkillToDelete] = useState(null);
   const [newSkill, setNewSkill] = useState({
     title: '',
     content: '',
@@ -76,32 +83,26 @@ const Skills = () => {
 
   const handleAddSkill = async () => {
     if (!newSkill.title || !newSkill.content) {
-      alert('Please fill in all required fields');
+      setToastMessage('Please fill in all required fields');
+      setToastType('error');
+      setShowToast(true);
       return;
     }
 
     try {
       const docRef = doc(db, "portfolio", "skills");
-      // Get current data first
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data().items : [];
 
       let updatedData;
       if (editingIndex !== null) {
-        // If editing, replace the item at editingIndex
         updatedData = [...currentData];
         updatedData[editingIndex] = newSkill;
       } else {
-        // If adding new, prepend the new item
         updatedData = [newSkill, ...currentData];
       }
 
-      // Update the document with the new array
-      await updateDoc(docRef, {
-        items: updatedData
-      });
-
-      // Update local state
+      await updateDoc(docRef, { items: updatedData });
       setSkillsData(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
@@ -110,24 +111,45 @@ const Skills = () => {
         content: '',
         icon: ''
       });
+      setToastMessage(editingIndex !== null ? 'Skill updated successfully' : 'Skill added successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error adding/updating skill:", error);
+      setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} skill`);
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
-  const handleDeleteSkill = async (index) => {
+  const handleDeleteSkill = (index) => {
+    setSkillToDelete(index);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (skillToDelete === null) return;
+
     try {
       const docRef = doc(db, "portfolio", "skills");
       await updateDoc(docRef, {
-        items: arrayRemove(skillsData[index])
+        items: arrayRemove(skillsData[skillToDelete])
       });
 
-      setSkillsData(prev => prev.filter((_, i) => i !== index));
+      setSkillsData(prev => prev.filter((_, i) => i !== skillToDelete));
+      setToastMessage('Skill deleted successfully');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting skill:", error);
+      setToastMessage('Failed to delete skill');
+      setToastType('error');
+      setShowToast(true);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setSkillToDelete(null);
     }
   };
-
   const handleEditSkill = (index) => {
     setNewSkill(skillsData[index]);
     setEditingIndex(index);
@@ -169,17 +191,17 @@ const Skills = () => {
               className="group relative bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden"
             >
               {user && (
-                <div className="absolute top-2 right-2 flex gap-2">
+                <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <button
                     onClick={() => handleEditSkill(index)}
-                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-blue-600 hover:text-blue-800 transition-colors bg-white p-1 rounded"
                     aria-label="Edit skill"
                   >
                     <FaEdit size={16} />
                   </button>
                   <button
                     onClick={() => handleDeleteSkill(index)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
+                    className="text-red-500 hover:text-red-700 transition-colors bg-white p-1 rounded"
                     aria-label="Delete skill"
                   >
                     <FaTrash size={16} />
@@ -187,7 +209,7 @@ const Skills = () => {
                 </div>
               )}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-300"></div>
-              
+
               <div className="flex items-start space-x-4">
                 <span className="text-3xl mt-1">{skill.icon}</span>
                 <div>
@@ -195,7 +217,7 @@ const Skills = () => {
                   <p className="text-gray-700 leading-relaxed">{skill.content}</p>
                 </div>
               </div>
-              
+
               <div className="absolute bottom-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <svg className="w-16 h-16 text-blue-50" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clipRule="evenodd" />
@@ -283,6 +305,24 @@ const Skills = () => {
           </div>
         </div>
       </Modal>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this skill?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="red"
+        title="Delete Skill"
+      />
     </section>
   );
 };
