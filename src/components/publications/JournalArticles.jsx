@@ -5,6 +5,8 @@ import { collection, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc } from '
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from "../common/Modal";
+import Toast from '../common/Toast';
+import ConfirmationModal from "../common/ConfirmationModal";
 
 const JournalArticles = () => {
     const { user } = useAuth();
@@ -13,6 +15,11 @@ const JournalArticles = () => {
     const [activeYear, setActiveYear] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentArticle, setCurrentArticle] = useState(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('success');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [articleToDelete, setArticleToDelete] = useState(null);
     const [formData, setFormData] = useState({
         year: "",
         title: "",
@@ -31,7 +38,7 @@ const JournalArticles = () => {
             try {
                 const articlesCollection = collection(db, 'journal_articles');
                 const snapshot = await getDocs(articlesCollection);
-                
+
                 const articlesData = {};
                 snapshot.forEach(doc => {
                     if (doc.data().articles) {
@@ -44,13 +51,13 @@ const JournalArticles = () => {
                 });
 
                 setJournalArticles(articlesData);
-                
+
                 // Set the most recent year as active by default
                 const years = Object.keys(articlesData).sort((a, b) => b.localeCompare(a));
                 if (years.length > 0) {
                     setActiveYear(years[0]);
                 }
-                
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching journal articles:', error);
@@ -88,20 +95,20 @@ const JournalArticles = () => {
                 // Editing an existing article
                 const yearDocRef = doc(db, "journal_articles", currentArticle.docId);
                 const yearDoc = await getDoc(yearDocRef);
-                
+
                 if (yearDoc.exists()) {
                     const articles = [...yearDoc.data().articles];
-                    
+
                     // Check if year changed
                     if (currentArticle.year !== formData.year) {
                         // Remove from old year
                         articles.splice(currentArticle.articleIndex, 1);
                         await updateDoc(yearDocRef, { articles });
-                        
+
                         // Add to new year
                         const newYearDocRef = doc(db, "journal_articles", formData.year);
                         const newYearDoc = await getDoc(newYearDocRef);
-                        
+
                         if (newYearDoc.exists()) {
                             const newArticles = [...newYearDoc.data().articles, articleData];
                             await updateDoc(newYearDocRef, { articles: newArticles });
@@ -149,7 +156,7 @@ const JournalArticles = () => {
             setLoading(true);
             const articlesCollection = collection(db, 'journal_articles');
             const snapshot = await getDocs(articlesCollection);
-            
+
             const articlesData = {};
             snapshot.forEach(doc => {
                 if (doc.data().articles) {
@@ -163,8 +170,15 @@ const JournalArticles = () => {
 
             setJournalArticles(articlesData);
             setLoading(false);
+            setToastMessage(currentArticle ? 'Article updated successfully' : 'Article added successfully');
+            setToastType('success');
+            setShowToast(true);
+
         } catch (error) {
             console.error("Error saving journal article:", error);
+            setToastMessage(`Failed to ${currentArticle ? 'update' : 'add'} article`);
+            setToastType('error');
+            setShowToast(true);
         }
     };
 
@@ -185,45 +199,59 @@ const JournalArticles = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (docId, articleIndex) => {
-        if (window.confirm("Are you sure you want to delete this article?")) {
-            try {
-                const yearDocRef = doc(db, "journal_articles", docId);
-                const yearDoc = await getDoc(yearDocRef);
+    const handleDelete = (docId, articleIndex) => {
+        setArticleToDelete({ docId, articleIndex });
+        setIsDeleteModalOpen(true);
+    };
 
-                if (yearDoc.exists()) {
-                    const articles = [...yearDoc.data().articles];
-                    articles.splice(articleIndex, 1);
+    const handleConfirmDelete = async () => {
+        if (!articleToDelete) return;
 
-                    // If last article in year, delete the entire year document
-                    if (articles.length === 0) {
-                        await deleteDoc(yearDocRef);
-                    } else {
-                        await updateDoc(yearDocRef, { articles });
-                    }
-                    
-                    // Refresh data
-                    setLoading(true);
-                    const articlesCollection = collection(db, 'journal_articles');
-                    const snapshot = await getDocs(articlesCollection);
-                    
-                    const articlesData = {};
-                    snapshot.forEach(doc => {
-                        if (doc.data().articles) {
-                            articlesData[doc.id] = doc.data().articles.map((article, index) => ({
-                                ...article,
-                                docId: doc.id,
-                                articleIndex: index
-                            }));
-                        }
-                    });
+        try {
+            const { docId, articleIndex } = articleToDelete;
+            const yearDocRef = doc(db, "journal_articles", docId);
+            const yearDoc = await getDoc(yearDocRef);
 
-                    setJournalArticles(articlesData);
-                    setLoading(false);
+            if (yearDoc.exists()) {
+                const articles = [...yearDoc.data().articles];
+                articles.splice(articleIndex, 1);
+
+                if (articles.length === 0) {
+                    await deleteDoc(yearDocRef);
+                } else {
+                    await updateDoc(yearDocRef, { articles });
                 }
-            } catch (error) {
-                console.error("Error deleting article:", error);
+
+                // Refresh data
+                setLoading(true);
+                const articlesCollection = collection(db, 'journal_articles');
+                const snapshot = await getDocs(articlesCollection);
+
+                const articlesData = {};
+                snapshot.forEach(doc => {
+                    if (doc.data().articles) {
+                        articlesData[doc.id] = doc.data().articles.map((article, index) => ({
+                            ...article,
+                            docId: doc.id,
+                            articleIndex: index
+                        }));
+                    }
+                });
+
+                setJournalArticles(articlesData);
+                setLoading(false);
+                setToastMessage('Article deleted successfully');
+                setToastType('success');
+                setShowToast(true);
             }
+        } catch (error) {
+            console.error("Error deleting article:", error);
+            setToastMessage('Failed to delete article');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setIsDeleteModalOpen(false);
+            setArticleToDelete(null);
         }
     };
 
@@ -301,11 +329,10 @@ const JournalArticles = () => {
                                 <button
                                     key={year}
                                     onClick={() => setActiveYear(year)}
-                                    className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${
-                                        activeYear === year
-                                            ? 'bg-blue-600 text-white shadow-md'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
+                                    className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${activeYear === year
+                                        ? 'bg-blue-600 text-white shadow-md'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
                                 >
                                     {year}
                                     <span className="ml-2 text-xs bg-white/20 rounded-full px-2 py-0.5">
@@ -331,10 +358,10 @@ const JournalArticles = () => {
                     {journalArticles[activeYear]?.map((article, index) => (
                         <div
                             key={index}
-                            className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm"
+                            className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm group"
                         >
                             {user && (
-                                <div className="absolute top-4 right-4 flex space-x-2">
+                                <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <button
                                         onClick={() => handleEdit(article)}
                                         className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
@@ -585,6 +612,24 @@ const JournalArticles = () => {
                     </form>
                 </div>
             </Modal>
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                message="Are you sure you want to delete this article?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="red"
+                title="Delete Article"
+            />
         </section>
     );
 };
