@@ -7,6 +7,8 @@ import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from './common/Toast';
+import ConfirmationModal from './common/ConfirmationModal';
 
 const Certifications = () => {
   const { user } = useAuth();
@@ -14,6 +16,11 @@ const Certifications = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [certToDelete, setCertToDelete] = useState(null);
   const [newCertification, setNewCertification] = useState({
     title: '',
     provider: ''
@@ -61,32 +68,29 @@ const Certifications = () => {
 
   const handleAddCertification = async () => {
     if (!newCertification.title || !newCertification.provider) {
-      alert('Please fill in all required fields');
+      setToastMessage('Please fill in all required fields');
+      setToastType('error');
+      setShowToast(true);
       return;
     }
 
     try {
       const docRef = doc(db, "portfolio", "certifications");
-      // Get current data first
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data().items : [];
 
       let updatedData;
       if (editingIndex !== null) {
-        // If editing, replace the item at editingIndex
         updatedData = [...currentData];
         updatedData[editingIndex] = newCertification;
       } else {
-        // If adding new, prepend the new item
         updatedData = [newCertification, ...currentData];
       }
 
-      // Update the document with the new array
       await updateDoc(docRef, {
         items: updatedData
       });
 
-      // Update local state
       setCertifications(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
@@ -94,10 +98,22 @@ const Certifications = () => {
         title: '',
         provider: ''
       });
+
+      setToastMessage(
+        editingIndex !== null
+          ? 'Certification updated successfully!'
+          : 'Certification added successfully!'
+      );
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error adding/updating certification:", error);
+      setToastMessage('Failed to save certification. Please try again.');
+      setToastType('error');
+      setShowToast(true);
     }
   };
+
 
   const handleDeleteCertification = async (index) => {
     try {
@@ -107,8 +123,15 @@ const Certifications = () => {
       });
 
       setCertifications(prev => prev.filter((_, i) => i !== index));
+
+      setToastMessage('Certification deleted successfully!');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting certification:", error);
+      setToastMessage('Failed to delete certification. Please try again.');
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
@@ -173,7 +196,10 @@ const Certifications = () => {
                     <FaEdit size={14} />
                   </button>
                   <button
-                    onClick={() => handleDeleteCertification(index)}
+                    onClick={() => {
+                      setCertToDelete(index);
+                      setShowDeleteModal(true);
+                    }}
                     className="text-red-500 hover:text-red-700 transition-colors"
                     aria-label="Delete certification"
                   >
@@ -182,12 +208,12 @@ const Certifications = () => {
                 </div>
               )}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-300"></div>
-              
+
               <div className="pr-8">
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{cert.title}</h3>
                 <p className="text-gray-700 mb-4">{cert.provider}</p>
               </div>
-              
+
               <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <svg className="w-8 h-8 text-blue-100" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -268,6 +294,26 @@ const Certifications = () => {
           </div>
         </div>
       </Modal>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => {
+          handleDeleteCertification(certToDelete);
+          setShowDeleteModal(false);
+        }}
+        title="Delete Certification"
+        message="Are you sure you want to delete this certification?"
+        confirmText="Delete"
+        confirmColor="red"
+      />
     </section>
   );
 };

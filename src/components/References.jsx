@@ -7,6 +7,8 @@ import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
 import Modal from '../components/hero/Modal';
 import LoadingAnimation from '../components/LoadingAnimation';
+import Toast from './common/Toast';
+import ConfirmationModal from './common/ConfirmationModal';
 
 const References = () => {
   const { user } = useAuth();
@@ -14,6 +16,11 @@ const References = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [refToDelete, setRefToDelete] = useState(null);
   const [newReference, setNewReference] = useState({
     name: '',
     title: '',
@@ -64,32 +71,29 @@ const References = () => {
 
   const handleAddReference = async () => {
     if (!newReference.name || !newReference.title || !newReference.institution || !newReference.location || !newReference.email) {
-      alert('Please fill in all required fields');
+      setToastMessage('Please fill in all required fields');
+      setToastType('error');
+      setShowToast(true);
       return;
     }
 
     try {
       const docRef = doc(db, "portfolio", "references");
-      // Get current data first
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data().items : [];
 
       let updatedData;
       if (editingIndex !== null) {
-        // If editing, replace the item at editingIndex
         updatedData = [...currentData];
         updatedData[editingIndex] = newReference;
       } else {
-        // If adding new, append the new item (to bottom)
         updatedData = [...currentData, newReference];
       }
 
-      // Update the document with the new array
       await updateDoc(docRef, {
         items: updatedData
       });
 
-      // Update local state
       setReferences(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
@@ -101,8 +105,19 @@ const References = () => {
         email: '',
         link: ''
       });
+
+      setToastMessage(
+        editingIndex !== null
+          ? 'Reference updated successfully!'
+          : 'Reference added successfully!'
+      );
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error adding/updating reference:", error);
+      setToastMessage('Failed to save reference. Please try again.');
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
@@ -114,8 +129,15 @@ const References = () => {
       });
 
       setReferences(prev => prev.filter((_, i) => i !== index));
+
+      setToastMessage('Reference deleted successfully!');
+      setToastType('success');
+      setShowToast(true);
     } catch (error) {
       console.error("Error deleting reference:", error);
+      setToastMessage('Failed to delete reference. Please try again.');
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
@@ -175,10 +197,10 @@ const References = () => {
               key={index}
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="bg-white p-8 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md relative"
+              className="group bg-white p-8 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md relative"
             >
               {user && (
-                <div className="absolute top-4 right-4 flex gap-2">
+                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
                     onClick={() => handleEditReference(index)}
                     className="text-blue-600 hover:text-blue-800 transition-colors"
@@ -187,7 +209,10 @@ const References = () => {
                     <FaEdit size={16} />
                   </button>
                   <button
-                    onClick={() => handleDeleteReference(index)}
+                    onClick={() => {
+                      setRefToDelete(index);
+                      setShowDeleteModal(true);
+                    }}
                     className="text-red-500 hover:text-red-700 transition-colors"
                     aria-label="Delete reference"
                   >
@@ -352,6 +377,27 @@ const References = () => {
           </div>
         </div>
       </Modal>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => {
+          handleDeleteReference(refToDelete);
+          setShowDeleteModal(false);
+        }}
+        title="Delete Reference"
+        message="Are you sure you want to delete this reference?"
+        confirmText="Delete"
+        confirmColor="red"
+      />
+
     </section>
   );
 };
