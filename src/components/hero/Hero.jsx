@@ -5,6 +5,7 @@ import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from './Modal';
 import LoadingAnimation from '../LoadingAnimation';
+import Toast from '../common/Toast';
 
 const Hero = () => {
   const { user } = useAuth();
@@ -15,6 +16,12 @@ const Hero = () => {
   const [tempValue, setTempValue] = useState('');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ ...toast, show: false }), 5000);
+  };
 
   useEffect(() => {
     const fetchHeroData = async () => {
@@ -25,7 +32,6 @@ const Hero = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setHeroData(data);
-          // Set the image URL if it exists in Firestore
           if (data.profileImageUrl) {
             setImageUrl(data.profileImageUrl);
           }
@@ -88,8 +94,9 @@ const Hero = () => {
             ]
           });
         }
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        console.error("Error fetching hero data:", error);
+        showToast('Failed to load profile data', 'error');
       } finally {
         setLoading(false);
       }
@@ -119,13 +126,18 @@ const Hero = () => {
       }));
 
       setIsEditing(false);
+      showToast('Profile updated successfully', 'success');
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.error("Error updating hero data:", error);
+      showToast('Failed to update profile', 'error');
     }
   };
 
   const handleImageUpdate = async () => {
-    if (!imageUrl) return;
+    if (!imageUrl) {
+      showToast('Please provide an image URL', 'error');
+      return;
+    }
     
     try {
       const docRef = doc(db, "portfolio", "hero");
@@ -133,15 +145,16 @@ const Hero = () => {
         profileImageUrl: imageUrl
       });
 
-      // Update local state
       setHeroData(prev => ({
         ...prev,
         profileImageUrl: imageUrl
       }));
 
       setIsImageModalOpen(false);
+      showToast('Profile image updated successfully', 'success');
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.error("Error updating profile image:", error);
+      showToast('Failed to update profile image', 'error');
     }
   };
 
@@ -154,12 +167,12 @@ const Hero = () => {
   }
 
   return (
-    <section className="text-gray-800 py-12 px-4 sm:px-8 lg:px-12" id="hero">
-      <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-8 lg:gap-12">
+    <section className="text-gray-800 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 2xl:px-12" id="hero">
+      <div className="max-w-6xl mx-auto flex flex-col-reverse md:flex-row items-center gap-6 lg:gap-10 xl:gap-12">
         {/* Text Content */}
         <div className="flex-1 w-full">
           <div className="flex items-start gap-3 group">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 tracking-tight">
+            <h1 className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 tracking-tight">
               {heroData.name}
             </h1>
             {user && (
@@ -173,8 +186,8 @@ const Hero = () => {
             )}
           </div>
 
-          <div className="relative group mb-4">
-            <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-lg whitespace-pre-line">
+          <div className="relative group mb-3 sm:mb-4">
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed max-w-lg whitespace-pre-line">
               {heroData.profession}
             </p>
             {user && (
@@ -189,7 +202,7 @@ const Hero = () => {
           </div>
 
           {/* Location & Contact */}
-          <div className="text-sm sm:text-base text-gray-700 space-y-2 mb-6 max-w-md">
+          <div className="text-sm sm:text-base text-gray-700 space-y-1.5 sm:space-y-2 mb-4 sm:mb-6 max-w-md">
             {/* Location with link */}
             <div className="flex items-start gap-1 group">
               <div
@@ -248,25 +261,25 @@ const Hero = () => {
           </div>
 
           {/* Social Links */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 mt-6 max-w-md">
+          <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 sm:mt-6 max-w-md">
             {heroData.socialLinks?.map(({ href, icon, label }) => (
               <a
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700
+                className="flex items-center gap-1.5 border border-gray-300 rounded-lg px-2.5 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-700
                  hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200"
                 aria-label={`Visit ${label}`}
               >
-                {icon === 'linkedin' && <FaLinkedin className="text-blue-700" />}
-                {icon === 'researchgate' && <FaResearchgate className="text-green-700" />}
-                {icon === 'google' && <FaGoogle className="text-blue-600" />}
-                {icon === 'orcid' && <FaOrcid className="text-green-600" />}
-                {icon === 'database' && <FaDatabase className="text-red-600" />}
-                {icon === 'book' && <FaBook className="text-purple-700" />}
-                {icon === 'globe' && <FaGlobe className="text-indigo-600" />}
-                {icon === 'github' && <FaGithub className="text-gray-800" />}
+                {icon === 'linkedin' && <FaLinkedin className="text-blue-700 text-sm sm:text-base" />}
+                {icon === 'researchgate' && <FaResearchgate className="text-green-700 text-sm sm:text-base" />}
+                {icon === 'google' && <FaGoogle className="text-blue-600 text-sm sm:text-base" />}
+                {icon === 'orcid' && <FaOrcid className="text-green-600 text-sm sm:text-base" />}
+                {icon === 'database' && <FaDatabase className="text-red-600 text-sm sm:text-base" />}
+                {icon === 'book' && <FaBook className="text-purple-700 text-sm sm:text-base" />}
+                {icon === 'globe' && <FaGlobe className="text-indigo-600 text-sm sm:text-base" />}
+                {icon === 'github' && <FaGithub className="text-gray-800 text-sm sm:text-base" />}
                 <span className="hidden sm:inline">{label}</span>
               </a>
             ))}
@@ -274,22 +287,22 @@ const Hero = () => {
         </div>
 
         {/* Profile Image */}
-        <div className="flex-1 flex justify-center relative group mb-8 md:mb-0">
+        <div className="flex-1 flex justify-center relative group mb-6 sm:mb-8 md:mb-0">
           <div className="relative">
             <img
               src={imageUrl || "/images/a2.jpg"}
               alt="Anindya Nag"
-              className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 object-cover rounded-full border-4 border-blue-600 shadow-xl transition-all duration-300 hover:shadow-2xl"
+              className="w-40 h-40 xs:w-48 xs:h-48 sm:w-56 sm:h-56 md:w-60 md:h-60 lg:w-72 lg:h-72 xl:w-80 xl:h-80 object-cover rounded-full border-4 border-blue-600 shadow-lg sm:shadow-xl transition-all duration-300 hover:shadow-2xl"
               onError={(e) => {
-                e.target.src = "/images/a2.jpg"; // Fallback image if URL is invalid
+                e.target.src = "/images/a2.jpg";
               }}
             />
             {user && (
               <button
-                className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-all transform hover:scale-110"
+                className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 bg-white p-1.5 sm:p-2 rounded-full shadow-md hover:bg-gray-100 transition-all transform hover:scale-110"
                 onClick={() => setIsImageModalOpen(true)}
               >
-                <FaUpload className="text-blue-600" size={16} />
+                <FaUpload className="text-blue-600 text-sm sm:text-base" />
               </button>
             )}
           </div>
@@ -299,8 +312,8 @@ const Hero = () => {
       {/* Edit Text Modal */}
       <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">
               Edit {editField.replace(/^\w/, c => c.toUpperCase())}
             </h3>
 
@@ -308,17 +321,17 @@ const Hero = () => {
               <textarea
                 value={tempValue}
                 onChange={(e) => setTempValue(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base"
                 rows={4}
               />
             ) : editField === 'location' ? (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <input
                   type="text"
                   value={tempValue}
                   onChange={(e) => setTempValue(e.target.value)}
                   placeholder="Location text"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base"
                 />
                 <input
                   type="url"
@@ -331,7 +344,7 @@ const Hero = () => {
                     }
                   }))}
                   placeholder="Google Maps link"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base"
                 />
               </div>
             ) : (
@@ -339,20 +352,20 @@ const Hero = () => {
                 type={editField === 'email' ? 'email' : 'text'}
                 value={tempValue}
                 onChange={(e) => setTempValue(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base"
               />
             )}
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-2 sm:gap-3 mt-4 sm:mt-6">
               <button
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors text-sm sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
               >
                 Save Changes
               </button>
@@ -364,13 +377,13 @@ const Hero = () => {
       {/* Image Update Modal */}
       <Modal isOpen={isImageModalOpen} onClose={() => setIsImageModalOpen(false)}>
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">
               Update Profile Image
             </h3>
             
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="mb-3 sm:mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                 Image URL (from ImageBB)
               </label>
               <input
@@ -378,34 +391,34 @@ const Hero = () => {
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://i.ibb.co/..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base"
               />
             </div>
 
             {imageUrl && (
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+              <div className="mb-3 sm:mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-1 sm:mb-2">Preview:</p>
                 <img 
                   src={imageUrl} 
                   alt="Preview" 
-                  className="w-32 h-32 object-cover rounded-full border border-gray-300"
+                  className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full border border-gray-300"
                   onError={(e) => {
-                    e.target.src = "/images/a2.jpg"; // Fallback image if URL is invalid
+                    e.target.src = "/images/a2.jpg";
                   }}
                 />
               </div>
             )}
 
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-2 sm:gap-3 mt-4 sm:mt-6">
               <button
                 onClick={() => setIsImageModalOpen(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors text-sm sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleImageUpdate}
-                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
                 disabled={!imageUrl}
               >
                 Update Image
@@ -414,6 +427,15 @@ const Hero = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
     </section>
   );
 };
