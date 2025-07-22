@@ -25,6 +25,8 @@ const About = () => {
   const [editField, setEditField] = useState('');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+  const [cvUrl, setCVUrl] = useState(aboutData?.contactInfo?.cvLink || '');
   const [tempValues, setTempValues] = useState({
     shortBio: '',
     fullBio: '',
@@ -46,6 +48,7 @@ const About = () => {
           setAboutData(docSnap.data());
           const data = docSnap.data();
           setAboutData(data);
+          setCVUrl(data.contactInfo?.cvLink || '');
           // Set the image URL if it exists in Firestore
           if (data.aboutImageUrl) {
             setImageUrl(data.aboutImageUrl);
@@ -269,16 +272,27 @@ const About = () => {
             <div className="flex items-center gap-3">
               <FaDownload className="text-primary" />
               <a
-                href={aboutData.contactInfo.cvLink}
+                href={aboutData.contactInfo.cvLink
+                  ? aboutData.contactInfo.cvLink.replace(
+                    /^https:\/\/drive\.google\.com\/file\/d\/([^/]+).*$/,
+                    'https://drive.google.com/uc?export=download&id=$1'
+                  )
+                  : '#'
+                }
                 download="AnindyaNag_CV.pdf"
                 className="underline hover:text-primary transition"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Download CV
               </a>
               {user && (
                 <button
                   className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
-                  onClick={() => console.log("Edit CV clicked")}
+                  onClick={() => {
+                    setCVUrl(aboutData.contactInfo.cvLink);
+                    setIsCVModalOpen(true);
+                  }}
                   aria-label="Edit CV"
                 >
                   <FaEdit size={14} />
@@ -479,6 +493,74 @@ const About = () => {
                 disabled={!imageUrl}
               >
                 Update Image
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      {/* CV Update Modal */}
+      <Modal isOpen={isCVModalOpen} onClose={() => setIsCVModalOpen(false)}>
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Update CV Link
+            </h3>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Google Drive Shareable Link
+              </label>
+              <input
+                type="url"
+                value={cvUrl}
+                onChange={(e) => setCVUrl(e.target.value)}
+                placeholder="https://drive.google.com/..."
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg mb-4">
+              <h4 className="text-sm font-medium text-blue-800 mb-2">How to get Google Drive link:</h4>
+              <ol className="text-xs text-blue-700 list-decimal pl-5 space-y-1">
+                <li>Upload your CV to Google Drive</li>
+                <li>Right-click the file and select "Share"</li>
+                <li>Change sharing settings to "Anyone with the link"</li>
+                <li>Copy the shareable link and paste it above</li>
+              </ol>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setIsCVModalOpen(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    const docRef = doc(db, "portfolio", "about");
+                    await updateDoc(docRef, {
+                      "contactInfo.cvLink": cvUrl
+                    });
+
+                    setAboutData(prev => ({
+                      ...prev,
+                      contactInfo: {
+                        ...prev.contactInfo,
+                        cvLink: cvUrl
+                      }
+                    }));
+
+                    setIsCVModalOpen(false);
+                  } catch (error) {
+                    console.error("Error updating CV link:", error);
+                  }
+                }}
+                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={!cvUrl}
+              >
+                Update CV
               </button>
             </div>
           </div>
