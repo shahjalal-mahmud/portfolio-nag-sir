@@ -12,8 +12,20 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { SiGooglescholar, SiOrcid, SiResearchgate, SiScopus, SiClarivate } from "react-icons/si";
+import useHeroData from '../../hooks/useHeroData';
+import LoadingAnimation from '../components/LoadingAnimation';
 
 const Contact = () => {
+  const { heroData, loading } = useHeroData();
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
+
+  if (!heroData) {
+    return <div className="text-center py-12 text-gray-500">No contact information available</div>;
+  }
+
   return (
     <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -39,8 +51,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-1">Email</h4>
-                  <a href="mailto:anindyanag@ieee.org" className="text-blue-600 hover:underline">
-                    anindyanag@ieee.org
+                  <a href={`mailto:${heroData.email}`} className="text-blue-600 hover:underline">
+                    {heroData.email}
                   </a>
                 </div>
               </div>
@@ -51,7 +63,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-1">Phone</h4>
-                  <p>+880 1795617168</p>
+                  <p>{heroData.phone}</p>
                 </div>
               </div>
 
@@ -61,25 +73,35 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-gray-500 mb-1">Location</h4>
-                  <p>
-                    Northern University of Business and Technology Khulna,<br />
-                    Shib Bari Circle, Sonadanga,<br />
-                    Khulna-9100, Bangladesh
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="bg-blue-100 p-2 rounded-full mr-4 mt-1">
-                  <FaGlobe className="text-blue-600 text-lg" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-1">Portfolio</h4>
-                  <a href="https://anindyanag.netlify.app/" target="_blank" rel="noopener noreferrer" className="font-medium">
-                    anindyanag.netlify.app
+                  <a
+                    href={heroData.location.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-blue-600 hover:underline"
+                  >
+                    {heroData.location.text}
                   </a>
                 </div>
               </div>
+              {/* Find the portfolio link from socialLinks if it exists */}
+              {heroData.socialLinks?.find(link => link.label === "Personal Portfolio") && (
+                <div className="flex items-start">
+                  <div className="bg-blue-100 p-2 rounded-full mr-4 mt-1">
+                    <FaGlobe className="text-blue-600 text-lg" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Portfolio</h4>
+                    <a
+                      href={heroData.socialLinks.find(link => link.label === "Personal Portfolio").href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium"
+                    >
+                      {heroData.socialLinks.find(link => link.label === "Personal Portfolio").href.replace(/^https?:\/\//, '')}
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Academic Profiles */}

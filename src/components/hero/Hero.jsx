@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaLinkedin, FaResearchgate, FaGoogle, FaOrcid, FaDatabase, FaBook, FaGithub, FaMapMarkerAlt, FaGlobe, FaEdit, FaUpload } from "react-icons/fa";
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from './Modal';
 import LoadingAnimation from '../LoadingAnimation';
 import Toast from '../common/Toast';
+import useHeroData from '../../../hooks/useHeroData';
 
 const Hero = () => {
   const { user } = useAuth();
-  const [heroData, setHeroData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { heroData, loading } = useHeroData(); 
   const [isEditing, setIsEditing] = useState(false);
   const [editField, setEditField] = useState('');
   const [tempValue, setTempValue] = useState('');
@@ -22,88 +22,6 @@ const Hero = () => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast({ ...toast, show: false }), 5000);
   };
-
-  useEffect(() => {
-    const fetchHeroData = async () => {
-      try {
-        const docRef = doc(db, "portfolio", "hero");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setHeroData(data);
-          if (data.profileImageUrl) {
-            setImageUrl(data.profileImageUrl);
-          }
-        } else {
-          setHeroData({
-            name: "ANINDYA NAG",
-            profession: "Lecturer, Dept. of Computer Science & Engineering\nNorthern University of Business and Technology Khulna",
-            location: {
-              text: "Northern University of Business and Technology Khulna, Khulna-9100, Bangladesh",
-              link: "https://maps.app.goo.gl/sr7kWTtaCYLGGRM87"
-            },
-            email: "anindyanag@ieee.org",
-            phone: "+880 1795617168",
-            socialLinks: [
-              {
-                href: "https://www.linkedin.com/in/anindya-nag-892b19190/",
-                icon: "linkedin",
-                label: "LinkedIn",
-              },
-              {
-                href: "https://www.researchgate.net/profile/Anindya-Nag-3",
-                icon: "researchgate",
-                label: "ResearchGate",
-              },
-              {
-                href: "https://scholar.google.com/citations?hl=en&user=V4OLVPAAAAAJ&view_op=list_works",
-                icon: "google",
-                label: "Google Scholar",
-              },
-              {
-                href: "https://orcid.org/0000-0001-6518-8233",
-                icon: "orcid",
-                label: "ORCID",
-              },
-              {
-                href: "https://www.scopus.com/authid/detail.uri?authorId=58398246900",
-                icon: "database",
-                label: "Scopus",
-              },
-              {
-                href: "https://www.webofscience.com/wos/author/record/ITT-5228-2023",
-                icon: "book",
-                label: "Web of Science",
-              },
-              {
-                href: "https://nubtkhulna.ac.bd/sd/273/Anindya%20Nag",
-                icon: "globe",
-                label: "Official Website",
-              },
-              {
-                href: "https://github.com/AnindyaNag",
-                icon: "github",
-                label: "GitHub",
-              },
-              {
-                href: "https://anindyanag.netlify.app/",
-                icon: "globe",
-                label: "Personal Portfolio"
-              },
-            ]
-          });
-        }
-      // eslint-disable-next-line no-unused-vars
-      } catch (error) {
-        showToast('Failed to load profile data', 'error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHeroData();
-  }, []);
 
   const handleEditClick = (field, value) => {
     setEditField(field);
@@ -119,16 +37,10 @@ const Hero = () => {
         : { [editField]: tempValue };
 
       await updateDoc(docRef, updateData);
-
-      setHeroData(prev => ({
-        ...prev,
-        ...updateData
-      }));
-
       setIsEditing(false);
       showToast('Profile updated successfully', 'success');
-    // eslint-disable-next-line no-unused-vars
     } catch (error) {
+      console.error('Failed to update profile', error);
       showToast('Failed to update profile', 'error');
     }
   };
@@ -145,15 +57,10 @@ const Hero = () => {
         profileImageUrl: imageUrl
       });
 
-      setHeroData(prev => ({
-        ...prev,
-        profileImageUrl: imageUrl
-      }));
-
       setIsImageModalOpen(false);
       showToast('Profile image updated successfully', 'success');
-    // eslint-disable-next-line no-unused-vars
     } catch (error) {
+      console.error('Failed to update profile image', error);
       showToast('Failed to update profile image', 'error');
     }
   };
@@ -336,7 +243,7 @@ const Hero = () => {
                 <input
                   type="url"
                   value={heroData.location.link}
-                  onChange={(e) => setHeroData(prev => ({
+                  onChange={(e) => heroData(prev => ({
                     ...prev,
                     location: {
                       ...prev.location,
