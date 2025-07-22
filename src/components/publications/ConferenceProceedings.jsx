@@ -5,6 +5,8 @@ import { collection, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc } from '
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
 import Modal from "../common/Modal";
+import Toast from '../common/Toast';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 const ConferenceProceedings = () => {
     const { user } = useAuth();
@@ -13,6 +15,11 @@ const ConferenceProceedings = () => {
     const [activeYear, setActiveYear] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentProceeding, setCurrentProceeding] = useState(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('success');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [proceedingToDelete, setProceedingToDelete] = useState(null);
     const [formData, setFormData] = useState({
         year: "",
         title: "",
@@ -30,7 +37,7 @@ const ConferenceProceedings = () => {
             try {
                 const proceedingsCollection = collection(db, 'conference_proceedings');
                 const snapshot = await getDocs(proceedingsCollection);
-                
+
                 const proceedingsData = {};
                 snapshot.forEach(doc => {
                     if (doc.data().proceedings) {
@@ -43,13 +50,13 @@ const ConferenceProceedings = () => {
                 });
 
                 setProceedings(proceedingsData);
-                
+
                 // Set the most recent year as active by default
                 const years = Object.keys(proceedingsData).sort((a, b) => b.localeCompare(a));
                 if (years.length > 0) {
                     setActiveYear(years[0]);
                 }
-                
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching conference proceedings:', error);
@@ -86,20 +93,20 @@ const ConferenceProceedings = () => {
                 // Editing an existing proceeding
                 const yearDocRef = doc(db, "conference_proceedings", currentProceeding.docId);
                 const yearDoc = await getDoc(yearDocRef);
-                
+
                 if (yearDoc.exists()) {
                     const proceedings = [...yearDoc.data().proceedings];
-                    
+
                     // Check if year changed
                     if (currentProceeding.year !== formData.year) {
                         // Remove from old year
                         proceedings.splice(currentProceeding.proceedingIndex, 1);
                         await updateDoc(yearDocRef, { proceedings });
-                        
+
                         // Add to new year
                         const newYearDocRef = doc(db, "conference_proceedings", formData.year);
                         const newYearDoc = await getDoc(newYearDocRef);
-                        
+
                         if (newYearDoc.exists()) {
                             const newProceedings = [...newYearDoc.data().proceedings, proceedingData];
                             await updateDoc(newYearDocRef, { proceedings: newProceedings });
@@ -146,7 +153,7 @@ const ConferenceProceedings = () => {
             setLoading(true);
             const proceedingsCollection = collection(db, 'conference_proceedings');
             const snapshot = await getDocs(proceedingsCollection);
-            
+
             const proceedingsData = {};
             snapshot.forEach(doc => {
                 if (doc.data().proceedings) {
@@ -160,8 +167,15 @@ const ConferenceProceedings = () => {
 
             setProceedings(proceedingsData);
             setLoading(false);
+            setToastMessage(currentProceeding ? 'Proceeding updated successfully' : 'Proceeding added successfully');
+            setToastType('success');
+            setShowToast(true);
+
         } catch (error) {
             console.error("Error saving conference proceeding:", error);
+            setToastMessage(`Failed to ${currentProceeding ? 'update' : 'add'} proceeding`);
+            setToastType('error');
+            setShowToast(true);
         }
     };
 
@@ -181,45 +195,59 @@ const ConferenceProceedings = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (docId, proceedingIndex) => {
-        if (window.confirm("Are you sure you want to delete this proceeding?")) {
-            try {
-                const yearDocRef = doc(db, "conference_proceedings", docId);
-                const yearDoc = await getDoc(yearDocRef);
+    const handleDelete = (docId, proceedingIndex) => {
+        setProceedingToDelete({ docId, proceedingIndex });
+        setIsDeleteModalOpen(true);
+    };
 
-                if (yearDoc.exists()) {
-                    const proceedings = [...yearDoc.data().proceedings];
-                    proceedings.splice(proceedingIndex, 1);
+    const handleConfirmDelete = async () => {
+        if (!proceedingToDelete) return;
 
-                    // If last proceeding in year, delete the entire year document
-                    if (proceedings.length === 0) {
-                        await deleteDoc(yearDocRef);
-                    } else {
-                        await updateDoc(yearDocRef, { proceedings });
-                    }
-                    
-                    // Refresh data
-                    setLoading(true);
-                    const proceedingsCollection = collection(db, 'conference_proceedings');
-                    const snapshot = await getDocs(proceedingsCollection);
-                    
-                    const proceedingsData = {};
-                    snapshot.forEach(doc => {
-                        if (doc.data().proceedings) {
-                            proceedingsData[doc.id] = doc.data().proceedings.map((proceeding, index) => ({
-                                ...proceeding,
-                                docId: doc.id,
-                                proceedingIndex: index
-                            }));
-                        }
-                    });
+        try {
+            const { docId, proceedingIndex } = proceedingToDelete;
+            const yearDocRef = doc(db, "conference_proceedings", docId);
+            const yearDoc = await getDoc(yearDocRef);
 
-                    setProceedings(proceedingsData);
-                    setLoading(false);
+            if (yearDoc.exists()) {
+                const proceedings = [...yearDoc.data().proceedings];
+                proceedings.splice(proceedingIndex, 1);
+
+                if (proceedings.length === 0) {
+                    await deleteDoc(yearDocRef);
+                } else {
+                    await updateDoc(yearDocRef, { proceedings });
                 }
-            } catch (error) {
-                console.error("Error deleting proceeding:", error);
+
+                // Refresh data
+                setLoading(true);
+                const proceedingsCollection = collection(db, 'conference_proceedings');
+                const snapshot = await getDocs(proceedingsCollection);
+
+                const proceedingsData = {};
+                snapshot.forEach(doc => {
+                    if (doc.data().proceedings) {
+                        proceedingsData[doc.id] = doc.data().proceedings.map((proceeding, index) => ({
+                            ...proceeding,
+                            docId: doc.id,
+                            proceedingIndex: index
+                        }));
+                    }
+                });
+
+                setProceedings(proceedingsData);
+                setLoading(false);
+                setToastMessage('Proceeding deleted successfully');
+                setToastType('success');
+                setShowToast(true);
             }
+        } catch (error) {
+            console.error("Error deleting proceeding:", error);
+            setToastMessage('Failed to delete proceeding');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setIsDeleteModalOpen(false);
+            setProceedingToDelete(null);
         }
     };
 
@@ -296,11 +324,10 @@ const ConferenceProceedings = () => {
                                 <button
                                     key={year}
                                     onClick={() => setActiveYear(year)}
-                                    className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${
-                                        activeYear === year
-                                            ? 'bg-indigo-600 text-white shadow-md'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
+                                    className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${activeYear === year
+                                        ? 'bg-indigo-600 text-white shadow-md'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
                                 >
                                     <HiOutlineCalendar className="mr-2" />
                                     {year}
@@ -327,10 +354,10 @@ const ConferenceProceedings = () => {
                     {proceedings[activeYear]?.map((item, idx) => (
                         <div
                             key={idx}
-                            className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm"
+                            className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm group"
                         >
                             {user && (
-                                <div className="absolute top-4 right-4 flex space-x-2">
+                                <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <button
                                         onClick={() => handleEdit(item)}
                                         className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
@@ -562,6 +589,24 @@ const ConferenceProceedings = () => {
                     </form>
                 </div>
             </Modal>
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                message="Are you sure you want to delete this proceeding?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="red"
+                title="Delete Proceeding"
+            />
         </section>
     );
 };

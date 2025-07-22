@@ -5,6 +5,8 @@ import { collection, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc } from '
 import { db } from '../../firebase';
 import Modal from '../common/Modal';
 import { useAuth } from '../../context/useAuth';
+import Toast from '../common/Toast';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 const BookChapters = () => {
     const [bookChapters, setBookChapters] = useState({});
@@ -12,6 +14,11 @@ const BookChapters = () => {
     const [activeYear, setActiveYear] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentChapter, setCurrentChapter] = useState(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState('success');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [chapterToDelete, setChapterToDelete] = useState(null);
     const [formData, setFormData] = useState({
         year: "",
         title: "",
@@ -29,7 +36,7 @@ const BookChapters = () => {
             try {
                 const chaptersCollection = collection(db, 'book_chapters');
                 const snapshot = await getDocs(chaptersCollection);
-                
+
                 const chaptersData = {};
                 snapshot.forEach(doc => {
                     if (doc.data().chapters) {
@@ -42,13 +49,13 @@ const BookChapters = () => {
                 });
 
                 setBookChapters(chaptersData);
-                
+
                 // Set the most recent year as active by default
                 const years = Object.keys(chaptersData).sort((a, b) => b.localeCompare(a));
                 if (years.length > 0) {
                     setActiveYear(years[0]);
                 }
-                
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching book chapters:', error);
@@ -84,20 +91,20 @@ const BookChapters = () => {
                 // Editing an existing chapter
                 const yearDocRef = doc(db, "book_chapters", currentChapter.docId);
                 const yearDoc = await getDoc(yearDocRef);
-                
+
                 if (yearDoc.exists()) {
                     const chapters = [...yearDoc.data().chapters];
-                    
+
                     // Check if year changed
                     if (currentChapter.year !== formData.year) {
                         // Remove from old year
                         chapters.splice(currentChapter.chapterIndex, 1);
                         await updateDoc(yearDocRef, { chapters });
-                        
+
                         // Add to new year
                         const newYearDocRef = doc(db, "book_chapters", formData.year);
                         const newYearDoc = await getDoc(newYearDocRef);
-                        
+
                         if (newYearDoc.exists()) {
                             const newChapters = [...newYearDoc.data().chapters, chapterData];
                             await updateDoc(newYearDocRef, { chapters: newChapters });
@@ -143,7 +150,7 @@ const BookChapters = () => {
             setLoading(true);
             const chaptersCollection = collection(db, 'book_chapters');
             const snapshot = await getDocs(chaptersCollection);
-            
+
             const chaptersData = {};
             snapshot.forEach(doc => {
                 if (doc.data().chapters) {
@@ -157,8 +164,15 @@ const BookChapters = () => {
 
             setBookChapters(chaptersData);
             setLoading(false);
+            setToastMessage(currentChapter ? 'Chapter updated successfully' : 'Chapter added successfully');
+            setToastType('success');
+            setShowToast(true);
+
         } catch (error) {
             console.error("Error saving book chapter:", error);
+            setToastMessage(`Failed to ${currentChapter ? 'update' : 'add'} chapter`);
+            setToastType('error');
+            setShowToast(true);
         }
     };
 
@@ -177,45 +191,59 @@ const BookChapters = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (docId, chapterIndex) => {
-        if (window.confirm("Are you sure you want to delete this chapter?")) {
-            try {
-                const yearDocRef = doc(db, "book_chapters", docId);
-                const yearDoc = await getDoc(yearDocRef);
+    const handleDelete = (docId, chapterIndex) => {
+        setChapterToDelete({ docId, chapterIndex });
+        setIsDeleteModalOpen(true);
+    };
 
-                if (yearDoc.exists()) {
-                    const chapters = [...yearDoc.data().chapters];
-                    chapters.splice(chapterIndex, 1);
+    const handleConfirmDelete = async () => {
+        if (!chapterToDelete) return;
 
-                    // If last chapter in year, delete the entire year document
-                    if (chapters.length === 0) {
-                        await deleteDoc(yearDocRef);
-                    } else {
-                        await updateDoc(yearDocRef, { chapters });
-                    }
-                    
-                    // Refresh data
-                    setLoading(true);
-                    const chaptersCollection = collection(db, 'book_chapters');
-                    const snapshot = await getDocs(chaptersCollection);
-                    
-                    const chaptersData = {};
-                    snapshot.forEach(doc => {
-                        if (doc.data().chapters) {
-                            chaptersData[doc.id] = doc.data().chapters.map((chapter, index) => ({
-                                ...chapter,
-                                docId: doc.id,
-                                chapterIndex: index
-                            }));
-                        }
-                    });
+        try {
+            const { docId, chapterIndex } = chapterToDelete;
+            const yearDocRef = doc(db, "book_chapters", docId);
+            const yearDoc = await getDoc(yearDocRef);
 
-                    setBookChapters(chaptersData);
-                    setLoading(false);
+            if (yearDoc.exists()) {
+                const chapters = [...yearDoc.data().chapters];
+                chapters.splice(chapterIndex, 1);
+
+                if (chapters.length === 0) {
+                    await deleteDoc(yearDocRef);
+                } else {
+                    await updateDoc(yearDocRef, { chapters });
                 }
-            } catch (error) {
-                console.error("Error deleting chapter:", error);
+
+                // Refresh data
+                setLoading(true);
+                const chaptersCollection = collection(db, 'book_chapters');
+                const snapshot = await getDocs(chaptersCollection);
+
+                const chaptersData = {};
+                snapshot.forEach(doc => {
+                    if (doc.data().chapters) {
+                        chaptersData[doc.id] = doc.data().chapters.map((chapter, index) => ({
+                            ...chapter,
+                            docId: doc.id,
+                            chapterIndex: index
+                        }));
+                    }
+                });
+
+                setBookChapters(chaptersData);
+                setLoading(false);
+                setToastMessage('Chapter deleted successfully');
+                setToastType('success');
+                setShowToast(true);
             }
+        } catch (error) {
+            console.error("Error deleting chapter:", error);
+            setToastMessage('Failed to delete chapter');
+            setToastType('error');
+            setShowToast(true);
+        } finally {
+            setIsDeleteModalOpen(false);
+            setChapterToDelete(null);
         }
     };
 
@@ -321,10 +349,10 @@ const BookChapters = () => {
                     {bookChapters[activeYear]?.map((chapter, index) => (
                         <div
                             key={index}
-                            className="border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm relative"
+                            className="border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm relative group"
                         >
                             {user && (
-                                <div className="absolute top-4 right-4 flex space-x-2">
+                                <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <button
                                         onClick={() => handleEdit(chapter)}
                                         className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
@@ -534,6 +562,24 @@ const BookChapters = () => {
                     </form>
                 </div>
             </Modal>
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                message="Are you sure you want to delete this chapter?"
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="red"
+                title="Delete Chapter"
+            />
         </section>
     );
 };
