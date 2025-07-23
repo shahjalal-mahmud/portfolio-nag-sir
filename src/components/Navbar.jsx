@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { Link } from "react-scroll";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { FiMenu, FiX, FiChevronDown, FiLogIn, FiLogOut } from "react-icons/fi";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
+import ConfirmationModal from '../components/common/ConfirmationModal'
+import Toast from '../components/common/Toast'
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [active, setActive] = useState("hero");
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+    const [toastType, setToastType] = useState("");
 
     const menuItems = [
         { name: "Home", to: "hero" },
@@ -55,20 +62,44 @@ const Navbar = () => {
                 setIsOpen(false);
                 setOpenDropdown(null);
             }}
-            className={`block w-full px-4 py-2 rounded-md cursor-pointer transition-all text-sm ${
-                active === item.to
-                    ? "bg-primary text-white"
-                    : "text-gray-800 hover:bg-gray-100"
-            }`}
+            className={`block w-full px-4 py-2 rounded-md cursor-pointer transition-all text-sm ${active === item.to
+                ? "bg-primary text-white"
+                : "text-gray-800 hover:bg-gray-100"
+                }`}
         >
             {item.name}
         </Link>
     );
 
-    const handleLogout = () => {
-        logout();
-        setIsOpen(false);
-        setOpenDropdown(null);
+    const handleLogout = async () => {
+        try {
+            await logout(); // Assuming logout is an async function
+            setToastMessage("Logout successful!");
+            setToastType("success");
+            setShowToast(true);
+
+            // Close mobile menu if open
+            setIsOpen(false);
+            setOpenDropdown(null);
+
+            // Redirect after toast is shown
+            setTimeout(() => {
+                navigate("/");
+            }, 1500);
+        } catch (err) {
+            setToastMessage(err.message || "Logout failed. Please try again.");
+            setToastType("error");
+            setShowToast(true);
+        }
+    };
+
+    const handleLogoutClick = () => {
+        setShowLogoutModal(true);
+    };
+
+    const handleLogoutConfirm = async () => {
+        setShowLogoutModal(false);
+        await handleLogout();
     };
 
     return (
@@ -95,11 +126,10 @@ const Navbar = () => {
                             <div className="dropdown dropdown-hover" key={item.name}>
                                 <label
                                     tabIndex={0}
-                                    className={`px-2 py-2 cursor-pointer border-b-2 transition-all ${
-                                        item.sub.some((s) => s.to === active)
-                                            ? "border-primary text-primary"
-                                            : "border-transparent hover:border-primary"
-                                    }`}
+                                    className={`px-2 py-2 cursor-pointer border-b-2 transition-all ${item.sub.some((s) => s.to === active)
+                                        ? "border-primary text-primary"
+                                        : "border-transparent hover:border-primary"
+                                        }`}
                                 >
                                     {item.name}
                                 </label>
@@ -115,11 +145,10 @@ const Navbar = () => {
                         ) : (
                             <div
                                 key={item.name}
-                                className={`px-2 py-2 cursor-pointer border-b-2 transition-all ${
-                                    active === item.to
-                                        ? "border-primary text-primary"
-                                        : "border-transparent hover:border-primary"
-                                }`}
+                                className={`px-2 py-2 cursor-pointer border-b-2 transition-all ${active === item.to
+                                    ? "border-primary text-primary"
+                                    : "border-transparent hover:border-primary"
+                                    }`}
                             >
                                 {renderLink(item)}
                             </div>
@@ -129,7 +158,7 @@ const Navbar = () => {
                     {/* Login/Logout Button for Desktop */}
                     {user ? (
                         <button
-                            onClick={handleLogout}
+                            onClick={handleLogoutClick}
                             className="ml-4 px-3 py-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors flex items-center gap-1"
                         >
                             <FiLogOut className="text-sm" />
@@ -180,9 +209,8 @@ const Navbar = () => {
                                     >
                                         <span>{item.name}</span>
                                         <FiChevronDown
-                                            className={`transition-transform ${
-                                                openDropdown === item.name ? "rotate-180" : ""
-                                            }`}
+                                            className={`transition-transform ${openDropdown === item.name ? "rotate-180" : ""
+                                                }`}
                                         />
                                     </div>
 
@@ -208,7 +236,7 @@ const Navbar = () => {
                         <div className="border-t border-gray-200 pt-4 mt-4">
                             {user ? (
                                 <button
-                                    onClick={handleLogout}
+                                    onClick={handleLogoutClick}
                                     className="block w-full px-4 py-2 rounded-md bg-red-100 text-red-800 hover:bg-red-200 transition-colors text-left items-center gap-2"
                                 >
                                     <FiLogOut className="text-sm" />
@@ -228,6 +256,25 @@ const Navbar = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+            {/* Toast Notification */}
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
+            {/* Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={showLogoutModal}
+                onClose={() => setShowLogoutModal(false)}
+                onConfirm={handleLogoutConfirm}
+                title="Confirm Logout"
+                message="Are you sure you want to logout?"
+                confirmText="Logout"
+                cancelText="Cancel"
+                confirmColor="red"
+            />
         </header>
     );
 };

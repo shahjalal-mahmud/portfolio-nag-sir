@@ -8,11 +8,10 @@ import {
 import { auth } from "../firebase";
 import AuthContext from "./AuthContext";
 
-// Define both authorized emails
-const AUTHORIZED_EMAILS = [
-  "mahmud.nubtk@gmail.com",
-  "anindyanag@ieee.org"
-];
+// Get authorized emails from environment variable
+const AUTHORIZED_EMAILS = import.meta.env.VITE_AUTHORIZED_EMAILS 
+  ? import.meta.env.VITE_AUTHORIZED_EMAILS.split(',') 
+  : [];
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -20,26 +19,29 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (
-        firebaseUser &&
-        AUTHORIZED_EMAILS.includes(firebaseUser.email) &&
-        firebaseUser.emailVerified
-      ) {
-        setUser(firebaseUser);
-      } else {
-        setUser(null);
-        if (firebaseUser) {
-          if (!firebaseUser.emailVerified) {
-            await sendEmailVerification(firebaseUser);
-            alert("Please verify your email address. A verification email has been sent.");
+      try {
+        if (firebaseUser &&
+          AUTHORIZED_EMAILS.includes(firebaseUser.email) &&
+          firebaseUser.emailVerified) {
+          setUser(firebaseUser);
+        } else {
+          setUser(null);
+          if (firebaseUser) {
+            if (!firebaseUser.emailVerified) {
+              await sendEmailVerification(firebaseUser);
+              console.log("Verification email sent");
+            }
+            await signOut(auth);
           }
-          signOut(auth); // Log out if not verified or not authorized
         }
+      } catch (error) {
+        console.error("Auth state error:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   const login = async (email, password) => {
@@ -49,17 +51,17 @@ const AuthProvider = ({ children }) => {
       }
 
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const currentUser = userCredential.user;
 
-      if (!currentUser.emailVerified) {
-        await sendEmailVerification(currentUser);
-        throw new Error("Email not verified. A verification email has been sent.");
+      if (!userCredential.user.emailVerified) {
+        await sendEmailVerification(userCredential.user);
+        await signOut(auth); // Immediate sign out if not verified
+        throw new Error("Email not verified. Please check your inbox.");
       }
 
-      return currentUser;
+      return userCredential.user;
     } catch (error) {
       console.error("Login error:", error);
-      throw error;
+      throw error; // Re-throw for component-level handling
     }
   };
 
@@ -67,9 +69,10 @@ const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       setUser(null);
+      return true; // Indicate success
     } catch (error) {
       console.error("Logout error:", error);
-      throw error;
+      throw error; // Re-throw for error handling in components
     }
   };
 
