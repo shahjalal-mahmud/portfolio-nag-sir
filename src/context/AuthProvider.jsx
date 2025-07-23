@@ -10,7 +10,7 @@ import AuthContext from "./AuthContext";
 
 // Get authorized emails from environment variable
 const AUTHORIZED_EMAILS = import.meta.env.VITE_AUTHORIZED_EMAILS 
-  ? import.meta.env.VITE_AUTHORIZED_EMAILS.split(',') 
+  ? import.meta.env.VITE_AUTHORIZED_EMAILS.split(',').map(email => email.trim().toLowerCase())
   : [];
 
 const AuthProvider = ({ children }) => {
