@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaLinkedin, FaResearchgate, FaGoogle, FaOrcid, FaDatabase, FaBook, FaGithub, FaMapMarkerAlt, FaGlobe, FaEdit, FaUpload } from "react-icons/fa";
+import { FaLinkedin, FaResearchgate, FaGoogle, FaOrcid, FaDatabase, FaBook, FaGithub, FaMapMarkerAlt, FaGlobe, FaEdit, FaUpload, FaPhone, FaEnvelope } from "react-icons/fa";
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
@@ -10,7 +10,7 @@ import useHeroData from '../../../hooks/useHeroData';
 
 const Hero = () => {
   const { user } = useAuth();
-  const { heroData, loading } = useHeroData(); 
+  const { heroData, loading } = useHeroData();
   const [isEditing, setIsEditing] = useState(false);
   const [editField, setEditField] = useState('');
   const [tempValue, setTempValue] = useState('');
@@ -50,7 +50,7 @@ const Hero = () => {
       showToast('Please provide an image URL', 'error');
       return;
     }
-    
+
     try {
       const docRef = doc(db, "portfolio", "hero");
       await updateDoc(docRef, {
@@ -132,7 +132,8 @@ const Hero = () => {
 
             {/* Email */}
             <div className="flex items-center gap-1 group">
-              <p className="flex items-center">
+              <p className="flex items-center gap-2">
+                <FaEnvelope className="mr-1 text-gray-600" />
                 Email:{" "}
                 <a
                   href={`mailto:${heroData.email}`}
@@ -153,8 +154,11 @@ const Hero = () => {
             </div>
 
             {/* Phone */}
-            <div className="flex items-center gap-1 group">
-              <p>Mobile: {heroData.phone}</p>
+            <div className="flex items-center gap-2 group">
+              <p className="flex items-center gap-2">
+                <FaPhone className="mr-1 text-gray-600" />
+                Mobile: {heroData.phone}
+              </p>
               {user && (
                 <button
                   onClick={() => handleEditClick('phone', heroData.phone)}
@@ -199,17 +203,17 @@ const Hero = () => {
             <img
               src={imageUrl || "/images/a2.jpg"}
               alt="Anindya Nag"
-              className="w-40 h-40 xs:w-48 xs:h-48 sm:w-56 sm:h-56 md:w-60 md:h-60 lg:w-72 lg:h-72 xl:w-80 xl:h-80 object-cover rounded-full border-4 border-blue-600 shadow-lg sm:shadow-xl transition-all duration-300 hover:shadow-2xl"
+              className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 xl:w-104 xl:h-104 2xl:w-112 2xl:h-112 object-cover rounded-full border-4 border-blue-600 shadow-lg sm:shadow-xl transition-all duration-300 hover:shadow-2xl"
               onError={(e) => {
                 e.target.src = "/images/a2.jpg";
               }}
             />
             {user && (
               <button
-                className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 bg-white p-1.5 sm:p-2 rounded-full shadow-md hover:bg-gray-100 transition-all transform hover:scale-110"
+                className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 bg-white p-2 sm:p-2.5 rounded-full shadow-md hover:bg-gray-100 transition-all transform hover:scale-110"
                 onClick={() => setIsImageModalOpen(true)}
               >
-                <FaUpload className="text-blue-600 text-sm sm:text-base" />
+                <FaUpload className="text-blue-600 text-base sm:text-lg" />
               </button>
             )}
           </div>
@@ -288,7 +292,7 @@ const Hero = () => {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">
               Update Profile Image
             </h3>
-            
+
             <div className="mb-3 sm:mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                 Image URL (from ImageBB)
@@ -305,9 +309,9 @@ const Hero = () => {
             {imageUrl && (
               <div className="mb-3 sm:mb-4">
                 <p className="text-sm font-medium text-gray-700 mb-1 sm:mb-2">Preview:</p>
-                <img 
-                  src={imageUrl} 
-                  alt="Preview" 
+                <img
+                  src={imageUrl}
+                  alt="Preview"
                   className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-full border border-gray-300"
                   onError={(e) => {
                     e.target.src = "/images/a2.jpg";
@@ -337,9 +341,9 @@ const Hero = () => {
 
       {/* Toast Notification */}
       {toast.show && (
-        <Toast 
-          message={toast.message} 
-          type={toast.type} 
+        <Toast
+          message={toast.message}
+          type={toast.type}
           onClose={() => setToast({ ...toast, show: false })}
         />
       )}
