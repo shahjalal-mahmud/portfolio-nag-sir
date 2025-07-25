@@ -223,6 +223,18 @@ const Footer = () => {
                 <div className="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
                     © {new Date().getFullYear()} Anindya Nag. All rights reserved.
                 </div>
+
+                {/* Developer Credit */}
+                <div className="mt-4 text-center text-gray-500 text-sm">
+                    Website developed by <a
+                        href="https://shahajalalmahmud.netlify.app/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                    >
+                        Shahajalal Mahmud
+                    </a>
+                </div>
             </div>
         </footer>
     );
