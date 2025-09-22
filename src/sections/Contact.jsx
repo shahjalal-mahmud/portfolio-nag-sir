@@ -153,7 +153,7 @@ const Contact = () => {
                 className="flex items-center px-4 py-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
               >
                 <FaGlobe className="text-indigo-600 text-xl mr-3" />
-                <span className="truncate">Official Website</span>
+                <span className="truncate">NUBTK Profile</span>
               </a>
             </div>
           </div>
