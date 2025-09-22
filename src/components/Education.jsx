@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
@@ -15,6 +15,7 @@ const Education = () => {
   const [educationData, setEducationData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
   const [toast, setToast] = useState({
     show: false,
     message: '',
@@ -29,7 +30,8 @@ const Education = () => {
     url: '',
     year: '',
     result: '',
-    courses: ''
+    courses: '',
+    isPresent: false
   });
 
   const showToast = (message, type) => {
@@ -59,6 +61,7 @@ const Education = () => {
               year: "Jan 2023 – Nov 2024",
               result: "CGPA: 3.96 (Out of 4.00)",
               courses: "Research Methodology & Ethics, Network Optimization, Human-Computer Interaction, Advanced Probability & Statistics, Advanced Software Engineering, Software Evaluation & Maintenance",
+              isPresent: false
             },
             {
               title: "Bachelor of Technology in Computer Science & Engineering",
@@ -67,6 +70,7 @@ const Education = () => {
               year: "Jul 2018 – Jun 2022",
               result: "CGPA: 9.64 (Out of 10)",
               courses: "Programming & Data Structures, Operating Systems, Computer Networks, Database Management, AI, ML, IoT, Computer Vision, Information Retrieval, and more.",
+              isPresent: false
             },
             {
               title: "Higher Secondary Certificate (Science)",
@@ -74,6 +78,7 @@ const Education = () => {
               url: "https://www.blcollege.edu.bd/",
               year: "May 2014 – Jul 2016",
               result: "GPA: 5.00 (Out of 5.00)",
+              isPresent: false
             },
             {
               title: "Secondary School Certificate (Science)",
@@ -81,6 +86,7 @@ const Education = () => {
               url: "https://www.sohopathi.com/damodar-m-m-high-school/",
               year: "Jan 2012 – Mar 2014",
               result: "GPA: 5.00 (Out of 5.00)",
+              isPresent: false
             }
           ];
           setEducationData(fallbackData);
@@ -97,8 +103,8 @@ const Education = () => {
   }, []);
 
   const handleAddEducation = async () => {
-    if (!newEducation.title || !newEducation.institution || !newEducation.year || !newEducation.result) {
-      showToast('Please fill in all required fields', 'error');
+    if (!newEducation.title || !newEducation.institution || !newEducation.year) {
+      showToast('Please fill in all required fields (Title, Institution, and Year)', 'error');
       return;
     }
 
@@ -107,27 +113,44 @@ const Education = () => {
       const docSnap = await getDoc(docRef);
       const currentData = docSnap.exists() ? docSnap.data().items : [];
 
-      const updatedData = [newEducation, ...currentData];
+      let updatedData;
+      if (editingIndex !== null) {
+        // Update existing education
+        updatedData = [...currentData];
+        updatedData[editingIndex] = newEducation;
+      } else {
+        // Add new education
+        updatedData = [newEducation, ...currentData];
+      }
 
       await updateDoc(docRef, {
         items: updatedData
       });
 
-      setEducationData(prev => [newEducation, ...prev]);
+      setEducationData(updatedData);
       setShowAddModal(false);
+      setEditingIndex(null);
       setNewEducation({
         title: '',
         institution: '',
         url: '',
         year: '',
         result: '',
-        courses: ''
+        courses: '',
+        isPresent: false
       });
-      showToast('Education added successfully!', 'success');
+      
+      showToast(editingIndex !== null ? 'Education updated successfully!' : 'Education added successfully!', 'success');
     } catch (error) {
-      console.error("Error adding education:", error);
-      showToast('Failed to add education. Please try again.', 'error');
+      console.error("Error adding/updating education:", error);
+      showToast('Failed to save education. Please try again.', 'error');
     }
+  };
+
+  const handleEditEducation = (index) => {
+    setNewEducation(educationData[index]);
+    setEditingIndex(index);
+    setShowAddModal(true);
   };
 
   const handleDeleteClick = (index) => {
@@ -149,6 +172,20 @@ const Education = () => {
       console.error("Error deleting education:", error);
       showToast('Failed to delete education. Please try again.', 'error');
     }
+  };
+
+  const resetForm = () => {
+    setNewEducation({
+      title: '',
+      institution: '',
+      url: '',
+      year: '',
+      result: '',
+      courses: '',
+      isPresent: false
+    });
+    setEditingIndex(null);
+    setShowAddModal(false);
   };
 
   if (loading) {
@@ -201,16 +238,30 @@ const Education = () => {
                     className={`group bg-white shadow-md rounded-xl p-6 w-full lg:w-[45%] z-10 relative ${isLeft ? "lg:mr-auto" : "lg:ml-auto"}`}
                   >
                     {user && (
-                      <button
-                        onClick={() => handleDeleteClick(idx)}
-                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors opacity-0 group-hover:opacity-100"
-                        aria-label="Delete education"
-                      >
-                        <FaTrash size={16} />
-                      </button>
+                      <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button
+                          onClick={() => handleEditEducation(idx)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          aria-label="Edit education"
+                        >
+                          <FaEdit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(idx)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                          aria-label="Delete education"
+                        >
+                          <FaTrash size={16} />
+                        </button>
+                      </div>
                     )}
                     <div className="text-sm text-primary font-semibold mb-1">
                       {item.year}
+                      {item.isPresent && (
+                        <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                          Present
+                        </span>
+                      )}
                     </div>
                     <h4 className="text-xl font-bold">{item.title}</h4>
                     <p className="text-sm mt-1 font-medium italic">
@@ -223,9 +274,11 @@ const Education = () => {
                         {item.institution}
                       </a>
                     </p>
-                    <p className="text-sm text-gray-700 mt-2">
-                      <span className="font-semibold">{item.result}</span>
-                    </p>
+                    {item.result && (
+                      <p className="text-sm text-gray-700 mt-2">
+                        <span className="font-semibold">{item.result}</span>
+                      </p>
+                    )}
                     {item.courses && (
                       <p className="text-sm text-gray-600 mt-2">
                         <span className="font-medium">Courses:</span>{" "}
@@ -240,12 +293,12 @@ const Education = () => {
         </div>
       </div>
 
-      {/* Add Education Modal */}
-      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
+      {/* Add/Edit Education Modal */}
+      <Modal isOpen={showAddModal} onClose={resetForm}>
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md md:max-w-2xl mx-2 my-4 md:my-8">
           <div className="p-4 sm:p-6">
             <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">
-              Add New Education
+              {editingIndex !== null ? 'Edit Education' : 'Add New Education'}
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -272,7 +325,7 @@ const Education = () => {
               </div>
 
               <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Institution URL</label>
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Institution URL (Optional)</label>
                 <input
                   type="url"
                   value={newEducation.url}
@@ -283,18 +336,18 @@ const Education = () => {
               </div>
 
               <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Year*</label>
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Year/Duration*</label>
                 <input
                   type="text"
                   value={newEducation.year}
                   onChange={(e) => setNewEducation({ ...newEducation, year: e.target.value })}
                   className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="e.g., 2020 - 2022"
+                  placeholder="e.g., 2020 - 2022 or 2024 - Present"
                 />
               </div>
 
               <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Result*</label>
+                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Result (Optional)</label>
                 <input
                   type="text"
                   value={newEducation.result}
@@ -302,6 +355,22 @@ const Education = () => {
                   className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="e.g., GPA: 3.8/4.0"
                 />
+              </div>
+
+              <div className="sm:col-span-2">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isPresent"
+                    checked={newEducation.isPresent}
+                    onChange={(e) => setNewEducation({ ...newEducation, isPresent: e.target.checked })}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                  <label htmlFor="isPresent" className="ml-2 text-sm sm:text-base font-medium text-gray-700">
+                    Currently studying here (Present)
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Check this if you are currently pursuing this education</p>
               </div>
 
               <div className="sm:col-span-2">
@@ -318,7 +387,7 @@ const Education = () => {
 
             <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 space-y-2 sm:space-y-0">
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={resetForm}
                 className="px-4 py-2 text-sm sm:text-base text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors order-2 sm:order-1"
               >
                 Cancel
@@ -327,7 +396,7 @@ const Education = () => {
                 onClick={handleAddEducation}
                 className="px-4 py-2 text-sm sm:text-base bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors order-1 sm:order-2"
               >
-                Add Education
+                {editingIndex !== null ? 'Update Education' : 'Add Education'}
               </button>
             </div>
           </div>
