@@ -246,77 +246,72 @@ const About = () => {
 
           {/* Contact & Info Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mt-4">
-            <div className="flex items-center gap-3">
-              <FaGraduationCap className="text-primary" />
-              <span>{aboutData.contactInfo.position}</span>
-              {user && (
-                <button
-                  onClick={() => handleEditClick('position', aboutData.contactInfo.position)}
-                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
-                  aria-label="Edit position"
-                >
-                  <FaEdit size={14} />
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <FaMapMarkerAlt className="text-primary" />
-              <span>{aboutData.contactInfo.location}</span>
-              {user && (
-                <button
-                  onClick={() => handleEditClick('location', aboutData.contactInfo.location)}
-                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
-                  aria-label="Edit location"
-                >
-                  <FaEdit size={14} />
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <FaEnvelope className="text-primary" />
-              <span>{aboutData.contactInfo.email}</span>
-              {user && (
-                <button
-                  onClick={() => handleEditClick('email', aboutData.contactInfo.email)}
-                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
-                  aria-label="Edit email"
-                >
-                  <FaEdit size={14} />
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <FaDownload className="text-primary" />
-              <a
-                href={aboutData.contactInfo.cvLink
-                  ? aboutData.contactInfo.cvLink.replace(
-                    /^https:\/\/drive\.google\.com\/file\/d\/([^/]+).*$/,
-                    'https://drive.google.com/uc?export=download&id=$1'
-                  )
-                  : '/cv/Anindya_Nag_CV.pdf' // Fallback to public folder file
-                }
-                download="AnindyaNag_CV.pdf"
-                className="underline hover:text-primary transition"
-                target="_self"
-                rel={aboutData.contactInfo.cvLink ? 'noopener noreferrer' : ''}
-              >
-                Download CV
-              </a>
-              {user && (
-                <button
-                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1"
-                  onClick={() => {
-                    setCVUrl(aboutData.contactInfo.cvLink);
-                    setIsCVModalOpen(true);
-                  }}
-                  aria-label="Edit CV"
-                >
-                  <FaEdit size={14} />
-                </button>
-              )}
-            </div>
+            {[
+              {
+                icon: <FaGraduationCap className="text-primary text-lg sm:text-xl flex-shrink-0" />,
+                value: aboutData.contactInfo.position,
+                field: "position",
+              },
+              {
+                icon: <FaMapMarkerAlt className="text-primary text-lg sm:text-xl flex-shrink-0" />,
+                value: aboutData.contactInfo.location,
+                field: "location",
+              },
+              {
+                icon: <FaEnvelope className="text-primary ttext-lg sm:text-xl flex-shrink-0" />,
+                value: aboutData.contactInfo.email,
+                field: "email",
+              },
+              {
+                icon: <FaDownload className="text-primary text-lg sm:text-xl flex-shrink-0" />,
+                value: (
+                  <a
+                    href={aboutData.contactInfo.cvLink
+                      ? aboutData.contactInfo.cvLink.replace(
+                        /^https:\/\/drive\.google\.com\/file\/d\/([^/]+).*$/,
+                        "https://drive.google.com/uc?export=download&id=$1"
+                      )
+                      : "/cv/Anindya_Nag_CV.pdf"}
+                    download="AnindyaNag_CV.pdf"
+                    className="underline hover:text-primary transition"
+                    target="_self"
+                    rel={aboutData.contactInfo.cvLink ? "noopener noreferrer" : ""}
+                  >
+                    Download CV
+                  </a>
+                ),
+                field: "cvLink",
+              },
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-start gap-3">
+                {item.icon}
+                <div className="flex-1">
+                  <span className="block break-words">{item.value}</span>
+                  {user && item.field !== "cvLink" && (
+                    <button
+                      onClick={() => handleEditClick(item.field, item.value)}
+                      className="text-gray-400 hover:text-blue-600 transition-colors mt-1 inline-flex items-center"
+                      aria-label={`Edit ${item.field}`}
+                    >
+                      <FaEdit size={14} />
+                    </button>
+                  )}
+                  {user && item.field === "cvLink" && (
+                    <button
+                      className="text-gray-400 hover:text-blue-600 transition-colors mt-1 inline-flex items-center"
+                      onClick={() => {
+                        setCVUrl(aboutData.contactInfo.cvLink);
+                        setIsCVModalOpen(true);
+                      }}
+                      aria-label="Edit CV"
+                    >
+                      <FaEdit size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-
           {/* Skills */}
           <div className="pt-6">
             <div className="flex items-center justify-center md:justify-start gap-3">
