@@ -25,16 +25,36 @@ const Hero = () => {
 
   const handleEditClick = (field, value) => {
     setEditField(field);
-    setTempValue(field === 'location' ? value.text : value);
+    
+    // Convert array to string for textarea display
+    if ((field === 'email' || field === 'phone') && Array.isArray(value)) {
+      setTempValue(value.join('\n'));
+    } else {
+      setTempValue(field === 'location' ? value.text : value);
+    }
+    
     setIsEditing(true);
   };
 
   const handleSave = async () => {
     try {
       const docRef = doc(db, "portfolio", "hero");
+      
+      // Process the tempValue for email and phone fields
+      let processedValue = tempValue;
+      
+      if (editField === 'email' || editField === 'phone') {
+        if (typeof tempValue === 'string') {
+          // Split by new lines and filter out empty strings
+          processedValue = tempValue.split('\n')
+            .map(item => item.trim())
+            .filter(item => item !== '');
+        }
+      }
+      
       const updateData = editField === 'location'
-        ? { location: { text: tempValue, link: heroData.location.link } }
-        : { [editField]: tempValue };
+        ? { location: { text: processedValue, link: heroData.location.link } }
+        : { [editField]: processedValue };
 
       await updateDoc(docRef, updateData);
       setIsEditing(false);
@@ -131,21 +151,37 @@ const Hero = () => {
             </div>
 
             {/* Email */}
-            <div className="flex items-center gap-1 group">
-              <p className="flex items-center gap-2">
-                <FaEnvelope className="mr-1 text-gray-600" />
-                Email:{" "}
-                <a
-                  href={`mailto:${heroData.email}`}
-                  className="text-blue-600 hover:text-blue-800 ml-1 transition-colors"
-                >
-                  {heroData.email}
-                </a>
-              </p>
+            <div className="flex items-start gap-1 group">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <FaEnvelope className="text-gray-600 flex-shrink-0" />
+                  <span className="font-medium">Email:</span>
+                </div>
+                <div className="flex flex-wrap gap-2 ml-5">
+                  {Array.isArray(heroData.email) ? (
+                    heroData.email.map((email, index) => (
+                      <a
+                        key={index}
+                        href={`mailto:${email}`}
+                        className="text-blue-600 hover:text-blue-800 transition-colors text-sm break-all"
+                      >
+                        {email}
+                      </a>
+                    ))
+                  ) : (
+                    <a
+                      href={`mailto:${heroData.email}`}
+                      className="text-blue-600 hover:text-blue-800 transition-colors text-sm break-all"
+                    >
+                      {heroData.email}
+                    </a>
+                  )}
+                </div>
+              </div>
               {user && (
                 <button
                   onClick={() => handleEditClick('email', heroData.email)}
-                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1 transform hover:scale-110"
+                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1 transform hover:scale-110 flex-shrink-0"
                   aria-label="Edit email"
                 >
                   <FaEdit size={16} />
@@ -154,15 +190,32 @@ const Hero = () => {
             </div>
 
             {/* Phone */}
-            <div className="flex items-center gap-2 group">
-              <p className="flex items-center gap-2">
-                <FaPhone className="mr-1 text-gray-600" />
-                Mobile: {heroData.phone}
-              </p>
+            <div className="flex items-start gap-1 group">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <FaPhone className="text-gray-600 flex-shrink-0" />
+                  <span className="font-medium">Mobile:</span>
+                </div>
+                <div className="flex flex-wrap gap-2 ml-5">
+                  {Array.isArray(heroData.phone) ? (
+                    heroData.phone.map((phone, index) => (
+                      <a
+                        key={index}
+                        href={`tel:${phone}`}
+                        className="text-gray-700 hover:text-blue-700 transition-colors text-sm break-all"
+                      >
+                        {phone}
+                      </a>
+                    ))
+                  ) : (
+                    <span className="text-gray-700 text-sm break-all">{heroData.phone}</span>
+                  )}
+                </div>
+              </div>
               {user && (
                 <button
                   onClick={() => handleEditClick('phone', heroData.phone)}
-                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1 transform hover:scale-110"
+                  className="text-gray-400 hover:text-blue-600 transition-colors ml-1 transform hover:scale-110 flex-shrink-0"
                   aria-label="Edit phone"
                 >
                   <FaEdit size={16} />
@@ -201,8 +254,8 @@ const Hero = () => {
         <div className="flex-1 flex justify-center relative group mb-6 sm:mb-8 md:mb-0">
           <div className="relative">
             <img
-              src={imageUrl || "/images/a2.jpg"}
-              alt="Anindya Nag"
+              src={heroData.profileImageUrl || imageUrl || "/images/a2.jpg"}
+              alt={heroData.name || "Profile"}
               className="w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 xl:w-104 xl:h-104 2xl:w-112 2xl:h-112 object-cover rounded-full border-4 border-blue-600 shadow-lg sm:shadow-xl transition-all duration-300 hover:shadow-2xl"
               onError={(e) => {
                 e.target.src = "/images/a2.jpg";
@@ -247,16 +300,27 @@ const Hero = () => {
                 <input
                   type="url"
                   value={heroData.location.link}
-                  onChange={(e) => heroData(prev => ({
-                    ...prev,
-                    location: {
-                      ...prev.location,
-                      link: e.target.value
-                    }
-                  }))}
+                  onChange={(e) => {
+                    // This needs to be handled properly - you might need to update your state management
+                    // For now, we'll just update the tempValue for location text only
+                    console.log('Location link update would go here');
+                  }}
                   placeholder="Google Maps link"
                   className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base"
                 />
+              </div>
+            ) : (editField === 'email' || editField === 'phone') ? (
+              <div className="space-y-2">
+                <textarea
+                  value={tempValue}
+                  onChange={(e) => setTempValue(e.target.value)}
+                  placeholder={`Enter multiple ${editField === 'email' ? 'emails' : 'phone numbers'} separated by new lines`}
+                  className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm sm:text-base"
+                  rows={4}
+                />
+                <p className="text-xs text-gray-500">
+                  Enter each {editField === 'email' ? 'email' : 'phone number'} on a new line
+                </p>
               </div>
             ) : (
               <input
