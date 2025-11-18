@@ -153,9 +153,9 @@ const Hero = () => {
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-purple-50/10 py-12 px-4 sm:px-6 lg:px-8 2xl:px-12" id="hero">
       <div className="max-w-7xl mx-auto">
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20 items-center">
           {/* Text Content - Left Side */}
-          <div className="space-y-8 animate-fade-in-up">
+          <div className="order-2 lg:order-1 space-y-8 animate-fade-in-up">
             {/* Name Section */}
             <div className="group relative">
               <div className="flex items-start gap-4">
@@ -363,7 +363,7 @@ const Hero = () => {
           </div>
 
           {/* Profile Image - Right Side */}
-          <div className="flex justify-center lg:justify-end animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <div className="order-1 lg:order-2 flex justify-center lg:justify-end animate-fade-in-up" style={{ animationDelay: '200ms' }}>
             <div className="relative group">
               {/* Floating Animation Container */}
               <div className="animate-float">
