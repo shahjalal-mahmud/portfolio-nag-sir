@@ -1,7 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui";
 
-body {
-  @apply bg-pageBg text-textPrimary font-inter;
+@theme {
+  /* Your custom font */
+  --font-inter: "Inter", sans-serif;
+
+  /* Your custom color */
+  --color-page-bg: #ffffff;
 }
