@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { FaGithub, FaExternalLinkAlt, FaRegCalendarAlt, FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaGithub, FaExternalLinkAlt, FaRegCalendarAlt, FaPlus, FaTrash, FaEdit, FaLink, FaProjectDiagram } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/useAuth';
@@ -33,51 +32,13 @@ const Projects = () => {
       try {
         const docRef = doc(db, "portfolio", "projects");
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           setProjectsData(docSnap.data().items || []);
         } else {
-          // Fallback data if document doesn't exist
+          // Fallback data provided in your original code
           const fallbackData = [
-            {
-              title: "Cloud-Based Vehicle Tracking System",
-              date: "March 2022 - June 2022",
-              description: "Developed an RFID-based parking management system that records vehicle in-time and out-time, provides instant access to car and owner details, supports multiple gate monitoring, and allows easy vehicle tracking through a centralized website.",
-              links: [
-                { name: "GitHub", url: "https://github.com/AnindyaNag/Project_2_Vehicle-Tracking-Management-System" }
-              ]
-            },
-            {
-              title: "Foodazon: Canteen Management System",
-              date: "August 2021 - November 2021",
-              description: "Developed a canteen management system using Laravel and MySQL to efficiently manage and store records, meeting all operational objectives and expectations."
-            },
-            {
-              title: "Analyze Crop Production of India",
-              date: "July 2021 - September 2021",
-              description: "As an Intern at Spotle.ai through the NASSCOM Community AI Internship, I analyzed crop production in India, developed a model to predict rice yields, and published an article on 'AI in Agriculture: An Emerging Era in Technology' in the NASSCOM Community.",
-              links: [
-                { name: "GitHub", url: "https://github.com/AnindyaNag/Project---Analyze-Crop-Production-of-India" },
-                { name: "Article", url: "https://community.nasscom.in/communities/agritech/ai-agriculture-emerging-era-technology" }
-              ]
-            },
-            {
-              title: "Basic Banking System",
-              date: "March 2021 - June 2021",
-              description: "As a Web Development & Designing Intern at The Sparks Foundation (GRIP), I developed and hosted a Basic Banking System website using HTML, CSS, and JavaScript, showcasing account-to-account money transfers.",
-              links: [
-                { name: "GitHub", url: "https://github.com/AnindyaNag/Basic-Banking-System" },
-                { name: "Live Demo", url: "https://anindyanag.github.io/Basic-Banking-System/" }
-              ]
-            },
-            {
-              title: "Data Science and Business Analytics",
-              date: "January 2021 - March 2021",
-              description: "As a Data Science & Business Analytics Intern at The Sparks Foundation (GRIP), I developed supervised and unsupervised ML models and conducted exploratory data analysis to optimize retail business strategies.",
-              links: [
-                { name: "GitHub", url: "https://github.com/AnindyaNag/The-Sparks-Foundation-Data-Science-and-Business-Analytics-Internship-Tasks" }
-              ]
-            }
+            { title: "Cloud-Based Vehicle Tracking System", date: "March 2022 - June 2022", description: "Developed an RFID-based parking management system that records vehicle in-time and out-time...", links: [{ name: "GitHub", url: "https://github.com/AnindyaNag/Project_2_Vehicle-Tracking-Management-System" }] },
+            { title: "Analyze Crop Production of India", date: "July 2021 - September 2021", description: "As an Intern at Spotle.ai...", links: [{ name: "GitHub", url: "https://github.com/AnindyaNag/Project---Analyze-Crop-Production-of-India" }, { name: "Article", url: "https://community.nasscom.in/communities/agritech/ai-agriculture-emerging-era-technology" }] }
           ];
           setProjectsData(fallbackData);
         }
@@ -87,7 +48,6 @@ const Projects = () => {
         setLoading(false);
       }
     };
-
     fetchProjectsData();
   }, []);
 
@@ -116,37 +76,23 @@ const Projects = () => {
       setProjectsData(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
-      setNewProject({
-        title: '',
-        date: '',
-        description: '',
-        links: []
-      });
+      setNewProject({ title: '', date: '', description: '', links: [] });
       setToastMessage(editingIndex !== null ? 'Project updated successfully' : 'Project added successfully');
       setToastType('success');
       setShowToast(true);
     } catch (error) {
       console.error("Error adding/updating project:", error);
-      setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} project`);
+      setToastMessage(`Failed to save project`);
       setToastType('error');
       setShowToast(true);
     }
   };
 
-  const handleDeleteProject = (index) => {
-    setProjectToDelete(index);
-    setIsDeleteModalOpen(true);
-  };
-
   const handleConfirmDelete = async () => {
     if (projectToDelete === null) return;
-
     try {
       const docRef = doc(db, "portfolio", "projects");
-      await updateDoc(docRef, {
-        items: arrayRemove(projectsData[projectToDelete])
-      });
-
+      await updateDoc(docRef, { items: arrayRemove(projectsData[projectToDelete]) });
       setProjectsData(prev => prev.filter((_, i) => i !== projectToDelete));
       setToastMessage('Project deleted successfully');
       setToastType('success');
@@ -162,266 +108,173 @@ const Projects = () => {
     }
   };
 
-  const handleEditProject = (index) => {
-    setNewProject(projectsData[index]);
-    setEditingIndex(index);
-    setShowAddModal(true);
-  };
-
   const handleLinkChange = (index, field, value) => {
     const updatedLinks = [...newProject.links];
-    updatedLinks[index] = {
-      ...updatedLinks[index],
-      [field]: value
-    };
+    updatedLinks[index] = { ...updatedLinks[index], [field]: value };
     setNewProject({ ...newProject, links: updatedLinks });
   };
 
-  const addLinkField = () => {
-    setNewProject({ ...newProject, links: [...newProject.links, { name: '', url: '' }] });
-  };
-
-  const removeLinkField = (index) => {
-    const updatedLinks = newProject.links.filter((_, i) => i !== index);
-    setNewProject({ ...newProject, links: updatedLinks });
-  };
-
-  if (loading) {
-    return <LoadingAnimation />;
-  }
+  if (loading) return <LoadingAnimation />;
 
   return (
-    <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8">
+    <section id="projects" className="py-24 px-4 sm:px-6 lg:px-8 bg-base-100">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-16">
-          <div className="text-center md:text-left">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
-              Featured Projects
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold uppercase tracking-widest">
+              <FaProjectDiagram /> Portfoio
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-base-content tracking-tight">
+              Featured <span className="text-primary">Projects</span>
             </h2>
-            <p className="text-lg text-gray-600">
-              A selection of my technical implementations and solutions
+            <p className="text-lg text-base-content/60 max-w-2xl">
+              Showcasing technical architecture, problem-solving, and implementation excellence across various domains.
             </p>
           </div>
           {user && (
             <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              onClick={() => { setShowAddModal(true); setEditingIndex(null); setNewProject({ title: '', date: '', description: '', links: [] }); }}
+              className="btn btn-primary shadow-lg gap-2"
             >
-              <FaPlus /> Add New
+              <FaPlus /> Create Project
             </button>
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-8">
-          {projectsData.map((project, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="group relative bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden"
-            >
-              {user && (
-                <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button
-                    onClick={() => handleEditProject(index)}
-                    className="text-blue-600 hover:text-blue-800 transition-colors bg-white p-1 rounded"
-                    aria-label="Edit project"
-                  >
-                    <FaEdit size={16} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProject(index)}
-                    className="text-red-500 hover:text-red-700 transition-colors bg-white p-1 rounded"
-                    aria-label="Delete project"
-                  >
-                    <FaTrash size={16} />
-                  </button>
-                </div>
-              )}
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-300"></div>
+        {/* Projects Stack */}
+        <div className="grid grid-cols-1 gap-10">
+          <AnimatePresence>
+            {projectsData.map((project, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -4 }}
+                className="group relative"
+              >
+                <div className="bg-base-100 border border-base-300 group-hover:border-primary/40 rounded-[2rem] overflow-hidden transition-all duration-300 shadow-sm group-hover:shadow-2xl">
+                  {/* Accent Line */}
+                  <div className="absolute top-0 left-0 w-full h-1.5 bg-base-300 group-hover:bg-primary transition-colors" />
+                  
+                  <div className="p-8 md:p-12 flex flex-col lg:flex-row gap-10">
+                    <div className="flex-1 space-y-6">
+                      <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 text-sm font-bold text-primary bg-primary/10 px-4 py-2 rounded-full">
+                          <FaRegCalendarAlt />
+                          {project.date}
+                        </div>
+                        {user && (
+                          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => { setNewProject(project); setEditingIndex(index); setShowAddModal(true); }} className="btn btn-circle btn-sm btn-ghost text-info hover:bg-info/10"><FaEdit /></button>
+                            <button onClick={() => { setProjectToDelete(index); setIsDeleteModalOpen(true); }} className="btn btn-circle btn-sm btn-ghost text-error hover:bg-error/10"><FaTrash /></button>
+                          </div>
+                        )}
+                      </div>
 
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{project.title}</h3>
+                      <h3 className="text-3xl md:text-4xl font-black text-base-content leading-tight">
+                        {project.title}
+                      </h3>
 
-                  <div className="flex items-center text-gray-500 mb-4">
-                    <FaRegCalendarAlt className="mr-2 text-blue-500" />
-                    <span className="text-sm">{project.date}</span>
+                      <p className="text-lg text-base-content/70 leading-relaxed font-medium border-l-4 border-base-300 pl-6 py-2 group-hover:border-primary transition-colors">
+                        {project.description}
+                      </p>
+
+                      <div className="flex flex-wrap gap-4 pt-4">
+                        {project.links?.map((link, i) => (
+                          <a
+                            key={i}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`btn btn-md rounded-2xl gap-2 font-bold transition-all ${
+                              link.name.toLowerCase().includes('github') 
+                              ? 'btn-neutral' 
+                              : 'btn-primary btn-outline'
+                            }`}
+                          >
+                            {link.name.toLowerCase().includes('github') ? <FaGithub size={18} /> : <FaExternalLinkAlt size={16} />}
+                            {link.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-
-                  <p className="text-gray-700 leading-relaxed mb-4">
-                    {project.description}
-                  </p>
                 </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3 mt-4">
-                {project.links?.map((link, i) => (
-                  <a
-                    key={i}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`inline-flex items-center px-4 py-2 rounded-md ${link.name.toLowerCase() === 'github'
-                      ? 'bg-gray-100 hover:bg-gray-200 text-gray-800'
-                      : 'bg-blue-100 hover:bg-blue-200 text-blue-800'
-                      } transition-colors duration-200`}
-                  >
-                    {link.name.toLowerCase() === 'github' ? (
-                      <FaGithub className="mr-2" />
-                    ) : (
-                      <FaExternalLinkAlt className="mr-2" />
-                    )}
-                    {link.name}
-                  </a>
-                ))}
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Add/Edit Project Modal */}
-      <Modal isOpen={showAddModal} onClose={() => {
-        setShowAddModal(false);
-        setEditingIndex(null);
-        setNewProject({
-          title: '',
-          date: '',
-          description: '',
-          links: []
-        });
-      }}>
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md md:max-w-2xl mx-2 my-4 md:my-8">
-          <div className="p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">
-              {editingIndex !== null ? 'Edit Project' : 'Add New Project'}
+      {/* Modern Modal Design */}
+      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
+        <div className="bg-base-100 rounded-[2.5rem] shadow-2xl w-full max-w-3xl border border-base-300 overflow-hidden">
+          <div className="p-10">
+            <h3 className="text-3xl font-black text-base-content mb-8">
+              {editingIndex !== null ? 'Modify Project' : 'New Project Story'}
             </h3>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6">
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Title*</label>
-                <input
-                  type="text"
-                  value={newProject.title}
-                  onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="e.g., Cloud-Based Vehicle Tracking System"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="form-control col-span-2 md:col-span-1">
+                <label className="label"><span className="label-text font-black uppercase text-xs opacity-60">Project Title</span></label>
+                <input type="text" value={newProject.title} onChange={(e) => setNewProject({ ...newProject, title: e.target.value })} className="input input-bordered focus:input-primary bg-base-200/50" placeholder="e.g. Cloud System" />
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Date*</label>
-                <input
-                  type="text"
-                  value={newProject.date}
-                  onChange={(e) => setNewProject({ ...newProject, date: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="e.g., March 2022 - June 2022"
-                />
+              <div className="form-control col-span-2 md:col-span-1">
+                <label className="label"><span className="label-text font-black uppercase text-xs opacity-60">Timeline</span></label>
+                <input type="text" value={newProject.date} onChange={(e) => setNewProject({ ...newProject, date: e.target.value })} className="input input-bordered focus:input-primary bg-base-200/50" placeholder="March 2022 - June 2022" />
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Description*</label>
-                <textarea
-                  value={newProject.description}
-                  onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  rows={4}
-                  placeholder="Describe the project in detail..."
-                />
+              <div className="form-control col-span-2">
+                <label className="label"><span className="label-text font-black uppercase text-xs opacity-60">Deep Dive / Description</span></label>
+                <textarea value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} className="textarea textarea-bordered focus:textarea-primary bg-base-200/50 min-h-[140px]" placeholder="Explain the technical challenges and outcomes..." />
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Links (Optional)</label>
-                <div className="space-y-3">
+              <div className="form-control col-span-2">
+                <label className="label flex justify-between">
+                  <span className="label-text font-black uppercase text-xs opacity-60">Asset Links</span>
+                  <button type="button" onClick={() => setNewProject({ ...newProject, links: [...newProject.links, { name: '', url: '' }] })} className="btn btn-xs btn-primary btn-ghost gap-1"><FaPlus /> Add Link</button>
+                </label>
+                
+                <div className="space-y-4">
                   {newProject.links?.map((link, index) => (
-                    <div key={index} className="grid grid-cols-1 sm:grid-cols-5 gap-2 items-end">
-                      <div className="sm:col-span-2">
-                        <label className="block text-xs text-gray-500 mb-1">Link Name</label>
-                        <input
-                          type="text"
-                          value={link.name}
-                          onChange={(e) => handleLinkChange(index, 'name', e.target.value)}
-                          className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                          placeholder="e.g., GitHub, Live Demo"
-                        />
+                    <div key={index} className="flex flex-col sm:flex-row gap-3 items-end bg-base-200/50 p-4 rounded-2xl">
+                      <div className="flex-1 w-full">
+                        <input type="text" value={link.name} onChange={(e) => handleLinkChange(index, 'name', e.target.value)} className="input input-sm input-bordered w-full" placeholder="Label (e.g. GitHub)" />
                       </div>
-                      <div className="sm:col-span-2">
-                        <label className="block text-xs text-gray-500 mb-1">URL</label>
-                        <input
-                          type="url"
-                          value={link.url}
-                          onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
-                          className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                          placeholder="https://example.com"
-                        />
+                      <div className="flex-[2] w-full">
+                        <input type="url" value={link.url} onChange={(e) => handleLinkChange(index, 'url', e.target.value)} className="input input-sm input-bordered w-full" placeholder="https://" />
                       </div>
-                      <div>
-                        <button
-                          type="button"
-                          onClick={() => removeLinkField(index)}
-                          className="w-full p-2 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
-                        >
-                          <FaTrash size={14} />
-                        </button>
-                      </div>
+                      <button onClick={() => setNewProject({ ...newProject, links: newProject.links.filter((_, i) => i !== index) })} className="btn btn-sm btn-square btn-error btn-ghost"><FaTrash /></button>
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={addLinkField}
-                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm sm:text-base mt-2"
-                  >
-                    <FaPlus size={12} /> Add Link
-                  </button>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 space-y-2 sm:space-y-0">
-              <button
-                onClick={() => {
-                  setShowAddModal(false);
-                  setEditingIndex(null);
-                  setNewProject({
-                    title: '',
-                    date: '',
-                    description: '',
-                    links: []
-                  });
-                }}
-                className="px-4 py-2 text-sm sm:text-base text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors order-2 sm:order-1"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddProject}
-                className="px-4 py-2 text-sm sm:text-base bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors order-1 sm:order-2"
-              >
-                {editingIndex !== null ? 'Update Project' : 'Add Project'}
+            <div className="modal-action mt-12 gap-3">
+              <button onClick={() => setShowAddModal(false)} className="btn btn-ghost font-bold">Cancel</button>
+              <button onClick={handleAddProject} className="btn btn-primary px-10 font-black tracking-widest uppercase">
+                Publish Project
               </button>
             </div>
           </div>
         </div>
       </Modal>
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          type={toastType}
-          onClose={() => setShowToast(false)}
-        />
-      )}
 
+      {/* Notifications */}
+      {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="Are you sure you want to delete this project?"
-        confirmText="Delete"
-        cancelText="Cancel"
+        message="This will permanently remove the project and its associated links. Continue?"
+        confirmText="Confirm Deletion"
+        cancelText="Discard"
         confirmColor="red"
-        title="Delete Project"
+        title="Remove Project Record"
       />
     </section>
   );
