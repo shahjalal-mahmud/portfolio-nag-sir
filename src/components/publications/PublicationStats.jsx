@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { FaGoogle, FaEdit, FaSave } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaGoogle, FaEdit, FaSave, FaChartLine, FaQuoteLeft, FaHashtag, FaHistory } from "react-icons/fa";
 import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useAuth } from '../../context/useAuth';
 import Toast from '../common/Toast';
 
-const StatCard = ({ label, value, duration = 3, isEditing = false, onChange }) => {
+const StatCard = ({ label, value, icon: Icon, duration = 2, isEditing = false, onChange }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -18,30 +17,34 @@ const StatCard = ({ label, value, duration = 3, isEditing = false, onChange }) =
 
     let start = 0;
     const end = value;
-    const increment = end / (duration * 60); // frames at 60fps
-    let current = start;
+    if (end === 0) return;
 
-    const animate = () => {
-      current += increment;
-      if (current < end) {
-        setCount(Math.floor(current));
+    let startTime = null;
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+      const currentCount = Math.floor(progress * end);
+      
+      setCount(currentCount);
+
+      if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        setCount(end); // Final value
+        setCount(end);
       }
     };
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          animate();
-          observer.disconnect(); // Run once
+          requestAnimationFrame(animate);
+          observer.disconnect();
         }
       },
-      { threshold: 0.6 }
+      { threshold: 0.5 }
     );
 
-    const target = document.getElementById(`stat-${label}`);
+    const target = document.getElementById(`stat-${label.replace(/\s+/g, '-')}`);
     if (target) observer.observe(target);
 
     return () => observer.disconnect();
@@ -49,23 +52,38 @@ const StatCard = ({ label, value, duration = 3, isEditing = false, onChange }) =
 
   return (
     <motion.div
-      id={`stat-${label}`}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      id={`stat-${label.replace(/\s+/g, '-')}`}
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className="flex flex-col items-center bg-white shadow-md rounded-2xl p-6 w-full sm:w-48"
+      whileHover={{ y: -5 }}
+      className="relative overflow-hidden flex flex-col items-center justify-center p-6 rounded-3xl bg-base-100 border border-base-content/10 shadow-xl group"
     >
+      {/* Decorative Background Blob */}
+      <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full group-hover:bg-primary/10 transition-colors duration-500" />
+      
+      <div className="text-primary mb-3 text-xl opacity-80">
+        <Icon />
+      </div>
+
       {isEditing ? (
         <input
           type="number"
           value={count}
           onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-          className="text-4xl font-semibold text-blue-600 w-full text-center bg-gray-100 rounded"
+          className="input input-bordered input-primary w-full text-center text-2xl font-bold font-mono"
         />
       ) : (
-        <h3 className="text-4xl font-semibold text-blue-600">{count}</h3>
+        <div className="flex flex-col items-center">
+          <span className="text-4xl md:text-5xl font-black tracking-tight text-base-content">
+            {count}
+          </span>
+        </div>
       )}
-      <p className="text-sm text-gray-600 text-center mt-2">{label}</p>
+      
+      <p className="text-xs md:text-sm font-medium uppercase tracking-widest text-base-content/60 text-center mt-3">
+        {label}
+      </p>
     </motion.div>
   );
 };
@@ -93,9 +111,7 @@ const PublicationStats = () => {
 
   useEffect(() => {
     const docRef = doc(db, "publications", "summary");
-
     if (user) {
-      // For admin, use real-time updates
       const unsubscribe = onSnapshot(docRef, (doc) => {
         if (doc.exists()) {
           const data = doc.data();
@@ -103,23 +119,15 @@ const PublicationStats = () => {
           setEditStats(data);
         }
         setLoading(false);
-      }, (error) => {
-        console.error("Error fetching data:", error);
-        showToast('Failed to load publication data', 'error');
-        setLoading(false);
       });
       return () => unsubscribe();
     } else {
-      // For public view, just get once
       const fetchData = async () => {
         try {
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setStats(docSnap.data());
-          }
+          if (docSnap.exists()) setStats(docSnap.data());
           setLoading(false);
         } catch (error) {
-          console.error("Error fetching data:", error);
           showToast('Failed to load publication data', 'error');
           setLoading(false);
         }
@@ -139,10 +147,7 @@ const PublicationStats = () => {
   };
 
   const handleStatChange = (field, value) => {
-    setEditStats(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setEditStats(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async (e) => {
@@ -150,127 +155,130 @@ const PublicationStats = () => {
     try {
       await setDoc(doc(db, "publications", "summary"), editStats);
       setIsEditing(false);
-      showToast('Publication stats updated successfully', 'success');
+      showToast('Stats updated successfully', 'success');
     } catch (error) {
-      console.error("Error updating document:", error);
-      showToast('Failed to update publication stats', 'error');
+      showToast('Failed to update stats', 'error');
     }
   };
 
-  if (loading) return <div className="py-24 text-center">Loading...</div>;
-  if (!stats) return <div className="py-24 text-center">No data available</div>;
+  if (loading) return (
+    <div className="flex justify-center py-24">
+      <span className="loading loading-ring loading-lg text-primary"></span>
+    </div>
+  );
+  
+  if (!stats) return (
+    <div className="text-center py-24 opacity-50 italic">No publication summary found.</div>
+  );
 
   return (
-    <section
-      id="publications"
-      className="py-24 px-6 md:px-16 bg-base-100 text-gray-900 relative"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      {user && (
-        <div className="absolute top-6 right-6 md:right-16">
-          {!isEditing ? (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-            >
-              <FaEdit /> Edit
-            </motion.button>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-            >
-              <FaSave /> Save
-            </motion.button>
-          )}
-        </div>
-      )}
+    <section id="publications" className="py-20 px-6 bg-base-200/50 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-20" />
 
-      <div className="max-w-6xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Publication Summary
-        </h2>
-
-        {isEditing ? (
-          <div className="mb-10">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              As of Date
-            </label>
-            <input
-              type="text"
-              name="as_of_date"
-              value={editStats.as_of_date}
-              onChange={handleEditChange}
-              className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md mx-auto"
-              placeholder="e.g. June 2025"
-            />
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+          <div className="text-center md:text-left">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-base-content mb-3">
+              Impact <span className="text-primary">Summary</span>
+            </h2>
+            
+            <AnimatePresence mode="wait">
+              {isEditing ? (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 items-center">
+                  <span className="text-sm font-bold opacity-70 uppercase tracking-widest">Updating Date:</span>
+                  <input
+                    type="text"
+                    name="as_of_date"
+                    value={editStats.as_of_date}
+                    onChange={handleEditChange}
+                    className="input input-sm input-bordered input-primary w-40"
+                  />
+                </motion.div>
+              ) : (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 text-base-content/60">
+                   <FaHistory className="text-xs" />
+                   <span className="text-sm font-medium tracking-wide italic">Data verified as of {stats.as_of_date}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        ) : (
-          <p className="text-gray-600 mb-10">
-            As of {stats.as_of_date}. Source:&nbsp;
+
+          <div className="flex items-center gap-4">
             <a
               href={stats.google_scholar_link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center text-blue-600 hover:underline hover:text-blue-800 transition"
+              className="btn btn-ghost border-base-content/10 bg-base-100 hover:bg-base-content hover:text-base-100 rounded-full normal-case group"
             >
-              Google Scholar <FaGoogle className="ml-1" />
+              <FaGoogle className="group-hover:scale-110 transition-transform" />
+              Scholar Profile
             </a>
-          </p>
-        )}
+
+            {user && (
+              <button
+                onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                className={`btn rounded-full px-6 shadow-lg ${isEditing ? 'btn-success' : 'btn-primary'}`}
+              >
+                {isEditing ? <><FaSave /> Save</> : <><FaEdit /> Edit</>}
+              </button>
+            )}
+          </div>
+        </div>
 
         {isEditing && (
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Google Scholar Link
-            </label>
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} className="mb-8 p-4 bg-primary/5 rounded-2xl border border-primary/20">
+            <label className="label-text font-bold mb-2 block uppercase text-xs">Profile Link</label>
             <input
               type="url"
               name="google_scholar_link"
               value={editStats.google_scholar_link}
               onChange={handleEditChange}
-              className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md mx-auto"
+              className="input input-bordered w-full input-md"
+              placeholder="Google Scholar URL"
             />
-          </div>
+          </motion.div>
         )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           <StatCard
+            icon={FaChartLine}
             label="Total Articles"
             value={isEditing ? editStats.total_articles : stats.total_articles}
             isEditing={isEditing}
-            onChange={(value) => handleStatChange('total_articles', value)}
+            onChange={(val) => handleStatChange('total_articles', val)}
           />
           <StatCard
-            label="First/Corresponding Author"
+            icon={FaQuoteLeft}
+            label="1st/Corresp. Author"
             value={isEditing ? editStats.first_author_articles : stats.first_author_articles}
             isEditing={isEditing}
-            onChange={(value) => handleStatChange('first_author_articles', value)}
+            onChange={(val) => handleStatChange('first_author_articles', val)}
           />
           <StatCard
+            icon={FaQuoteLeft}
             label="Citations"
             value={isEditing ? editStats.citations : stats.citations}
             isEditing={isEditing}
-            onChange={(value) => handleStatChange('citations', value)}
+            onChange={(val) => handleStatChange('citations', val)}
           />
           <StatCard
+            icon={FaHashtag}
             label="H-Index"
             value={isEditing ? editStats.h_index : stats.h_index}
             isEditing={isEditing}
-            onChange={(value) => handleStatChange('h_index', value)}
+            onChange={(val) => handleStatChange('h_index', val)}
           />
           <StatCard
+            icon={FaHashtag}
             label="i10-Index"
             value={isEditing ? editStats.i10_index : stats.i10_index}
             isEditing={isEditing}
-            onChange={(value) => handleStatChange('i10_index', value)}
+            onChange={(val) => handleStatChange('i10_index', val)}
           />
         </div>
       </div>
+
       {toast.show && (
         <Toast
           message={toast.message}
