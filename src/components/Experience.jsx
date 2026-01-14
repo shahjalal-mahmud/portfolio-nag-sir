@@ -61,16 +61,8 @@ const Experience = () => {
         if (docSnap.exists()) {
           setExperienceData(docSnap.data().items || []);
         } else {
-          // Fallback static data
-          setExperienceData([
-            {
-              title: "Lecturer",
-              university: { name: "Northern University of Business & Technology Khulna", url: "https://nubtkhulna.ac.bd/" },
-              period: "March 2024 – Ongoing",
-              department: "Department of Computer Science and Engineering",
-              courses: ["Artificial Intelligence", "Pattern Recognition", "Numerical Methods"],
-            }
-          ]);
+          // Fallback data safely removed
+          setExperienceData([]);
         }
       } catch (error) {
         console.error("Error fetching experience data:", error);
