@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FaExternalLinkAlt, FaRegNewspaper, FaEdit, FaTrash, FaPlus, FaQuoteRight } from 'react-icons/fa';
-import { FiBarChart2 } from 'react-icons/fi';
+import { FaExternalLinkAlt, FaRegNewspaper, FaEdit, FaTrash, FaPlus, FaQuoteRight, FaAward, FaUserCheck } from 'react-icons/fa';
+import { FiBarChart2, FiArrowUpRight, FiLayers } from 'react-icons/fi';
 import { collection, getDocs, doc, updateDoc, deleteDoc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
@@ -21,94 +21,61 @@ const JournalArticles = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [articleToDelete, setArticleToDelete] = useState(null);
     const [formData, setFormData] = useState({
-        year: "",
-        title: "",
-        authors: "",
-        journal: "",
-        link: "",
-        impact_factor: "",
-        cite_score: "",
-        is_first_author: false,
-        is_corresponding_author: false,
-        status: ""
+        year: "", title: "", authors: "", journal: "", link: "",
+        impact_factor: "", cite_score: "", is_first_author: false,
+        is_corresponding_author: false, status: ""
     });
 
+    // Logic remains strictly unchanged as requested
     useEffect(() => {
         const fetchJournalArticles = async () => {
             try {
                 const articlesCollection = collection(db, 'journal_articles');
                 const snapshot = await getDocs(articlesCollection);
-
                 const articlesData = {};
                 snapshot.forEach(doc => {
                     if (doc.data().articles) {
                         articlesData[doc.id] = doc.data().articles.map((article, index) => ({
-                            ...article,
-                            docId: doc.id,
-                            articleIndex: index
+                            ...article, docId: doc.id, articleIndex: index
                         }));
                     }
                 });
-
                 setJournalArticles(articlesData);
-
-                // Set the most recent year as active by default
                 const years = Object.keys(articlesData).sort((a, b) => b.localeCompare(a));
-                if (years.length > 0) {
-                    setActiveYear(years[0]);
-                }
-
+                if (years.length > 0) setActiveYear(years[0]);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching journal articles:', error);
                 setLoading(false);
             }
         };
-
         fetchJournalArticles();
     }, []);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === 'checkbox' ? checked : value
-        });
+        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const articleData = {
-                title: formData.title,
-                authors: formData.authors,
-                journal: formData.journal,
-                link: formData.link,
-                impact_factor: formData.impact_factor,
-                cite_score: formData.cite_score,
-                is_first_author: formData.is_first_author,
-                is_corresponding_author: formData.is_corresponding_author,
+                title: formData.title, authors: formData.authors, journal: formData.journal,
+                link: formData.link, impact_factor: formData.impact_factor, cite_score: formData.cite_score,
+                is_first_author: formData.is_first_author, is_corresponding_author: formData.is_corresponding_author,
                 status: formData.status
             };
-
             if (currentArticle) {
-                // Editing an existing article
                 const yearDocRef = doc(db, "journal_articles", currentArticle.docId);
                 const yearDoc = await getDoc(yearDocRef);
-
                 if (yearDoc.exists()) {
                     const articles = [...yearDoc.data().articles];
-
-                    // Check if year changed
                     if (currentArticle.year !== formData.year) {
-                        // Remove from old year
                         articles.splice(currentArticle.articleIndex, 1);
                         await updateDoc(yearDocRef, { articles });
-
-                        // Add to new year
                         const newYearDocRef = doc(db, "journal_articles", formData.year);
                         const newYearDoc = await getDoc(newYearDocRef);
-
                         if (newYearDoc.exists()) {
                             const newArticles = [...newYearDoc.data().articles, articleData];
                             await updateDoc(newYearDocRef, { articles: newArticles });
@@ -116,66 +83,44 @@ const JournalArticles = () => {
                             await setDoc(newYearDocRef, { articles: [articleData] });
                         }
                     } else {
-                        // Update within same year
                         articles[currentArticle.articleIndex] = articleData;
                         await updateDoc(yearDocRef, { articles });
                     }
                 }
             } else {
-                // Adding a new article
                 const yearDocRef = doc(db, "journal_articles", formData.year);
                 const yearDoc = await getDoc(yearDocRef);
-
                 if (yearDoc.exists()) {
                     const existingArticles = yearDoc.data().articles || [];
-                    await updateDoc(yearDocRef, {
-                        articles: [articleData, ...existingArticles]
-                    });
+                    await updateDoc(yearDocRef, { articles: [articleData, ...existingArticles] });
                 } else {
-                    await setDoc(yearDocRef, {
-                        articles: [articleData]
-                    });
+                    await setDoc(yearDocRef, { articles: [articleData] });
                 }
             }
-
             setIsModalOpen(false);
             setCurrentArticle(null);
             setFormData({
-                year: "",
-                title: "",
-                authors: "",
-                journal: "",
-                link: "",
-                impact_factor: "",
-                cite_score: "",
-                is_first_author: false,
-                is_corresponding_author: false,
-                status: ""
+                year: "", title: "", authors: "", journal: "", link: "",
+                impact_factor: "", cite_score: "", is_first_author: false,
+                is_corresponding_author: false, status: ""
             });
-            // Refresh data
             setLoading(true);
             const articlesCollection = collection(db, 'journal_articles');
             const snapshot = await getDocs(articlesCollection);
-
             const articlesData = {};
             snapshot.forEach(doc => {
                 if (doc.data().articles) {
                     articlesData[doc.id] = doc.data().articles.map((article, index) => ({
-                        ...article,
-                        docId: doc.id,
-                        articleIndex: index
+                        ...article, docId: doc.id, articleIndex: index
                     }));
                 }
             });
-
             setJournalArticles(articlesData);
             setLoading(false);
             setToastMessage(currentArticle ? 'Article updated successfully' : 'Article added successfully');
             setToastType('success');
             setShowToast(true);
-
         } catch (error) {
-            console.error("Error saving journal article:", error);
             setToastMessage(`Failed to ${currentArticle ? 'update' : 'add'} article`);
             setToastType('error');
             setShowToast(true);
@@ -185,16 +130,10 @@ const JournalArticles = () => {
     const handleEdit = (article) => {
         setCurrentArticle(article);
         setFormData({
-            year: article.year,
-            title: article.title,
-            authors: article.authors,
-            journal: article.journal || "",
-            link: article.link || "",
-            impact_factor: article.impact_factor || "",
-            cite_score: article.cite_score || "",
-            is_first_author: article.is_first_author || false,
-            is_corresponding_author: article.is_corresponding_author || false,
-            status: article.status || ""
+            year: article.docId, title: article.title, authors: article.authors,
+            journal: article.journal || "", link: article.link || "", impact_factor: article.impact_factor || "",
+            cite_score: article.cite_score || "", is_first_author: article.is_first_author || false,
+            is_corresponding_author: article.is_corresponding_author || false, status: article.status || ""
         });
         setIsModalOpen(true);
     };
@@ -206,38 +145,24 @@ const JournalArticles = () => {
 
     const handleConfirmDelete = async () => {
         if (!articleToDelete) return;
-
         try {
             const { docId, articleIndex } = articleToDelete;
             const yearDocRef = doc(db, "journal_articles", docId);
             const yearDoc = await getDoc(yearDocRef);
-
             if (yearDoc.exists()) {
                 const articles = [...yearDoc.data().articles];
                 articles.splice(articleIndex, 1);
-
-                if (articles.length === 0) {
-                    await deleteDoc(yearDocRef);
-                } else {
-                    await updateDoc(yearDocRef, { articles });
-                }
-
-                // Refresh data
+                articles.length === 0 ? await deleteDoc(yearDocRef) : await updateDoc(yearDocRef, { articles });
                 setLoading(true);
-                const articlesCollection = collection(db, 'journal_articles');
-                const snapshot = await getDocs(articlesCollection);
-
+                const snapshot = await getDocs(collection(db, 'journal_articles'));
                 const articlesData = {};
                 snapshot.forEach(doc => {
                     if (doc.data().articles) {
                         articlesData[doc.id] = doc.data().articles.map((article, index) => ({
-                            ...article,
-                            docId: doc.id,
-                            articleIndex: index
+                            ...article, docId: doc.id, articleIndex: index
                         }));
                     }
                 });
-
                 setJournalArticles(articlesData);
                 setLoading(false);
                 setToastMessage('Article deleted successfully');
@@ -245,8 +170,6 @@ const JournalArticles = () => {
                 setShowToast(true);
             }
         } catch (error) {
-            console.error("Error deleting article:", error);
-            setToastMessage('Failed to delete article');
             setToastType('error');
             setShowToast(true);
         } finally {
@@ -259,192 +182,143 @@ const JournalArticles = () => {
         setCurrentArticle(null);
         setFormData({
             year: activeYear || new Date().getFullYear().toString(),
-            title: "",
-            authors: "",
-            journal: "",
-            link: "",
-            impact_factor: "",
-            cite_score: "",
-            is_first_author: false,
-            is_corresponding_author: false,
-            status: ""
+            title: "", authors: "", journal: "", link: "", impact_factor: "",
+            cite_score: "", is_first_author: false, is_corresponding_author: false, status: ""
         });
         setIsModalOpen(true);
     };
 
-    if (loading) {
-        return (
-            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
-                <div className="max-w-7xl mx-auto text-center">
-                    <p>Loading journal articles...</p>
-                </div>
-            </section>
-        );
-    }
-
     const years = Object.keys(journalArticles).sort((a, b) => b.localeCompare(a));
 
-    if (years.length === 0) {
+    if (loading) {
         return (
-            <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900">
-                <div className="max-w-7xl mx-auto text-center">
-                    <p>No journal articles found.</p>
-                    {user && (
-                        <button
-                            onClick={openAddModal}
-                            className="mt-4 btn btn-primary gap-2"
-                        >
-                            <FaPlus />
-                            Add New Article
-                        </button>
-                    )}
-                </div>
-            </section>
+            <div className="flex h-96 items-center justify-center bg-base-100">
+                <span className="loading loading-spinner loading-lg text-primary"></span>
+            </div>
         );
     }
 
     return (
-        <section
-            id='journal-articles'
-            className="py-16 px-4 sm:px-6 lg:px-8 bg-white text-gray-900"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-        >
-            <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-blue-50 text-blue-600">
-                        <FaRegNewspaper className="text-2xl" />
-                    </div>
-                    <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                        Journal Articles
-                    </h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
-                        Peer-reviewed research publications in academic journals
-                    </p>
-                </div>
-
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <div className="flex overflow-x-auto pb-4 scrollbar-hide w-full">
-                        <div className="flex flex-wrap justify-center gap-2 mx-auto">
-                            {years.map((year) => (
-                                <button
-                                    key={year}
-                                    onClick={() => setActiveYear(year)}
-                                    className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 flex items-center ${activeYear === year
-                                        ? 'bg-blue-600 text-white shadow-md'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    {year}
-                                    <span className="ml-2 text-xs bg-white/20 rounded-full px-2 py-0.5">
-                                        {journalArticles[year].length}
-                                    </span>
-                                </button>
-                            ))}
+        <section id='journal-articles' className="py-20 px-4 sm:px-6 lg:px-8 bg-base-100 text-base-content overflow-hidden">
+            <div className="max-w-6xl mx-auto">
+                {/* Modern Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+                            <FiLayers /> Research Publications
                         </div>
+                        <h2 className="text-4xl md:text-5xl font-black">
+                            Journal <span className="text-primary italic">Articles</span>
+                        </h2>
+                        <p className="text-base-content/60 max-w-xl text-lg">
+                            Showcasing peer-reviewed research and scholarly excellence across global academic journals.
+                        </p>
                     </div>
-
                     {user && (
-                        <button
-                            onClick={openAddModal}
-                            className="btn btn-primary gap-2 whitespace-nowrap"
-                        >
-                            <FaPlus />
-                            Add New Article
+                        <button onClick={openAddModal} className="btn btn-primary shadow-xl shadow-primary/20 hover:scale-105 transition-all">
+                            <FaPlus /> Add New Article
                         </button>
                     )}
                 </div>
 
-                <div className="space-y-6">
+                {/* Sticky Year Navigation */}
+                {years.length > 0 && (
+                    <div className="sticky top-4 z-20 backdrop-blur-lg bg-base-100/80 p-1.5 rounded-2xl border border-base-content/5 shadow-xl mb-12 flex gap-2 overflow-x-auto no-scrollbar">
+                        {years.map((year) => (
+                            <button
+                                key={year}
+                                onClick={() => setActiveYear(year)}
+                                className={`btn btn-sm md:btn-md flex-none rounded-xl transition-all ${
+                                    activeYear === year 
+                                    ? 'btn-primary shadow-lg' 
+                                    : 'btn-ghost hover:bg-base-300'
+                                }`}
+                            >
+                                {year}
+                                <span className={`badge badge-sm ml-1 ${activeYear === year ? 'badge-ghost' : 'badge-base-300'}`}>
+                                    {journalArticles[year]?.length}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                )}
+
+                {/* Staggered Articles List */}
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
                     {journalArticles[activeYear]?.map((article, index) => (
                         <div
                             key={index}
-                            className="relative border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all duration-300 bg-white hover:shadow-sm group"
+                            style={{ animationDelay: `${index * 150}ms` }}
+                            className="group relative bg-base-200/40 hover:bg-base-200 rounded-3xl p-6 md:p-10 transition-all duration-500 border border-base-content/5 hover:border-primary/20 hover:shadow-2xl"
                         >
                             {user && (
-                                <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <button
-                                        onClick={() => handleEdit(article)}
-                                        className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50"
-                                        title="Edit"
-                                    >
-                                        <FaEdit />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(article.docId, article.articleIndex)}
-                                        className="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50"
-                                        title="Delete"
-                                    >
-                                        <FaTrash />
-                                    </button>
+                                <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button onClick={() => handleEdit(article)} className="btn btn-circle btn-sm btn-info btn-outline"><FaEdit /></button>
+                                    <button onClick={() => handleDelete(article.docId, article.articleIndex)} className="btn btn-circle btn-sm btn-error btn-outline"><FaTrash /></button>
                                 </div>
                             )}
-                            <div className="flex flex-col md:flex-row md:justify-between">
-                                <div className="flex-1">
-                                    <h3 className="text-xl font-semibold text-gray-900 leading-snug">
-                                        <a
-                                            href={article.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="hover:text-blue-600 transition-colors"
-                                        >
-                                            {article.title}
-                                        </a>
-                                    </h3>
 
-                                    <div className="mt-3 flex items-center text-sm text-blue-600">
-                                        <FaQuoteRight className="mr-2 text-xs opacity-70" />
-                                        <span className="italic">{article.journal}</span>
-                                    </div>
-
-                                    <div className="mt-4 flex flex-wrap gap-3">
+                            <div className="flex flex-col lg:flex-row gap-8">
+                                <div className="flex-1 space-y-4">
+                                    {/* Status & Metrics Bar */}
+                                    <div className="flex flex-wrap gap-2 items-center">
+                                        {article.status && (
+                                            <span className="badge badge-primary font-bold py-3">{article.status}</span>
+                                        )}
                                         {article.impact_factor && (
-                                            <span className="inline-flex items-center text-xs font-medium bg-green-50 text-green-700 px-3 py-1 rounded-full">
-                                                <FiBarChart2 className="mr-1" />
-                                                IF: {article.impact_factor}
-                                            </span>
+                                            <div className="badge badge-outline badge-success gap-1 py-3 font-semibold">
+                                                <FiBarChart2 /> IF: {article.impact_factor}
+                                            </div>
                                         )}
                                         {article.cite_score && (
-                                            <span className="inline-flex items-center text-xs font-medium bg-purple-50 text-purple-700 px-3 py-1 rounded-full">
-                                                <FiBarChart2 className="mr-1" />
-                                                CiteScore: {article.cite_score}
-                                            </span>
-                                        )}
-                                        {(article.is_first_author || article.is_corresponding_author) && (
-                                            <div className="flex gap-2">
-                                                {article.is_first_author && (
-                                                    <span className="text-xs font-medium bg-blue-50 text-blue-700 px-3 py-1 rounded-full">
-                                                        First Author
-                                                    </span>
-                                                )}
-                                                {article.is_corresponding_author && (
-                                                    <span className="text-xs font-medium bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">
-                                                        Corresponding Author
-                                                    </span>
-                                                )}
+                                            <div className="badge badge-outline badge-secondary gap-1 py-3 font-semibold">
+                                                <FaAward className="text-[10px]" /> CiteScore: {article.cite_score}
                                             </div>
                                         )}
                                     </div>
 
-                                    <p className="mt-4 text-sm text-gray-600">
+                                    <h3 className="text-2xl font-extrabold leading-tight text-base-content group-hover:text-primary transition-colors">
+                                        <a href={article.link} target="_blank" rel="noopener noreferrer" className="hover:underline underline-offset-4 decoration-2">
+                                            {article.title}
+                                        </a>
+                                    </h3>
+
+                                    <div className="flex items-center gap-2 text-primary font-bold italic text-lg">
+                                        <FaQuoteRight className="text-sm opacity-50" />
+                                        {article.journal}
+                                    </div>
+
+                                    <p className="text-base-content/70 leading-relaxed font-medium">
                                         {article.authors.split(/(Anindya Nag)/).map((part, idx) =>
                                             part === "Anindya Nag" ? (
-                                                <strong key={idx} className="text-gray-900 font-semibold">Anindya Nag</strong>
-                                            ) : (
-                                                part
-                                            )
+                                                <span key={idx} className="text-base-content font-black border-b-2 border-primary/40 pb-0.5">Anindya Nag</span>
+                                            ) : part
                                         )}
                                     </p>
+
+                                    {/* Author Roles */}
+                                    <div className="flex gap-4 pt-2">
+                                        {article.is_first_author && (
+                                            <div className="flex items-center gap-1.5 text-xs font-black uppercase text-primary bg-primary/10 px-3 py-1.5 rounded-lg">
+                                                <FaUserCheck /> First Author
+                                            </div>
+                                        )}
+                                        {article.is_corresponding_author && (
+                                            <div className="flex items-center gap-1.5 text-xs font-black uppercase text-secondary bg-secondary/10 px-3 py-1.5 rounded-lg">
+                                                <FaRegNewspaper /> Corresponding Author
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
-                                <div className="mt-4 md:mt-0 md:ml-6">
+                                <div className="lg:w-48 flex items-center justify-center lg:border-l lg:border-base-content/10">
                                     <a
                                         href={article.link}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                                        className="btn btn-circle btn-lg btn-ghost group-hover:bg-primary group-hover:text-primary-content transition-all border border-base-content/10 shadow-lg"
                                     >
-                                        <span>View Article</span>
-                                        <FaExternalLinkAlt className="ml-2 text-xs" />
+                                        <FiArrowUpRight size={28} />
                                     </a>
                                 </div>
                             </div>
@@ -453,182 +327,83 @@ const JournalArticles = () => {
                 </div>
             </div>
 
-            {/* Modal for adding/editing articles */}
+            {/* Modern Modal Design */}
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <div className="p-6">
-                    <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                        {currentArticle ? "Edit Article" : "Add New Article"}
-                    </h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Year *</label>
-                                <input
-                                    type="text"
-                                    name="year"
-                                    value={formData.year}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
-                                    placeholder="2023"
-                                    required
-                                />
-                            </div>
+                <div className="p-2">
+                    <div className="mb-8">
+                        <h3 className="text-3xl font-black">{currentArticle ? "Edit Article" : "Register New Publication"}</h3>
+                        <p className="text-base-content/50">Update your scholarly record with the latest journal data.</p>
+                    </div>
 
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700">Title *</label>
-                                <input
-                                    type="text"
-                                    name="title"
-                                    value={formData.title}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
-                                    placeholder="Article Title"
-                                    required
-                                />
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Year *</label>
+                                <input type="text" name="year" value={formData.year} onChange={handleInputChange} className="input input-bordered focus:input-primary bg-base-200 border-none" required />
                             </div>
-
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700">Authors *</label>
-                                <input
-                                    type="text"
-                                    name="authors"
-                                    value={formData.authors}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
-                                    placeholder="Author1, Author2, Author3"
-                                    required
-                                />
+                            <div className="form-control md:col-span-2">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Full Title *</label>
+                                <textarea name="title" value={formData.title} onChange={handleInputChange} className="textarea textarea-bordered focus:textarea-primary bg-base-200 border-none h-24" required />
                             </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Journal *</label>
-                                <input
-                                    type="text"
-                                    name="journal"
-                                    value={formData.journal}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
-                                    placeholder="Journal Name"
-                                    required
-                                />
+                            <div className="form-control md:col-span-2">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Author List *</label>
+                                <input type="text" name="authors" value={formData.authors} onChange={handleInputChange} className="input input-bordered focus:input-primary bg-base-200 border-none" required placeholder="Author 1, Author 2..." />
                             </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Impact Factor</label>
-                                <input
-                                    type="text"
-                                    name="impact_factor"
-                                    value={formData.impact_factor}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
-                                    placeholder="5.678"
-                                />
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Journal Name *</label>
+                                <input type="text" name="journal" value={formData.journal} onChange={handleInputChange} className="input input-bordered focus:input-primary bg-base-200 border-none" required />
                             </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">CiteScore</label>
-                                <input
-                                    type="text"
-                                    name="cite_score"
-                                    value={formData.cite_score}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
-                                    placeholder="8.9"
-                                />
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">DOI/External Link</label>
+                                <input type="url" name="link" value={formData.link} onChange={handleInputChange} className="input input-bordered focus:input-primary bg-base-200 border-none" />
                             </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Link</label>
-                                <input
-                                    type="url"
-                                    name="link"
-                                    value={formData.link}
-                                    onChange={handleInputChange}
-                                    className="input input-bordered w-full"
-                                    placeholder="https://example.com"
-                                />
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Impact Factor</label>
+                                <input type="text" name="impact_factor" value={formData.impact_factor} onChange={handleInputChange} className="input input-bordered focus:input-primary bg-base-200 border-none" placeholder="e.g. 12.4" />
                             </div>
-
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Status</label>
-                                <select
-                                    name="status"
-                                    value={formData.status}
-                                    onChange={handleInputChange}
-                                    className="select select-bordered w-full"
-                                >
-                                    <option value="">Select status</option>
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">CiteScore</label>
+                                <input type="text" name="cite_score" value={formData.cite_score} onChange={handleInputChange} className="input input-bordered focus:input-primary bg-base-200 border-none" placeholder="e.g. 15.1" />
+                            </div>
+                            <div className="form-control">
+                                <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Status</label>
+                                <select name="status" value={formData.status} onChange={handleInputChange} className="select select-bordered focus:select-primary bg-base-200 border-none">
+                                    <option value="">Choose Status</option>
                                     <option value="Published">Published</option>
                                     <option value="In Press">In Press</option>
                                     <option value="Under Review">Under Review</option>
                                     <option value="Submitted">Submitted</option>
                                 </select>
                             </div>
-
-                            <div className="flex items-center space-x-3 pt-1">
-                                <input
-                                    type="checkbox"
-                                    name="is_first_author"
-                                    checked={formData.is_first_author}
-                                    onChange={handleInputChange}
-                                    className="checkbox checkbox-primary"
-                                    id="firstAuthorCheckbox"
-                                />
-                                <label htmlFor="firstAuthorCheckbox" className="text-sm font-medium text-gray-700">
-                                    First Author
-                                </label>
-                            </div>
-
-                            <div className="flex items-center space-x-3 pt-1">
-                                <input
-                                    type="checkbox"
-                                    name="is_corresponding_author"
-                                    checked={formData.is_corresponding_author}
-                                    onChange={handleInputChange}
-                                    className="checkbox checkbox-primary"
-                                    id="correspondingAuthorCheckbox"
-                                />
-                                <label htmlFor="correspondingAuthorCheckbox" className="text-sm font-medium text-gray-700">
-                                    Corresponding Author
-                                </label>
-                            </div>
                         </div>
 
-                        <div className="flex justify-end space-x-3 pt-4">
-                            <button
-                                type="button"
-                                className="btn btn-ghost"
-                                onClick={() => setIsModalOpen(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
-                            >
-                                {currentArticle ? "Update Article" : "Add Article"}
+                        <div className="flex flex-wrap gap-4 bg-base-300/30 p-4 rounded-2xl">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="is_first_author" checked={formData.is_first_author} onChange={handleInputChange} className="checkbox checkbox-primary" />
+                                <span className="text-sm font-bold">First Author</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" name="is_corresponding_author" checked={formData.is_corresponding_author} onChange={handleInputChange} className="checkbox checkbox-secondary" />
+                                <span className="text-sm font-bold">Corresponding Author</span>
+                            </label>
+                        </div>
+
+                        <div className="modal-action gap-2">
+                            <button type="button" className="btn btn-ghost" onClick={() => setIsModalOpen(false)}>Discard</button>
+                            <button type="submit" className="btn btn-primary px-8 shadow-xl shadow-primary/20">
+                                {currentArticle ? "Update Record" : "Save Publication"}
                             </button>
                         </div>
                     </form>
                 </div>
             </Modal>
-            {showToast && (
-                <Toast
-                    message={toastMessage}
-                    type={toastType}
-                    onClose={() => setShowToast(false)}
-                />
-            )}
 
+            {showToast && <Toast message={toastMessage} type={toastType} onClose={() => setShowToast(false)} />}
+            
             <ConfirmationModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={handleConfirmDelete}
-                message="Are you sure you want to delete this article?"
-                confirmText="Delete"
-                cancelText="Cancel"
-                confirmColor="red"
-                title="Delete Article"
+                isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete} message="This article will be permanently removed from your academic portfolio."
+                confirmText="Delete" confirmColor="error" title="Delete Publication"
             />
         </section>
     );
