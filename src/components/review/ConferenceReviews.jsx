@@ -111,32 +111,49 @@ const ConferenceReviews = () => {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-primary/10 text-primary text-sm font-bold uppercase tracking-wider">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        {/* Title & Tagline */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-primary font-semibold tracking-wide uppercase text-sm">
             <FaMicrochip /> Academic Contributions
           </div>
-          <h2 className="text-3xl md:text-5xl font-black text-base-content tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-black text-base-content tracking-tight">
             Conference <span className="text-primary">Reviews</span>
           </h2>
-          <div className="flex items-center gap-3">
-            <div className="h-1.5 w-16 bg-primary rounded-full" />
-            <span className="text-base-content/60 font-medium">Total: {conferenceReviews.length} Experiences</span>
-          </div>
         </div>
 
-        {user && (
-          <button
-            onClick={() => {
-              setShowAddModal(true);
-              setEditingIndex(null);
-              setNewConferenceReview({ name: '', date: '', title: '', location: '', publisher: '' });
-            }}
-            className="btn btn-primary shadow-lg shadow-primary/20 gap-2"
-          >
-            <FaPlus /> Add Experience
-          </button>
-        )}
+        {/* Stats & Actions */}
+        <div className="flex items-center gap-4">
+          {/* Statistics Card */}
+          <div className="stats shadow bg-base-200 hidden sm:inline-flex">
+            <div className="stat py-2 px-4">
+              <div className="stat-title text-xs uppercase">Total Experiences</div>
+              <div className="stat-value text-2xl text-primary">
+                {conferenceReviews.length}
+              </div>
+            </div>
+          </div>
+
+          {/* Admin Action Button */}
+          {user && (
+            <button
+              onClick={() => {
+                setShowAddModal(true);
+                setEditingIndex(null);
+                setNewConferenceReview({
+                  name: '',
+                  date: '',
+                  title: '',
+                  location: '',
+                  publisher: ''
+                });
+              }}
+              className="btn btn-primary btn-md shadow-lg shadow-primary/20 gap-2"
+            >
+              <FaPlus /> Add Experience
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Grid Layout */}
@@ -153,7 +170,7 @@ const ConferenceReviews = () => {
               className="group relative h-full"
             >
               <div className="h-full bg-base-100 border border-base-300 hover:border-primary/50 rounded-2xl p-6 transition-all duration-300 shadow-sm hover:shadow-xl flex flex-col">
-                
+
                 {/* Header: Acronym & Date */}
                 <div className="flex justify-between items-start gap-4 mb-4">
                   <span className="px-3 py-1 bg-base-200 text-base-content rounded-md text-xs font-black uppercase tracking-widest">
@@ -185,17 +202,17 @@ const ConferenceReviews = () => {
 
                 {/* Footer / Actions */}
                 <div className="mt-6 pt-4 border-t border-base-200 flex justify-between items-center">
-                   <div className="badge badge-outline badge-sm font-bold opacity-50 uppercase tracking-tighter">Verified Reviewer</div>
-                   
-                   {user && (
+                  <div className="badge badge-outline badge-sm font-bold opacity-50 uppercase tracking-tighter">Verified Reviewer</div>
+
+                  {user && (
                     <div className="flex gap-1">
-                      <button 
+                      <button
                         onClick={() => { setNewConferenceReview(conf); setEditingIndex(index); setShowAddModal(true); }}
                         className="btn btn-ghost btn-xs text-info hover:bg-info/10"
                       >
                         <FaEdit />
                       </button>
-                      <button 
+                      <button
                         onClick={() => { setReviewToDelete(index); setIsDeleteModalOpen(true); }}
                         className="btn btn-ghost btn-xs text-error hover:bg-error/10"
                       >

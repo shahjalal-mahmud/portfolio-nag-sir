@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaTrash, FaEdit, FaMapMarkerAlt, FaBook, FaCalendarAlt, FaShieldAlt } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
@@ -144,9 +145,6 @@ const TechnicalProgramCommittee = () => {
           <h2 className="text-3xl md:text-4xl font-black text-base-content tracking-tight">
             Technical Program <span className="text-primary">Committee</span>
           </h2>
-          <p className="text-base-content/70 max-w-xl">
-            Contributing to the global research community through peer review and conference management.
-          </p>
         </div>
 
         <div className="flex items-center gap-4">

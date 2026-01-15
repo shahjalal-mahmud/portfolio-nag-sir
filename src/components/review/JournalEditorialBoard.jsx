@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaTrash, FaEdit, FaExternalLinkAlt, FaCalendarCheck, FaAward, FaBuilding } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
@@ -180,7 +181,7 @@ const JournalEditorialBoard = () => {
                                         )}
                                     </div>
 
-                                    <div className="flex-grow space-y-4">
+                                    <div className="grow space-y-4">
                                         {board.url ? (
                                             <a href={board.url} target="_blank" rel="noopener noreferrer" className="group/link flex items-center gap-2 text-2xl font-black text-base-content hover:text-primary transition-colors leading-tight">
                                                 {board.title} <FaExternalLinkAlt size={14} className="opacity-0 group-hover/link:opacity-100 transition-opacity" />
