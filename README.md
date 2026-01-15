@@ -102,6 +102,7 @@ Due to Firebase's free plan limitations on storage:
 - ⏳ Loading Screen during DB fetch
 - 🧠 Smart Content Sync across sections
 
+
 ---
 
 ## 🧪 Development Notes
@@ -113,13 +114,14 @@ Due to Firebase's free plan limitations on storage:
 
 ---
 
-## 📸 Screenshots (Optional - Add Your Own)
+## 📸 Screenshots
 Add a few screenshots of:
 - Admin Editing Modal
 - Timeline View
 - Publication Tabs
 - About Modal
 - Hero Section
+<img width="1365" height="643" alt="Hero_Section" src="https://github.com/user-attachments/assets/1379bd57-87bb-4a1a-ab41-bd19fa309f31" />
 
 ---
 
