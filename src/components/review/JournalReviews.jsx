@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaPlus, FaTrash, FaEdit, FaExternalLinkAlt, FaQuoteLeft, FaBookOpen } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
@@ -36,54 +36,7 @@ const JournalReviews = () => {
           const data = docSnap.data().items || [];
           setJournalReviews(data);
         } else {
-          // Fallback data
-          const fallbackData = [
-            {
-              name: "Pattern Recognition, Elsevier",
-              url: "https://www.sciencedirect.com/journal/pattern-recognition",
-            },
-            {
-              name: "IEEE Access, IEEE",
-              url: "https://ieeeaccess.ieee.org",
-            },
-            {
-              name: "Transactions on Emerging Telecommunications Technologies, Wiley",
-              url: "https://onlinelibrary.wiley.com/journal/21613915",
-            },
-            {
-              name: "Human-Centric Intelligent Systems, Springer",
-              url: "https://link.springer.com/journal/44230",
-            },
-            {
-              name: "PLOS Digital Health, PLOS",
-              url: "https://journals.plos.org/digitalhealth/",
-            },
-            {
-              name: "Frontiers in Nutrition, Frontiers",
-              url: "https://www.frontiersin.org/journals/nutrition",
-            },
-            {
-              name: "Frontiers in Oncology, Frontiers",
-              url: "https://www.frontiersin.org/journals/oncology",
-            },
-            {
-              name: "Computer Methods in Biomechanics and Biomedical Engineering, Taylor & Francis",
-              url: "https://www.tandfonline.com/journals/gcmb20",
-            },
-            {
-              name: "Artificial Intelligence and Applications, Bon View Publishing",
-              url: "https://ojs.bonviewpress.com/index.php/AIA/index",
-            },
-            {
-              name: "International Journal of Computing and Digital Systems, University of Bahrain, Bahrain",
-              url: "https://ijcds.uob.edu.bh/",
-            },
-            {
-              name: "Discover Artificial Intelligence, Springer Nature",
-              url: "https://link.springer.com/journal/44163",
-            },
-          ];
-          setJournalReviews(fallbackData);
+          setJournalReviews([]);
         }
       } catch (error) {
         console.error("Error fetching journal reviews data:", error);
@@ -120,16 +73,13 @@ const JournalReviews = () => {
       setJournalReviews(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
-      setNewJournalReview({
-        name: '',
-        url: ''
-      });
-      setToastMessage(editingIndex !== null ? 'Journal review updated successfully' : 'Journal review added successfully');
+      setNewJournalReview({ name: '', url: '' });
+      setToastMessage(editingIndex !== null ? 'Updated successfully' : 'Added successfully');
       setToastType('success');
       setShowToast(true);
     } catch (error) {
       console.error("Error updating journal reviews:", error);
-      setToastMessage(`Failed to ${editingIndex !== null ? 'update' : 'add'} journal review`);
+      setToastMessage('Failed to save changes');
       setToastType('error');
       setShowToast(true);
     }
@@ -142,20 +92,16 @@ const JournalReviews = () => {
 
   const handleConfirmDelete = async () => {
     if (reviewToDelete === null) return;
-
     try {
       const docRef = doc(db, "portfolio", "journalReviews");
-      await updateDoc(docRef, {
-        items: arrayRemove(journalReviews[reviewToDelete])
-      });
-
+      await updateDoc(docRef, { items: arrayRemove(journalReviews[reviewToDelete]) });
       setJournalReviews(prev => prev.filter((_, i) => i !== reviewToDelete));
-      setToastMessage('Journal review deleted successfully');
+      setToastMessage('Deleted successfully');
       setToastType('success');
       setShowToast(true);
     } catch (error) {
       console.error("Error deleting journal review:", error);
-      setToastMessage('Failed to delete journal review');
+      setToastMessage('Failed to delete');
       setToastType('error');
       setShowToast(true);
     } finally {
@@ -170,157 +116,169 @@ const JournalReviews = () => {
     setShowAddModal(true);
   };
 
-  if (loading) {
-    return <LoadingAnimation />;
-  }
+  if (loading) return <LoadingAnimation />;
 
   return (
-    <div className="mb-20">
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center">
-          <h3 className="text-2xl font-bold text-gray-900">Journal Article Reviews</h3>
-          <div className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            {journalReviews.length} Journals
+    <div className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Header section with Stats */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-sm">
+            <FaBookOpen className="animate-pulse" /> Peer Review Contributions
           </div>
+          <h2 className="text-3xl md:text-4xl font-black text-base-content">
+            Journal Article <span className="text-primary">Reviews</span>
+          </h2>
+          <div className="h-1 w-20 bg-primary rounded-full" />
         </div>
 
-        {user && (
-          <button
-            onClick={() => {
-              setShowAddModal(true);
-              setEditingIndex(null);
-              setNewJournalReview({
-                name: '',
-                url: ''
-              });
-            }}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            <FaPlus /> Add New
-          </button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {journalReviews.map((journal, index) => (
-          <motion.div
-            key={index}
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="relative group"
-          >
-            {user && (
-              <div className="absolute top-2 right-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleEditJournalReview(index);
-                  }}
-                  className="text-blue-600 hover:text-blue-800 transition-colors bg-white p-1 rounded"
-                  aria-label="Edit journal review"
-                >
-                  <FaEdit size={14} />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDeleteJournalReview(index);
-                  }}
-                  className="text-red-500 hover:text-red-700 transition-colors bg-white p-1 rounded"
-                  aria-label="Delete journal review"
-                >
-                  <FaTrash size={14} />
-                </button>
-              </div>
-            )}
-            <a
-              href={journal.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md"
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="bg-base-200 px-6 py-3 rounded-2xl border border-base-300 flex items-center gap-4 shadow-inner">
+             <div className="text-3xl font-black text-primary">{journalReviews.length}</div>
+             <div className="text-xs font-bold leading-tight uppercase opacity-60">Verified<br/>Journals</div>
+          </div>
+          {user && (
+            <button
+              onClick={() => {
+                setShowAddModal(true);
+                setEditingIndex(null);
+                setNewJournalReview({ name: '', url: '' });
+              }}
+              className="btn btn-primary shadow-lg shadow-primary/30"
             >
-              <div className="flex items-start">
-                <div className="flex-shrink-0 mt-1 mr-4">
-                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-gray-800 font-medium">{journal.name.split(',')[0]}</p>
-                  <p className="text-gray-600 text-sm">{journal.name.split(',')[1]}</p>
-                  <p className="text-gray-500 text-xs mt-1">{journal.year}</p>
-                </div>
-              </div>
-            </a>
-          </motion.div>
-        ))}
+              <FaPlus /> Add New
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Add/Edit Journal Review Modal */}
-      <Modal isOpen={showAddModal} onClose={() => {
-        setShowAddModal(false);
-        setEditingIndex(null);
-        setNewJournalReview({
-          name: '',
-          url: ''
-        });
-      }}>
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md md:max-w-2xl mx-2 my-4 md:my-8">
-          <div className="p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">
-              {editingIndex !== null ? 'Edit Journal Review' : 'Add New Journal Review'}
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <AnimatePresence>
+          {journalReviews.map((journal, index) => {
+            const [jName, publisher] = journal.name.split(',').map(s => s.trim());
+            return (
+              <motion.div
+                key={index}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                whileHover={{ y: -5 }}
+                className="group relative"
+              >
+                <div className="h-full bg-base-100 rounded-2xl border border-base-300 group-hover:border-primary/50 p-6 transition-all duration-300 shadow-sm group-hover:shadow-xl flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div className="p-3 bg-primary/10 rounded-xl text-primary group-hover:bg-primary group-hover:text-primary-content transition-colors duration-300">
+                        <FaQuoteLeft size={18} />
+                      </div>
+                      <a 
+                        href={journal.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="btn btn-circle btn-ghost btn-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Visit Journal"
+                      >
+                        <FaExternalLinkAlt size={14} className="text-primary" />
+                      </a>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-bold text-base-content leading-tight group-hover:text-primary transition-colors">
+                        {jName}
+                      </h4>
+                      {publisher && (
+                        <span className="badge badge-secondary badge-outline badge-sm mt-2 font-semibold">
+                          {publisher}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between border-t border-base-200 pt-4">
+                    <div className="text-[10px] font-black uppercase tracking-tighter opacity-40">Reviewer Record</div>
+                    
+                    {user && (
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => handleEditJournalReview(index)}
+                          className="btn btn-square btn-ghost btn-xs text-info"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteJournalReview(index)}
+                          className="btn btn-square btn-ghost btn-xs text-error"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
+
+      {/* Modal - Themed and Responsive */}
+      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
+        <div className="bg-base-100 rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden border border-base-300">
+          <div className="bg-primary p-6 text-primary-content">
+            <h3 className="text-2xl font-black">
+              {editingIndex !== null ? 'Edit Reviewer Entry' : 'New Journal Contribution'}
             </h3>
+            <p className="text-sm opacity-80 font-medium">Add journal details and verification link</p>
+          </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6">
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Journal Name*</label>
-                <input
-                  type="text"
-                  value={newJournalReview.name}
-                  onChange={(e) => setNewJournalReview({ ...newJournalReview, name: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="e.g., Pattern Recognition, Elsevier"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">URL*</label>
-                <input
-                  type="url"
-                  value={newJournalReview.url}
-                  onChange={(e) => setNewJournalReview({ ...newJournalReview, url: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="https://example.com/journal"
-                />
-              </div>
+          <div className="p-8 space-y-6">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-bold uppercase text-xs opacity-60">Journal & Publisher</span>
+              </label>
+              <input
+                type="text"
+                value={newJournalReview.name}
+                onChange={(e) => setNewJournalReview({ ...newJournalReview, name: e.target.value })}
+                className="input input-bordered focus:input-primary w-full bg-base-200/50"
+                placeholder="e.g., Pattern Recognition, Elsevier"
+              />
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 space-y-2 sm:space-y-0">
-              <button
-                onClick={() => {
-                  setShowAddModal(false);
-                  setEditingIndex(null);
-                  setNewJournalReview({
-                    name: '',
-                    url: ''
-                  });
-                }}
-                className="px-4 py-2 text-sm sm:text-base text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors order-2 sm:order-1"
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-bold uppercase text-xs opacity-60">Verification / Journal URL</span>
+              </label>
+              <input
+                type="url"
+                value={newJournalReview.url}
+                onChange={(e) => setNewJournalReview({ ...newJournalReview, url: e.target.value })}
+                className="input input-bordered focus:input-primary w-full bg-base-200/50"
+                placeholder="https://journal-link.com"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <button 
+                onClick={() => setShowAddModal(false)}
+                className="btn btn-ghost"
               >
                 Cancel
               </button>
-              <button
+              <button 
                 onClick={handleAddJournalReview}
-                className="px-4 py-2 text-sm sm:text-base bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors order-1 sm:order-2"
+                className="btn btn-primary px-8"
               >
-                {editingIndex !== null ? 'Update Review' : 'Add Review'}
+                Save Record
               </button>
             </div>
           </div>
         </div>
       </Modal>
+
+      {/* Standard Notifications */}
       {showToast && (
         <Toast
           message={toastMessage}
@@ -333,11 +291,11 @@ const JournalReviews = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="Are you sure you want to delete this journal review?"
-        confirmText="Delete"
+        message="Are you sure you want to remove this journal review record from your portfolio?"
+        confirmText="Remove"
         cancelText="Cancel"
         confirmColor="red"
-        title="Delete Journal Review"
+        title="Delete Record"
       />
     </div>
   );

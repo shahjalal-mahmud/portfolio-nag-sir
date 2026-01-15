@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaPlus, FaTrash, FaEdit, FaMapMarkerAlt, FaBook, FaCalendarAlt, FaShieldAlt } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../context/useAuth';
@@ -87,13 +87,7 @@ const TechnicalProgramCommittee = () => {
       setTechnicalPrograms(updatedData);
       setShowAddModal(false);
       setEditingIndex(null);
-      setNewProgram({
-        name: '',
-        date: '',
-        title: '',
-        location: '',
-        publisher: ''
-      });
+      setNewProgram({ name: '', date: '', title: '', location: '', publisher: '' });
       setToastMessage(editingIndex !== null ? 'Program updated successfully' : 'Program added successfully');
       setToastType('success');
       setShowToast(true);
@@ -112,13 +106,11 @@ const TechnicalProgramCommittee = () => {
 
   const handleConfirmDelete = async () => {
     if (programToDelete === null) return;
-
     try {
       const docRef = doc(db, "portfolio", "technicalPrograms");
       await updateDoc(docRef, {
         items: arrayRemove(technicalPrograms[programToDelete])
       });
-
       setTechnicalPrograms(prev => prev.filter((_, i) => i !== programToDelete));
       setToastMessage('Program deleted successfully');
       setToastType('success');
@@ -140,210 +132,213 @@ const TechnicalProgramCommittee = () => {
     setShowAddModal(true);
   };
 
-  if (loading) {
-    return <LoadingAnimation />;
-  }
+  if (loading) return <LoadingAnimation />;
 
   return (
-    <div className="mb-20">
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center">
-          <h3 className="text-2xl font-bold text-gray-900">Technical Program Committee Member</h3>
-          <div className="ml-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-            {technicalPrograms.length} Conference{technicalPrograms.length !== 1 ? 's' : ''}
+    <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-primary font-semibold tracking-wide uppercase text-sm">
+            <FaShieldAlt /> Professional Service
           </div>
+          <h2 className="text-3xl md:text-4xl font-black text-base-content tracking-tight">
+            Technical Program <span className="text-primary">Committee</span>
+          </h2>
         </div>
 
-        {user && (
-          <button
-            onClick={() => {
-              setShowAddModal(true);
-              setEditingIndex(null);
-              setNewProgram({
-                name: '',
-                date: '',
-                title: '',
-                location: '',
-                publisher: ''
-              });
-            }}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            <FaPlus /> Add New
-          </button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {technicalPrograms.map((conf, index) => (
-          <motion.div
-            key={index}
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="relative group"
-          >
-            {user && (
-              <div className="absolute top-2 right-2 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleEditProgram(index);
-                  }}
-                  className="text-blue-600 hover:text-blue-800 transition-colors bg-white p-1 rounded"
-                  aria-label="Edit program"
-                >
-                  <FaEdit size={14} />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDeleteProgram(index);
-                  }}
-                  className="text-red-500 hover:text-red-700 transition-colors bg-white p-1 rounded"
-                  aria-label="Delete program"
-                >
-                  <FaTrash size={14} />
-                </button>
-              </div>
-            )}
-            <div className="bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-300 shadow-sm hover:shadow-md">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="text-xl font-bold text-blue-700">{conf.name}</h4>
-                <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
-                  {conf.date}
-                </span>
-              </div>
-
-              <p className="text-gray-800 mb-3">{conf.title}</p>
-
-              <div className="flex items-center text-sm text-gray-600 mb-2">
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                {conf.location}
-              </div>
-
-              <div className="flex items-center text-sm text-gray-600">
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                </svg>
-                <span>Published by <span className="font-medium">{conf.publisher}</span></span>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-gray-100">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Technical Program Committee Member
-                </span>
-              </div>
+        <div className="flex items-center gap-4">
+          <div className="stats shadow bg-base-200 hidden sm:inline-flex">
+            <div className="stat py-2 px-4">
+              <div className="stat-title text-xs uppercase">Total Roles</div>
+              <div className="stat-value text-2xl text-primary">{technicalPrograms.length}</div>
             </div>
-          </motion.div>
-        ))}
+          </div>
+          
+          {user && (
+            <button
+              onClick={() => {
+                setShowAddModal(true);
+                setEditingIndex(null);
+                setNewProgram({ name: '', date: '', title: '', location: '', publisher: '' });
+              }}
+              className="btn btn-primary btn-md shadow-lg shadow-primary/20 gap-2"
+            >
+              <FaPlus /> Add Program
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Add/Edit Program Modal */}
-      <Modal isOpen={showAddModal} onClose={() => {
-        setShowAddModal(false);
-        setEditingIndex(null);
-        setNewProgram({
-          name: '',
-          date: '',
-          title: '',
-          location: '',
-          publisher: ''
-        });
-      }}>
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md md:max-w-2xl mx-2 my-4 md:my-8">
-          <div className="p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800 mb-4 sm:mb-6">
-              {editingIndex !== null ? 'Edit Technical Program' : 'Add New Technical Program'}
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-8">
+        <AnimatePresence>
+          {technicalPrograms.map((conf, index) => (
+            <motion.div
+              key={index}
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ delay: index * 0.1 }}
+              className="group relative"
+            >
+              <div className="h-full card bg-base-100 border border-base-300 hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl overflow-hidden">
+                {/* Accent bar */}
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                <div className="card-body p-6">
+                  {/* Card Header */}
+                  <div className="flex justify-between items-start gap-4 mb-4">
+                    <div className="badge badge-primary badge-outline font-bold p-3">
+                      {conf.name}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-medium text-base-content/60 bg-base-200 px-3 py-1 rounded-full">
+                      <FaCalendarAlt className="text-primary" />
+                      {conf.date}
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-lg font-bold leading-tight text-base-content mb-4 group-hover:text-primary transition-colors">
+                    {conf.title}
+                  </h3>
+
+                  {/* Details Metadata */}
+                  <div className="space-y-3 mt-auto">
+                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                      <div className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-primary shrink-0">
+                        <FaMapMarkerAlt />
+                      </div>
+                      <span>{conf.location}</span>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                      <div className="w-8 h-8 rounded-lg bg-base-200 flex items-center justify-center text-primary shrink-0">
+                        <FaBook />
+                      </div>
+                      <span>Publisher: <span className="font-semibold text-base-content">{conf.publisher}</span></span>
+                    </div>
+                  </div>
+
+                  {/* Role Footer */}
+                  <div className="mt-6 pt-4 border-t border-base-200 flex justify-between items-center">
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-success flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                      Active Member
+                    </span>
+                    
+                    {/* Admin Actions */}
+                    {user && (
+                      <div className="flex gap-1">
+                        <button 
+                          onClick={() => handleEditProgram(index)}
+                          className="btn btn-ghost btn-xs text-info hover:bg-info/10"
+                        >
+                          <FaEdit size={14} />
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteProgram(index)}
+                          className="btn btn-ghost btn-xs text-error hover:bg-error/10"
+                        >
+                          <FaTrash size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Modern Add/Edit Modal Content */}
+      <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
+        <div className="bg-base-100 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-base-300">
+          <div className="p-1 bg-primary" /> {/* Top accent line */}
+          <div className="p-8">
+            <h3 className="text-2xl font-black mb-6 flex items-center gap-2">
+              {editingIndex !== null ? <FaEdit className="text-primary"/> : <FaPlus className="text-primary"/>}
+              {editingIndex !== null ? 'Modify Program' : 'Add New Entry'}
             </h3>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6">
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Conference Name*</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="form-control w-full">
+                <label className="label text-xs font-bold uppercase opacity-60">Conference Acronym</label>
                 <input
                   type="text"
                   value={newProgram.name}
                   onChange={(e) => setNewProgram({ ...newProgram, name: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="input input-bordered focus:input-primary w-full bg-base-200/50"
                   placeholder="e.g., ICRTCIS-2025"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Date*</label>
+              <div className="form-control w-full">
+                <label className="label text-xs font-bold uppercase opacity-60">Event Date</label>
                 <input
                   type="text"
                   value={newProgram.date}
                   onChange={(e) => setNewProgram({ ...newProgram, date: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="input input-bordered focus:input-primary w-full bg-base-200/50"
                   placeholder="e.g., June 2025"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Conference Title*</label>
+              <div className="form-control w-full md:col-span-2">
+                <label className="label text-xs font-bold uppercase opacity-60">Full Conference Title</label>
                 <input
                   type="text"
                   value={newProgram.title}
                   onChange={(e) => setNewProgram({ ...newProgram, title: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="e.g., 6th Int. Conf. on Recent Trends..."
+                  className="input input-bordered focus:input-primary w-full bg-base-200/50"
+                  placeholder="6th International Conference on..."
                 />
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Location*</label>
+              <div className="form-control w-full">
+                <label className="label text-xs font-bold uppercase opacity-60">Venue / Location</label>
                 <input
                   type="text"
                   value={newProgram.location}
                   onChange={(e) => setNewProgram({ ...newProgram, location: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="e.g., Jaipur, Rajasthan, India"
+                  className="input input-bordered focus:input-primary w-full bg-base-200/50"
+                  placeholder="City, Country"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1">Publisher*</label>
+              <div className="form-control w-full">
+                <label className="label text-xs font-bold uppercase opacity-60">Publisher</label>
                 <input
                   type="text"
                   value={newProgram.publisher}
                   onChange={(e) => setNewProgram({ ...newProgram, publisher: e.target.value })}
-                  className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  placeholder="e.g., Springer, IET"
+                  className="input input-bordered focus:input-primary w-full bg-base-200/50"
+                  placeholder="e.g., IEEE, Springer"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 space-y-2 sm:space-y-0">
-              <button
-                onClick={() => {
-                  setShowAddModal(false);
-                  setEditingIndex(null);
-                  setNewProgram({
-                    name: '',
-                    date: '',
-                    title: '',
-                    location: '',
-                    publisher: ''
-                  });
-                }}
-                className="px-4 py-2 text-sm sm:text-base text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors order-2 sm:order-1"
+            <div className="modal-action mt-10">
+              <button 
+                onClick={() => setShowAddModal(false)}
+                className="btn btn-ghost"
               >
                 Cancel
               </button>
-              <button
+              <button 
                 onClick={handleAddProgram}
-                className="px-4 py-2 text-sm sm:text-base bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors order-1 sm:order-2"
+                className="btn btn-primary px-8"
               >
-                {editingIndex !== null ? 'Update Program' : 'Add Program'}
+                {editingIndex !== null ? 'Save Changes' : 'Publish Program'}
               </button>
             </div>
           </div>
         </div>
       </Modal>
+
+      {/* Keep your existing Toast and Confirmation Components */}
       {showToast && (
         <Toast
           message={toastMessage}
@@ -356,11 +351,11 @@ const TechnicalProgramCommittee = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        message="Are you sure you want to delete this program?"
-        confirmText="Delete"
-        cancelText="Cancel"
+        message="This action cannot be undone. Are you sure you want to remove this committee record?"
+        confirmText="Remove"
+        cancelText="Keep"
         confirmColor="red"
-        title="Delete Program"
+        title="Confirm Deletion"
       />
     </div>
   );

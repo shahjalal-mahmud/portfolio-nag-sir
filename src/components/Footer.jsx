@@ -51,6 +51,7 @@ const Footer = () => {
                         </div>
 
                         <div className="space-y-4">
+                            {/* Location */}
                             <div className="flex items-start group">
                                 <FaMapMarkerAlt className="text-blue-600 mt-1 mr-4 transition-transform group-hover:scale-110" />
                                 <a
@@ -63,13 +64,32 @@ const Footer = () => {
                                 </a>
                             </div>
 
-                            <div className="flex items-center group">
-                                <FaEnvelope className="text-blue-600 mr-4 transition-transform group-hover:scale-110" />
-                                <a href={`mailto:${heroData.email}`} className="text-gray-600 hover:text-blue-700 transition-colors">
-                                    {heroData.email}
-                                </a>
+                            {/* Dynamic Email Section */}
+                            <div className="flex items-start group">
+                                <FaEnvelope className="text-blue-600 mt-1 mr-4 transition-transform group-hover:scale-110" />
+                                <div className="flex flex-col space-y-2">
+                                    {Array.isArray(heroData.email) ? (
+                                        heroData.email.map((email, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={`mailto:${email}`}
+                                                className="text-gray-600 hover:text-blue-700 transition-colors break-all"
+                                            >
+                                                {email}
+                                            </a>
+                                        ))
+                                    ) : (
+                                        <a
+                                            href={`mailto:${heroData.email}`}
+                                            className="text-gray-600 hover:text-blue-700 transition-colors break-all"
+                                        >
+                                            {heroData.email}
+                                        </a>
+                                    )}
+                                </div>
                             </div>
 
+                            {/* Phone */}
                             <div className="flex items-center group">
                                 <FaPhone className="text-blue-600 mr-4 transition-transform group-hover:scale-110" />
                                 <span className="text-gray-600">{heroData.phone}</span>

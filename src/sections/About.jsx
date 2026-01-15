@@ -5,7 +5,8 @@ import {
   FaDownload,
   FaGraduationCap,
   FaEdit,
-  FaUpload
+  FaUpload,
+  FaCode
 } from "react-icons/fa";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,16 +28,17 @@ const About = () => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
-  const [cvUrl, setCVUrl] = useState(aboutData?.contactInfo?.cvLink || '');
+  const [cvUrl, setCVUrl] = useState('');
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
-  const showToast = (message, type) => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast(prev => ({ ...prev, show: false })), 5000);
-  };
+  const [isDesktop, setIsDesktop] = useState(false);
 
-  const closeToast = () => {
-    setToast(prev => ({ ...prev, show: false }));
-  };
+  useEffect(() => {
+    const checkRes = () => setIsDesktop(window.innerWidth >= 1024);
+    checkRes();
+    window.addEventListener('resize', checkRes);
+    return () => window.removeEventListener('resize', checkRes);
+  }, []);
+
   const [tempValues, setTempValues] = useState({
     shortBio: '',
     fullBio: '',
@@ -46,38 +48,34 @@ const About = () => {
     skills: []
   });
 
-  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast(prev => ({ ...prev, show: false })), 5000);
+  };
+
+  const closeToast = () => setToast(prev => ({ ...prev, show: false }));
 
   useEffect(() => {
     const fetchAboutData = async () => {
       try {
         const docRef = doc(db, "portfolio", "about");
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
-          setAboutData(docSnap.data());
           const data = docSnap.data();
           setAboutData(data);
           setCVUrl(data.contactInfo?.cvLink || '');
-          // Set the image URL if it exists in Firestore
-          if (data.aboutImageUrl) {
-            setImageUrl(data.aboutImageUrl);
-          }
-
+          if (data.aboutImageUrl) setImageUrl(data.aboutImageUrl);
         } else {
           setAboutData({
-            shortBio: `Anindya Nag obtained an M.Sc. in Computer Science and Engineering from Khulna University...`,
-            fullBio: `His research focuses on health informatics, medical Internet of Things...`,
+            shortBio: `Anindya Nag obtained an M.Sc. in Computer Science...`,
+            fullBio: `His research focuses on health informatics...`,
             contactInfo: {
               position: "Lecturer, NUBTK",
-              location: "Shib Bari Circle, Sonadanga, Khulna-9100",
+              location: "Khulna, Bangladesh",
               email: "anindyanag@ieee.org",
-              cvLink: "/cv/Anindya_Nag_CV.pdf"
+              cvLink: ""
             },
-            skills: [
-              "Python", "C", "C++", "NumPy", "Pandas", "SciPy", "Matplotlib",
-              "LaTex", "MySQL Workbench", "Google Colab", "PyCharm"
-            ]
+            skills: ["Python", "C++", "LaTeX", "Machine Learning"]
           });
         }
       } catch (error) {
@@ -86,7 +84,6 @@ const About = () => {
         setLoading(false);
       }
     };
-
     fetchAboutData();
   }, []);
 
@@ -95,21 +92,11 @@ const About = () => {
   const handleEditClick = (field, value) => {
     setEditField(field);
     if (field === 'bio') {
-      setTempValues({
-        ...tempValues,
-        shortBio: aboutData.shortBio,
-        fullBio: aboutData.fullBio
-      });
+      setTempValues({ ...tempValues, shortBio: aboutData.shortBio, fullBio: aboutData.fullBio });
     } else if (field === 'skills') {
-      setTempValues({
-        ...tempValues,
-        skills: aboutData.skills.join(', ') // Store as string for editing
-      });
+      setTempValues({ ...tempValues, skills: aboutData.skills.join(', ') });
     } else {
-      setTempValues({
-        ...tempValues,
-        [field]: value
-      });
+      setTempValues({ ...tempValues, [field]: value });
     }
     setIsEditing(true);
   };
@@ -118,474 +105,268 @@ const About = () => {
     try {
       const docRef = doc(db, "portfolio", "about");
       let updateData = {};
-
       if (editField === 'bio') {
-        updateData = {
-          shortBio: tempValues.shortBio,
-          fullBio: tempValues.fullBio
-        };
+        updateData = { shortBio: tempValues.shortBio, fullBio: tempValues.fullBio };
       } else if (editField === 'skills') {
-        updateData = {
-          skills: tempValues.skills.split(',').map(skill => skill.trim())
-        };
+        updateData = { skills: tempValues.skills.split(',').map(skill => skill.trim()) };
       } else {
-        updateData = {
-          contactInfo: {
-            ...aboutData.contactInfo,
-            [editField]: tempValues[editField]
-          }
-        };
+        updateData = { contactInfo: { ...aboutData.contactInfo, [editField]: tempValues[editField] } };
       }
-
       await updateDoc(docRef, updateData);
-
-      setAboutData(prev => ({
-        ...prev,
-        ...updateData
-      }));
-
+      setAboutData(prev => ({ ...prev, ...updateData }));
       setIsEditing(false);
-      showToast(`${editField === 'bio' ? 'Biography' : editField} updated successfully!`, 'success');
+      showToast(`${editField} updated!`, 'success');
     } catch (error) {
-      console.error("Error updating about data:", error);
-      showToast(`Failed to update ${editField === 'bio' ? 'biography' : editField}. Please try again.`, 'error');
+      showToast(`Update failed`, 'error');
     }
   };
 
   const handleImageUpdate = async () => {
-    if (!imageUrl) {
-      showToast('Please provide an image URL', 'error');
-      return;
-    }
-
     try {
       const docRef = doc(db, "portfolio", "about");
-      await updateDoc(docRef, {
-        aboutImageUrl: imageUrl
-      });
-
-      setAboutData(prev => ({
-        ...prev,
-        aboutImageUrl: imageUrl
-      }));
-
+      await updateDoc(docRef, { aboutImageUrl: imageUrl });
+      setAboutData(prev => ({ ...prev, aboutImageUrl: imageUrl }));
       setIsImageModalOpen(false);
-      showToast('Profile image updated successfully!', 'success');
+      showToast('Image updated!', 'success');
     } catch (error) {
-      console.error("Error updating about image:", error);
-      showToast('Failed to update profile image. Please try again.', 'error');
+      showToast('Update failed', 'error');
     }
   };
 
-  if (loading) {
-    return <LoadingAnimation />;
-  }
+  const TechBadge = ({ tech }) => (
+    <motion.span
+      whileHover={{ scale: 1.05, y: -2 }}
+      whileTap={{ scale: 0.95 }}
+      className="badge badge-outline border-primary/30 text-base-content hover:bg-primary hover:text-primary-content hover:border-primary cursor-default py-4 px-4 text-xs sm:text-sm transition-colors duration-300"
+    >
+      {tech}
+    </motion.span>
+  );
 
-  if (!aboutData) {
-    return <div className="text-center py-12 text-gray-500">No data available</div>;
-  }
+  if (loading) return <LoadingAnimation />;
+  if (!aboutData) return <div className="text-center py-12">No data available</div>;
+
+  const cvDownloadLink = aboutData.contactInfo.cvLink?.replace(
+    /^https:\/\/drive\.google\.com\/file\/d\/([^/]+).*$/,
+    "https://drive.google.com/uc?export=download&id=$1"
+  ) || "#";
 
   return (
-    <section
-      id="about"
-      className="py-24 px-6 text-gray-900"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
-        {/* Profile Image */}
-        <div className="w-full md:w-1/2 flex justify-center relative">
-          <img
-            src={imageUrl || "/images/cover.jpeg"}
-            alt="Anindya Nag"
-            className="w-80 h-80 sm:w-96 sm:h-96 object-cover rounded-2xl shadow-2xl border-4 border-primary"
-            onError={(e) => {
-              e.target.src = "/images/cover.jpeg"; // Fallback image if URL is invalid
-            }}
-          />
-          {user && (
-            <button
-              className="absolute bottom-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-all"
-              onClick={() => setIsImageModalOpen(true)}
-            >
-              <FaUpload className="text-blue-600" size={16} />
-            </button>
-          )}
-        </div>
-
-        {/* About Text */}
-        <div className="w-full md:w-1/2 space-y-6 text-center md:text-left relative">
-          <div className="flex items-center justify-center md:justify-start gap-3">
-            <h2 className="text-4xl font-extrabold">About Me</h2>
+    <section id="about" className="py-20 lg:py-32 px-6 bg-base-100 text-base-content transition-colors duration-300 relative">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20">
+        
+        {/* Profile Image Section */}
+        <div className="w-full lg:w-5/12 flex justify-center lg:justify-end">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="relative group"
+          >
+            <div className="absolute -inset-4 bg-primary/10 rounded-3xl blur-2xl -z-10 animate-pulse"></div>
+            <img
+              src={imageUrl || "/images/cover.jpeg"}
+              alt="Profile"
+              className="w-56 h-56 sm:w-72 sm:h-72 lg:w-96 lg:h-96 object-cover rounded-3xl shadow-2xl border-4 border-primary ring-8 ring-primary/5 transition-all duration-500"
+              onError={(e) => { e.target.src = "/images/cover.jpeg"; }}
+            />
             {user && (
               <button
-                onClick={() => handleEditClick('bio', '')}
-                className="text-gray-400 hover:text-blue-600 transition-colors"
-                aria-label="Edit bio"
+                className="absolute bottom-4 right-4 btn btn-circle btn-primary btn-sm shadow-xl scale-0 group-hover:scale-100 transition-transform duration-300"
+                onClick={() => setIsImageModalOpen(true)}
               >
-                <FaEdit size={20} />
+                <FaUpload size={14} />
               </button>
             )}
-          </div>
+          </motion.div>
+        </div>
 
-          <p className="text-md sm:text-lg text-gray-700 leading-relaxed">
-            {aboutData.shortBio}
-            {!isDesktop && isExpanded && (
-              <>
-                <br /><br />
-                {aboutData.fullBio}
-              </>
-            )}
-          </p>
-
-          <button
-            onClick={toggleExpanded}
-            className="text-primary underline text-sm font-medium transition hover:text-secondary"
-          >
-            {isExpanded ? "See Less" : "See More"}
-          </button>
-
-          {/* Contact & Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mt-4">
-            {[
-              {
-                icon: <FaGraduationCap className="text-primary text-lg sm:text-xl flex-shrink-0" />,
-                value: aboutData.contactInfo.position,
-                field: "position",
-              },
-              {
-                icon: <FaMapMarkerAlt className="text-primary text-lg sm:text-xl flex-shrink-0" />,
-                value: aboutData.contactInfo.location,
-                field: "location",
-              },
-              {
-                icon: <FaEnvelope className="text-primary ttext-lg sm:text-xl flex-shrink-0" />,
-                value: aboutData.contactInfo.email,
-                field: "email",
-              },
-              {
-                icon: <FaDownload className="text-primary text-lg sm:text-xl flex-shrink-0" />,
-                value: (
-                  <a
-                    href={aboutData.contactInfo.cvLink
-                      ? aboutData.contactInfo.cvLink.replace(
-                        /^https:\/\/drive\.google\.com\/file\/d\/([^/]+).*$/,
-                        "https://drive.google.com/uc?export=download&id=$1"
-                      )
-                      : "/cv/Anindya_Nag_CV.pdf"}
-                    download="AnindyaNag_CV.pdf"
-                    className="underline hover:text-primary transition"
-                    target="_self"
-                    rel={aboutData.contactInfo.cvLink ? "noopener noreferrer" : ""}
-                  >
-                    Download CV
-                  </a>
-                ),
-                field: "cvLink",
-              },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-3">
-                {item.icon}
-                <div className="flex-1">
-                  <span className="block break-words">{item.value}</span>
-                  {user && item.field !== "cvLink" && (
-                    <button
-                      onClick={() => handleEditClick(item.field, item.value)}
-                      className="text-gray-400 hover:text-blue-600 transition-colors mt-1 inline-flex items-center"
-                      aria-label={`Edit ${item.field}`}
-                    >
-                      <FaEdit size={14} />
-                    </button>
-                  )}
-                  {user && item.field === "cvLink" && (
-                    <button
-                      className="text-gray-400 hover:text-blue-600 transition-colors mt-1 inline-flex items-center"
-                      onClick={() => {
-                        setCVUrl(aboutData.contactInfo.cvLink);
-                        setIsCVModalOpen(true);
-                      }}
-                      aria-label="Edit CV"
-                    >
-                      <FaEdit size={14} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Skills */}
-          <div className="pt-6">
-            <div className="flex items-center justify-center md:justify-start gap-3">
-              <h3 className="text-xl font-semibold">Skills & Tech Stack</h3>
+        {/* Content Section */}
+        <div className="w-full lg:w-7/12 space-y-8 text-center lg:text-left">
+          <div className="space-y-4">
+            <div className="flex items-center justify-center lg:justify-start gap-4">
+              <h2 className="text-4xl sm:text-5xl font-black tracking-tight italic">
+                About <span className="text-primary">Me</span>
+              </h2>
               {user && (
-                <button
-                  onClick={() => handleEditClick('skills', aboutData.skills)}
-                  className="text-gray-400 hover:text-blue-600 transition-colors"
-                  aria-label="Edit skills"
-                >
+                <button onClick={() => handleEditClick('bio', '')} className="btn btn-ghost btn-circle btn-sm text-primary">
                   <FaEdit size={18} />
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap gap-2 justify-center md:justify-start mt-3">
-              {aboutData.skills.map((skill, idx) => (
-                <motion.span
-                  key={idx}
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="bg-gray-200 text-sm px-3 py-1 rounded-full shadow-sm cursor-pointer hover:bg-primary hover:text-white transition-colors"
+            <div className="h-1.5 w-20 bg-primary mx-auto lg:mx-0 rounded-full"></div>
+          </div>
+
+          <div className="text-base sm:text-lg opacity-80 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            <p>{aboutData.shortBio}</p>
+            <AnimatePresence>
+              {!isDesktop && isExpanded && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }} 
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden mt-4 text-sm sm:text-base text-left bg-base-200 p-4 rounded-xl border border-primary/10"
                 >
-                  {skill}
-                </motion.span>
+                  {aboutData.fullBio}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <button
+            onClick={toggleExpanded}
+            className="btn btn-ghost btn-sm text-primary hover:bg-primary/10 font-bold normal-case group"
+          >
+            {isExpanded ? "Show Less" : "Read Full Vision"}
+            <span className="group-hover:translate-x-1 transition-transform ml-1">→</span>
+          </button>
+
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm sm:text-base border-t border-base-content/10 pt-8">
+            <div className="flex items-center gap-4 justify-center lg:justify-start group">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-content transition-colors">
+                <FaGraduationCap />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{aboutData.contactInfo.position}</span>
+                {user && <FaEdit className="cursor-pointer opacity-0 group-hover:opacity-100 text-primary" onClick={() => handleEditClick('position', aboutData.contactInfo.position)} />}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 justify-center lg:justify-start group">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-content transition-colors">
+                <FaMapMarkerAlt />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{aboutData.contactInfo.location}</span>
+                {user && <FaEdit className="cursor-pointer opacity-0 group-hover:opacity-100 text-primary" onClick={() => handleEditClick('location', aboutData.contactInfo.location)} />}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 justify-center lg:justify-start group">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-content transition-colors">
+                <FaEnvelope />
+              </div>
+              <div className="flex items-center gap-2 overflow-hidden">
+                <span className="font-medium truncate">{aboutData.contactInfo.email}</span>
+                {user && <FaEdit className="cursor-pointer opacity-0 group-hover:opacity-100 text-primary" onClick={() => handleEditClick('email', aboutData.contactInfo.email)} />}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 justify-center lg:justify-start group">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-content transition-colors">
+                <FaDownload />
+              </div>
+              <div className="flex items-center gap-2">
+                <a href={cvDownloadLink} download className="link link-primary no-underline hover:underline font-bold">Download Resume</a>
+                {user && <FaEdit className="cursor-pointer opacity-0 group-hover:opacity-100 text-primary" onClick={() => setIsCVModalOpen(true)} />}
+              </div>
+            </div>
+          </div>
+
+          {/* Skills Section */}
+          <div className="pt-4">
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
+              <h3 className="text-sm uppercase tracking-[0.2em] font-bold opacity-50">Core Expertise</h3>
+              {user && <FaEdit className="cursor-pointer text-primary" onClick={() => handleEditClick('skills', aboutData.skills)} />}
+            </div>
+            <div className="flex flex-wrap gap-2.5 justify-center lg:justify-start">
+              {aboutData.skills.map((skill, idx) => (
+                <TechBadge key={idx} tech={skill} />
               ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Expanded Full Bio Modal (only for desktop) */}
+      {/* Desktop Expanded Modal */}
       <AnimatePresence>
         {isExpanded && isDesktop && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            layoutId="about-popup"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-30"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-100 flex items-center justify-center p-6 bg-base-300/80 backdrop-blur-md"
             onClick={toggleExpanded}
           >
             <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl p-6 max-w-2xl w-full text-left space-y-6 shadow-xl overflow-auto max-h-[90vh] relative"
+              className="bg-base-100 rounded-3xl p-8 md:p-10 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-primary/20 relative"
             >
-              <button
-                onClick={toggleExpanded}
-                className="absolute top-3 right-3 text-xl text-gray-500 hover:text-red-500 transition"
-              >
-                <IoClose />
+              <button onClick={toggleExpanded} className="absolute top-6 right-6 btn btn-circle btn-sm btn-ghost hover:bg-error/10 hover:text-error">
+                <IoClose className="text-2xl" />
               </button>
-              <h3 className="text-2xl font-bold">Full Biography</h3>
-              <p className="text-base leading-relaxed text-gray-800">
-                {aboutData.shortBio}<br /><br />{aboutData.fullBio}
-              </p>
-              <div>
-                <h4 className="text-xl font-semibold mb-3">Skills & Tech Stack</h4>
-                <div className="flex flex-wrap gap-2">
-                  {aboutData.skills.map((skill, idx) => (
-                    <motion.span
-                      key={idx}
-                      whileHover={{ scale: 1.08 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="bg-gray-200 text-sm px-3 py-1 rounded-full shadow-sm cursor-pointer hover:bg-primary hover:text-white transition-colors"
-                    >
-                      {skill}
-                    </motion.span>
-                  ))}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-primary rounded-2xl text-primary-content shadow-lg shadow-primary/20">
+                  <FaCode className="text-3xl" />
                 </div>
+                <div>
+                  <h3 className="text-3xl font-black">Full Biography</h3>
+                  <p className="text-primary font-bold text-sm tracking-widest uppercase">Expertise & Journey</p>
+                </div>
+              </div>
+              <div className="text-lg leading-relaxed opacity-90 space-y-6 text-base-content/80">
+                <p>{aboutData.shortBio}</p>
+                <p>{aboutData.fullBio}</p>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Edit Modal */}
+      {/* --- Keep your existing Modals and Toast here but wrap their content in DaisyUI classes --- */}
       <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Edit {editField === 'bio' ? 'Biography' : editField === 'skills' ? 'Skills' : editField}
-            </h3>
-
-            {editField === 'bio' ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Short Bio</label>
-                  <textarea
-                    value={tempValues.shortBio}
-                    onChange={(e) => setTempValues({ ...tempValues, shortBio: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    rows={4}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Bio</label>
-                  <textarea
-                    value={tempValues.fullBio}
-                    onChange={(e) => setTempValues({ ...tempValues, fullBio: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    rows={6}
-                  />
-                </div>
-              </div>
-            ) : editField === 'skills' ? (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Skills (comma separated)
-                </label>
-                <textarea
-                  value={tempValues.skills}
-                  onChange={(e) => setTempValues({ ...tempValues, skills: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                  rows={4}
-                />
-              </div>
-            ) : (
-              <input
-                type="text"
-                value={tempValues[editField]}
-                onChange={(e) => setTempValues({ ...tempValues, [editField]: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              />
-            )}
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setIsEditing(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Save Changes
-              </button>
+        <div className="bg-base-100 p-6 rounded-2xl w-full max-w-md border border-primary/20">
+          <h3 className="text-xl font-bold mb-4 capitalize">Edit {editField}</h3>
+          {editField === 'bio' ? (
+            <div className="space-y-4">
+              <textarea value={tempValues.shortBio} onChange={(e) => setTempValues({ ...tempValues, shortBio: e.target.value })} className="textarea textarea-bordered w-full h-24" placeholder="Short Bio" />
+              <textarea value={tempValues.fullBio} onChange={(e) => setTempValues({ ...tempValues, fullBio: e.target.value })} className="textarea textarea-bordered w-full h-40" placeholder="Full Bio" />
             </div>
+          ) : (
+            <input 
+               type="text" 
+               value={editField === 'skills' ? tempValues.skills : tempValues[editField]} 
+               onChange={(e) => editField === 'skills' ? setTempValues({...tempValues, skills: e.target.value}) : setTempValues({...tempValues, [editField]: e.target.value})} 
+               className="input input-bordered w-full" 
+            />
+          )}
+          <div className="modal-action">
+            <button className="btn btn-ghost" onClick={() => setIsEditing(false)}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleSave}>Save</button>
           </div>
         </div>
       </Modal>
-      {/* Image Update Modal */}
+
       <Modal isOpen={isImageModalOpen} onClose={() => setIsImageModalOpen(false)}>
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Update About Image
-            </h3>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image URL (from ImageBB)
-              </label>
-              <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://i.ibb.co/..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              />
-            </div>
-
-            {imageUrl && (
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  className="w-full h-48 object-cover rounded-lg border border-gray-300"
-                  onError={(e) => {
-                    e.target.src = "/images/cover.jpeg"; // Fallback image if URL is invalid
-                  }}
-                />
-              </div>
-            )}
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setIsImageModalOpen(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleImageUpdate}
-                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                disabled={!imageUrl}
-              >
-                Update Image
-              </button>
-            </div>
+        <div className="bg-base-100 p-6 rounded-2xl w-full max-w-md border border-primary/20">
+          <h3 className="text-xl font-bold mb-4">Update Image URL</h3>
+          <input type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="input input-bordered w-full mb-4" placeholder="https://..." />
+          {imageUrl && <img src={imageUrl} alt="Preview" className="w-full h-40 object-cover rounded-lg mb-4" />}
+          <div className="modal-action">
+            <button className="btn btn-ghost" onClick={() => setIsImageModalOpen(false)}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleImageUpdate}>Update</button>
           </div>
         </div>
       </Modal>
-      {/* CV Update Modal */}
+
       <Modal isOpen={isCVModalOpen} onClose={() => setIsCVModalOpen(false)}>
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-md mx-4">
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Update CV Link
-            </h3>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Google Drive Shareable Link
-              </label>
-              <input
-                type="url"
-                value={cvUrl}
-                onChange={(e) => setCVUrl(e.target.value)}
-                placeholder="https://drive.google.com/..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              />
-            </div>
-
-            <div className="bg-blue-50 p-4 rounded-lg mb-4">
-              <h4 className="text-sm font-medium text-blue-800 mb-2">How to get Google Drive link:</h4>
-              <ol className="text-xs text-blue-700 list-decimal pl-5 space-y-1">
-                <li>Upload your CV to Google Drive</li>
-                <li>Right-click the file and select "Share"</li>
-                <li>Change sharing settings to "Anyone with the link"</li>
-                <li>Copy the shareable link and paste it above</li>
-              </ol>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setIsCVModalOpen(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    const docRef = doc(db, "portfolio", "about");
-                    await updateDoc(docRef, {
-                      "contactInfo.cvLink": cvUrl
-                    });
-
-                    setAboutData(prev => ({
-                      ...prev,
-                      contactInfo: {
-                        ...prev.contactInfo,
-                        cvLink: cvUrl
-                      }
-                    }));
-
-                    setIsCVModalOpen(false);
-                    showToast('CV link updated successfully!', 'success');
-                  } catch (error) {
-                    console.error("Error updating CV link:", error);
-                    showToast('Failed to update CV link. Please try again.', 'error');
-                  }
-                }}
-                className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                disabled={!cvUrl}
-              >
-                Update CV
-              </button>
-            </div>
+        <div className="bg-base-100 p-6 rounded-2xl w-full max-w-md border border-primary/20">
+          <h3 className="text-xl font-bold mb-4">Update CV Link</h3>
+          <input type="url" value={cvUrl} onChange={(e) => setCVUrl(e.target.value)} className="input input-bordered w-full mb-4" placeholder="Google Drive Link" />
+          <div className="modal-action">
+            <button className="btn btn-ghost" onClick={() => setIsCVModalOpen(false)}>Cancel</button>
+            <button className="btn btn-primary" onClick={async () => {
+              const docRef = doc(db, "portfolio", "about");
+              await updateDoc(docRef, { "contactInfo.cvLink": cvUrl });
+              setAboutData(prev => ({ ...prev, contactInfo: { ...prev.contactInfo, cvLink: cvUrl }}));
+              setIsCVModalOpen(false);
+              showToast('CV Link updated!', 'success');
+            }}>Save</button>
           </div>
         </div>
       </Modal>
-      {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={closeToast}
-        />
-      )}
+
+      {toast.show && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
     </section>
   );
 };
