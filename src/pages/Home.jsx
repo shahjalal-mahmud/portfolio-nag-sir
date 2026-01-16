@@ -16,67 +16,67 @@ import Projects from "../sections/Projects";
 
 const Home = () => {
   return (
-    <div className="bg-white">
+    <div className="bg-base-100 text-base-content transition-colors duration-300">
       <Navbar />
       <Hero />
       
       {/* Section with subtle top shadow */}
-      <div className="relative before:absolute before:top-0 before:w-full before:h-1 before:bg-gradient-to-r before:from-transparent before:via-gray-100 before:to-transparent">
+      <div className="relative before:absolute before:top-0 before:w-full before:h-1 before:bg-gradient-to-r before:from-transparent before:via-base-content/10 before:to-transparent">
         <About />
       </div>
       
       {/* Section with very light gray background */}
-      <div className="bg-gray-50">
+      <div className="bg-base-200">
         <Education />
       </div>
       
       {/* Section with top border */}
-      <div className="border-t border-gray-100">
+      <div className="border-t border-base-content/10">
         <Experience />
       </div>
       
       {/* Section with subtle pattern */}
-      <div className="bg-white bg-[radial-gradient(#f5f5f5_1px,transparent_1px)] [background-size:16px_16px]">
+      <div className="bg-base-100 bg-[radial-gradient(var(--bc)_0.5px,transparent_0.5px)] [background-size:16px_16px] [background-position:center] opacity-90">
         <PublicationStats />
       </div>
       
       {/* Section with light blue tint */}
-      <div className="bg-blue-50/30">
+      <div className="bg-base-300/50">
         <PublicationsTabs />
       </div>
       
       {/* Section with top border and bottom border */}
-      <div className="border-y border-gray-100">
+      <div className="border-y border-base-content/10">
         <ReviewExperience />
       </div>
       
       {/* Section with very light gray background */}
-      <div className="bg-gray-50">
+      <div className="bg-base-200">
         <Skills />
       </div>
       
       {/* Section with subtle pattern */}
-      <div className="bg-white bg-[radial-gradient(#f5f5f5_1px,transparent_1px)] [background-size:16px_16px]">
+      <div className="bg-base-100 bg-[radial-gradient(var(--bc)_0.5px,transparent_0.5px)] [background-size:16px_16px] [background-position:center] opacity-90">
         <Projects />
       </div>
       
       {/* Section with light amber tint */}
-      <div className="bg-amber-50/30">
+      <div className="bg-base-300/50">
         <MembershipsAndAwards />
       </div>
       
       {/* Section with top border */}
-      <div className="border-t border-gray-100">
+      <div className="border-t border-base-content/10">
         <Certifications />
       </div>
       
       {/* Section with very light gray background */}
-      <div className="bg-gray-50">
+      <div className="bg-base-200">
         <References />
       </div>
       
       {/* Contact section with subtle top shadow */}
-      <div className="relative before:absolute before:top-0 before:w-full before:h-1 before:bg-gradient-to-r before:from-transparent before:via-gray-100 before:to-transparent">
+      <div className="relative before:absolute before:top-0 before:w-full before:h-1 before:bg-gradient-to-r before:from-transparent before:via-base-content/10 before:to-transparent">
         <Contact />
       </div>
       

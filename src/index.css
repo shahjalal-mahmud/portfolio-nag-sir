@@ -1,10 +1,10 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  /* This allows you to use any of the 30+ built-in themes */
+  themes: all;
+}
 
 @theme {
-  /* Your custom font */
-  --font-inter: "Inter", sans-serif;
-
-  /* Your custom color */
-  --color-page-bg: #ffffff;
+  --font-sans: var(--user-font, "Inter", sans-serif); /* Use your dynamic font */
+  --color-page-bg: var(--background);
 }
