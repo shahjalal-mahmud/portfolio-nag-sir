@@ -127,7 +127,7 @@ const Navbar = () => {
 
     return (
         <header className="sticky top-0 z-50 text-base-content font-bold shadow-md bg-base-100/90 backdrop-blur-md">
-            <div className="navbar max-w-7xl mx-auto px-4 flex justify-between items-center py-2">
+            <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-2">
                 <div className="flex-1">
                     <Link
                         to="hero"
@@ -136,20 +136,20 @@ const Navbar = () => {
                         duration={500}
                         offset={-70}
                         onSetActive={() => setActive("hero")}
-                        className="text-2xl font-bold cursor-pointer text-primary"
+                        className="text-xl sm:text-2xl font-bold cursor-pointer text-primary"
                     >
                         Anindya Nag
                     </Link>
                 </div>
 
                 {/* Desktop Menu */}
-                <div className="hidden lg:flex items-center gap-2 text-sm">
+                <div className="hidden lg:flex items-center gap-1 xl:gap-2 text-sm">
                     {menuItems.map((item) =>
                         item.sub ? (
                             <div className="dropdown dropdown-hover" key={item.name}>
                                 <label
                                     tabIndex={0}
-                                    className={`px-2 py-2 cursor-pointer border-b-2 transition-all ${item.sub.some((s) => s.to === active)
+                                    className={`px-2 py-2 cursor-pointer whitespace-nowrap border-b-2 transition-all ${item.sub.some((s) => s.to === active)
                                         ? "border-primary text-primary"
                                         : "border-transparent hover:border-primary"
                                         }`}
@@ -168,7 +168,7 @@ const Navbar = () => {
                         ) : (
                             <div
                                 key={item.name}
-                                className={`px-2 py-2 cursor-pointer border-b-2 transition-all ${active === item.to
+                                className={`px-2 py-2 cursor-pointer whitespace-nowrap border-b-2 transition-all ${active === item.to
                                     ? "border-primary text-primary"
                                     : "border-transparent hover:border-primary"
                                     }`}
@@ -179,9 +179,9 @@ const Navbar = () => {
                     )}
 
                     {/* Theme Selector Integration */}
-                    <div className="relative ml-2" ref={desktopThemeMenuRef}>
+                    <div className="relative ml-1 xl:ml-2" ref={desktopThemeMenuRef}>
                         <button
-                            className="btn btn-ghost btn-sm gap-1 normal-case px-3"
+                            className="btn btn-ghost btn-sm gap-1 normal-case px-2 xl:px-3"
                             onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}
                         >
                             <FaPalette className="text-lg" />
@@ -191,7 +191,7 @@ const Navbar = () => {
 
                         <div
                             onClick={(e) => e.stopPropagation()} // Add this line
-                            className={`absolute right-0 mt-2 w-80 md:w-96 bg-base-200 rounded-box shadow-xl p-4 z-50 transition-all duration-200 ${isThemeMenuOpen
+                            className={`absolute right-0 mt-2 w-72 sm:w-80 md:w-96 bg-base-200 rounded-box shadow-xl p-4 z-50 transition-all duration-200 ${isThemeMenuOpen
                                 ? "opacity-100 translate-y-0"
                                 : "opacity-0 -translate-y-2 pointer-events-none"
                                 }`}
@@ -204,7 +204,7 @@ const Navbar = () => {
                     {user ? (
                         <button
                             onClick={handleLogoutClick}
-                            className="ml-4 px-3 py-2 rounded-md bg-error/10 text-error hover:bg-error/20 transition-colors flex items-center gap-1"
+                            className="ml-2 xl:ml-4 px-2 xl:px-3 py-2 rounded-md bg-error/10 text-error hover:bg-error/20 transition-colors flex items-center gap-1 whitespace-nowrap"
                         >
                             <FiLogOut className="text-sm" />
                             <span>Logout</span>
@@ -212,7 +212,7 @@ const Navbar = () => {
                     ) : (
                         <NavLink
                             to="/login"
-                            className="ml-4 px-3 py-2 rounded-md bg-info/10 text-info hover:bg-info/20 transition-colors flex items-center gap-1"
+                            className="ml-2 xl:ml-4 px-2 xl:px-3 py-2 rounded-md bg-info/10 text-info hover:bg-info/20 transition-colors flex items-center gap-1 whitespace-nowrap"
                         >
                             <FiLogIn className="text-sm" />
                             <span>Login</span>
@@ -221,17 +221,20 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Menu Actions (Theme + Hamburger) */}
-                <div className="lg:hidden flex items-center gap-2">
+                <div className="flex lg:hidden items-center gap-2">
                     {/* Theme Selector for Mobile */}
                     <div className="relative" ref={mobileThemeMenuRef}>
                         <button
                             className="btn btn-ghost btn-circle btn-sm"
-                            onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}
+                            onClick={() => {
+                                setIsThemeMenuOpen((prev) => !prev);
+                                setIsOpen(false); // close hamburger
+                            }}
                         >
                             <FaPalette className="text-lg" />
                         </button>
                         <div
-                            className={`absolute right-0 mt-2 w-72 bg-base-200 rounded-box shadow-xl p-4 z-50 transition-all duration-200 ${isThemeMenuOpen
+                            className={`absolute right-0 mt-2 w-72 sm:w-80 bg-base-200 rounded-box shadow-xl p-4 z-50 transition-all duration-200 ${isThemeMenuOpen
                                 ? "opacity-100 translate-y-0"
                                 : "opacity-0 -translate-y-2 pointer-events-none"
                                 }`}
@@ -241,7 +244,10 @@ const Navbar = () => {
                     </div>
 
                     <button
-                        onClick={() => setIsOpen(!isOpen)}
+                        onClick={() => {
+                            setIsOpen((prev) => !prev);
+                            setIsThemeMenuOpen(false); // close theme selector
+                        }}
                         className="text-2xl text-base-content focus:outline-none p-1"
                     >
                         {isOpen ? <FiX /> : <FiMenu />}
@@ -252,72 +258,108 @@ const Navbar = () => {
             {/* Mobile Slide-in Menu */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
-                        initial={{ x: "100%" }}
-                        animate={{ x: 0 }}
-                        exit={{ x: "100%" }}
-                        transition={{ duration: 0.3 }}
-                        className="lg:hidden fixed top-0 right-0 w-72 h-full bg-base-100 text-base-content shadow-lg z-40 overflow-y-auto px-4 pt-20 pb-6 space-y-4"
-                    >
-                        {menuItems.map((item) =>
-                            item.sub ? (
-                                <div key={item.name}>
-                                    <div
-                                        className="flex items-center justify-between px-2 py-2 font-semibold cursor-pointer hover:bg-base-200 rounded-md"
-                                        onClick={() =>
-                                            setOpenDropdown(
-                                                openDropdown === item.name ? null : item.name
-                                            )
-                                        }
-                                    >
-                                        <span>{item.name}</span>
-                                        <FiChevronDown
-                                            className={`transition-transform ${openDropdown === item.name ? "rotate-180" : ""
-                                                }`}
-                                        />
-                                    </div>
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="fixed inset-0 bg-black/50 lg:hidden z-98"
+                            onClick={() => {
+                                setIsOpen(false);
+                                setOpenDropdown(null);
+                            }}
+                        />
 
-                                    <AnimatePresence>
-                                        {openDropdown === item.name && (
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: "auto", opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                className="ml-4 pl-2 border-l border-base-300 space-y-1 mt-1"
-                                            >
-                                                {item.sub.map((subItem) => renderLink(subItem))}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            ) : (
-                                renderLink(item)
-                            )
-                        )}
-
-                        <div className="border-t border-base-300 pt-4 mt-4">
-                            {user ? (
+                        {/* Drawer */}
+                        <motion.aside
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "tween", duration: 0.35 }}
+                            className="fixed top-0 right-0 h-dvh w-[85%] max-w-sm bg-base-100 shadow-2xl z-99 lg:hidden flex flex-col"
+                        >
+                            {/* Drawer header */}
+                            <div className="flex items-center justify-end h-16 px-4 shrink-0">
                                 <button
-                                    onClick={handleLogoutClick}
-                                    className="block w-full px-4 py-2 rounded-md bg-error/10 text-error hover:bg-error/20 transition-colors text-left items-center gap-2"
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        setOpenDropdown(null);
+                                    }}
+                                    className="text-2xl text-base-content hover:opacity-70"
+                                    aria-label="Close menu"
                                 >
-                                    <FiLogOut className="text-sm" />
-                                    <span>Logout</span>
+                                    <FiX />
                                 </button>
-                            ) : (
-                                <NavLink
-                                    to="/login"
-                                    onClick={() => setIsOpen(false)}
-                                    className="block w-full px-4 py-2 rounded-md bg-info/10 text-info hover:bg-info/20 transition-colors items-center gap-2"
-                                >
-                                    <FiLogIn className="text-sm" />
-                                    <span>Login</span>
-                                </NavLink>
-                            )}
-                        </div>
-                    </motion.div>
+                            </div>
+
+                            {/* Menu content */}
+                            <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-2">
+                                {menuItems.map((item) =>
+                                    item.sub ? (
+                                        <div key={item.name}>
+                                            <button
+                                                className="flex w-full items-center justify-between px-3 py-2 rounded-md font-semibold hover:bg-base-200"
+                                                onClick={() =>
+                                                    setOpenDropdown(
+                                                        openDropdown === item.name ? null : item.name
+                                                    )
+                                                }
+                                            >
+                                                <span>{item.name}</span>
+                                                <FiChevronDown
+                                                    className={`transition-transform duration-200 ${openDropdown === item.name ? "rotate-180" : ""
+                                                        }`}
+                                                />
+                                            </button>
+
+                                            <AnimatePresence>
+                                                {openDropdown === item.name && (
+                                                    <motion.div
+                                                        initial={{ height: 0, opacity: 0 }}
+                                                        animate={{ height: "auto", opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        transition={{ duration: 0.25 }}
+                                                        className="ml-4 mt-1 space-y-1 overflow-hidden border-l border-base-300 pl-3"
+                                                    >
+                                                        {item.sub.map((subItem) => renderLink(subItem))}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    ) : (
+                                        renderLink(item)
+                                    )
+                                )}
+
+                                {/* Auth */}
+                                <div className="border-t border-base-300 pt-4 mt-4">
+                                    {user ? (
+                                        <button
+                                            onClick={handleLogoutClick}
+                                            className="flex w-full items-center gap-2 px-4 py-2 rounded-md bg-error/10 text-error hover:bg-error/20"
+                                        >
+                                            <FiLogOut />
+                                            <span>Logout</span>
+                                        </button>
+                                    ) : (
+                                        <NavLink
+                                            to="/login"
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex w-full items-center gap-2 px-4 py-2 rounded-md bg-info/10 text-info hover:bg-info/20"
+                                        >
+                                            <FiLogIn />
+                                            <span>Login</span>
+                                        </NavLink>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.aside>
+                    </>
                 )}
             </AnimatePresence>
+
 
             {showToast && (
                 <Toast
