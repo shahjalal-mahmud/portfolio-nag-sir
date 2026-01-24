@@ -56,9 +56,9 @@ const Home = () => {
       </div>
       
       {/* Section with subtle pattern */}
-      <div className="bg-base-100 bg-[radial-gradient(var(--bc)_0.5px,transparent_0.5px)] [background-size:16px_16px] [background-position:center] opacity-90">
+      {/* <div className="bg-base-100 bg-[radial-gradient(var(--bc)_0.5px,transparent_0.5px)] [background-size:16px_16px] [background-position:center] opacity-90">
         <Projects />
-      </div>
+      </div> */}
       
       {/* Section with light amber tint */}
       <div className="bg-base-300/50">
@@ -71,9 +71,9 @@ const Home = () => {
       </div>
       
       {/* Section with very light gray background */}
-      <div className="bg-base-200">
+      {/* <div className="bg-base-200">
         <References />
-      </div>
+      </div> */}
       
       {/* Contact section with subtle top shadow */}
       <div className="relative before:absolute before:top-0 before:w-full before:h-1 before:bg-gradient-to-r before:from-transparent before:via-base-content/10 before:to-transparent">
