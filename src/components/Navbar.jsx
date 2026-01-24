@@ -48,6 +48,7 @@ const Navbar = () => {
     }, [isThemeMenuOpen]);
 
     const menuItems = [
+        { name: "Home", to: "hero" },
         { name: "About", to: "about" },
         {
             name: "Academic",
@@ -58,13 +59,13 @@ const Navbar = () => {
             ],
         },
         { name: "Publications", to: "publications" },
-        {
-            name: "Portfolio",
-            sub: [
-                { name: "Skills", to: "skills" },
-                { name: "Projects", to: "projects" },
-            ],
-        },
+        // {
+        //     name: "Portfolio",
+        //     sub: [
+        //         { name: "Skills", to: "skills" },
+        //         { name: "Projects", to: "projects" },
+        //     ],
+        // },
         {
             name: "Achievements",
             sub: [
@@ -72,7 +73,7 @@ const Navbar = () => {
                 { name: "Certifications", to: "certifications" },
             ],
         },
-        { name: "References", to: "references" },
+        // { name: "References", to: "references" },
         { name: "Contact", to: "contact" },
     ];
 
