@@ -369,6 +369,7 @@ const JournalArticles = () => {
                                 <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Status</label>
                                 <select name="status" value={formData.status} onChange={handleInputChange} className="select select-bordered focus:select-primary bg-base-200 border-none">
                                     <option value="">Choose Status</option>
+                                    <option value="Accepted">Accepted</option>
                                     <option value="Published">Published</option>
                                     <option value="In Press">In Press</option>
                                     <option value="Under Review">Under Review</option>

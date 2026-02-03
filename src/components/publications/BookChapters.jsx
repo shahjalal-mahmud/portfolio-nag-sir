@@ -341,6 +341,7 @@ const BookChapters = () => {
                                 <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Chapter Status</label>
                                 <select name="status" value={formData.status} onChange={handleInputChange} className="select bg-base-200 border-none focus:ring-2 focus:ring-amber-500/50">
                                     <option value="">Choose Status</option>
+                                    <option value="Accepted">Accepted</option>
                                     <option value="Published">Published</option>
                                     <option value="In Press">In Press</option>
                                     <option value="Submitted">Submitted</option>
