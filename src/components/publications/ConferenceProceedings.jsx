@@ -358,9 +358,9 @@ const ConferenceProceedings = () => {
                                 <label className="label font-bold text-xs uppercase tracking-widest opacity-60">Event Status</label>
                                 <select name="status" value={formData.status} onChange={handleInputChange} className="select bg-base-200 focus:select-secondary border-none">
                                     <option value="">Select Status</option>
+                                    <option value="Accepted">Accepted</option>
                                     <option value="Published">Published</option>
                                     <option value="Presented">Presented</option>
-                                    <option value="Accepted">Accepted</option>
                                     <option value="Submitted">Submitted</option>
                                 </select>
                             </div>
