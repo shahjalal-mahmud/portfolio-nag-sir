@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaTrash, FaEdit, FaExternalLinkAlt, FaGraduationCap, FaCalendarAlt, FaUniversity, FaAward, FaBookOpen, FaChevronDown, FaChevronUp, FaTimes } from "react-icons/fa";
 import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
@@ -14,7 +15,6 @@ const Education = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [expandedCards, setExpandedCards] = useState({});
   const [toast, setToast] = useState({
     show: false,
     message: '',
@@ -39,13 +39,6 @@ const Education = () => {
 
   const closeToast = () => {
     setToast(prev => ({ ...prev, show: false }));
-  };
-
-  const toggleCardExpansion = (index) => {
-    setExpandedCards(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
   };
 
   useEffect(() => {
@@ -97,7 +90,7 @@ const Education = () => {
       setNewEducation({
         title: '', institution: '', url: '', year: '', result: '', courses: '', isPresent: false
       });
-      
+
       showToast(editingIndex !== null ? 'Education updated successfully!' : 'Education added successfully!', 'success');
     } catch (error) {
       console.error("Error adding/updating education:", error);
@@ -142,212 +135,151 @@ const Education = () => {
 
   if (loading) return <LoadingAnimation />;
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.2 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.6, ease: "easeOut" } 
-    }
-  };
-
-  const expandVariants = {
-    collapsed: { height: 0, opacity: 0 },
-    expanded: { height: "auto", opacity: 1 }
-  };
-
   return (
     <>
-      <section id="education" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          
-          {/* Header Section */}
-          <div className="mb-12 md:mb-16 lg:mb-20">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 text-primary text-sm font-medium uppercase tracking-wider">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  <span>Academic Journey</span>
+      <section id="education" className="py-12 sm:py-16 lg:py-20 px-4">
+        <div className="max-w-6xl mx-auto">
+
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FaGraduationCap className="text-xl text-primary" />
                 </div>
-                <div>
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-                    Education
-                    <span className="text-primary">.</span>
-                  </h2>
-                  <p className="mt-3 md:mt-4 text-base-content/70 text-lg max-w-2xl">
-                    My academic background and qualifications
-                  </p>
-                </div>
+                <h2 className="text-3xl sm:text-4xl font-bold text-base-content">
+                  Education
+                </h2>
               </div>
-              {user && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowAddModal(true)}
-                  className="btn btn-primary gap-2 px-6 py-3 rounded-lg font-semibold"
-                >
-                  <FaPlus className="text-sm" />
-                  <span>Add New</span>
-                </motion.button>
-              )}
+              <div className="h-1 w-16 bg-primary rounded-full ml-13"></div>
             </div>
+            {user && (
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="btn btn-primary btn-sm sm:btn-md gap-2"
+              >
+                <FaPlus className="text-sm" /> Add New
+              </button>
+            )}
           </div>
 
-          {/* Education Cards Grid */}
+          {/* Timeline */}
           {educationData.length > 0 ? (
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              {educationData.map((item, idx) => {
-                const coursesArray = item.courses ? item.courses.split(', ') : [];
-                const showExpandButton = coursesArray.length > 0;
-                const isExpanded = expandedCards[idx];
-                
-                return (
-                  <motion.div 
-                    key={idx} 
-                    variants={itemVariants}
-                    className="card bg-base-100 shadow-lg hover:shadow-xl border border-base-300/50 transition-all duration-300 group h-full flex flex-col"
-                  >
-                    <div className="card-body p-6 flex flex-col h-full">
-                      {/* Main Content - Always Visible */}
-                      <div className="flex-1">
-                        {/* Logo/Icon and Title */}
-                        <div className="flex items-start gap-4 mb-4">
-                          <div className="p-3 rounded-lg bg-primary/10">
-                            <FaGraduationCap className="text-xl text-primary" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-lg font-bold line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+            <div className="relative">
+              {/* Timeline Line - Hidden on mobile */}
+              <div className="hidden md:block absolute left-8 top-8 bottom-8 w-0.5 bg-base-300"></div>
+
+              {/* Education Cards */}
+              <div className="space-y-8">
+                {educationData.map((item, idx) => {
+                  const coursesArray = item.courses ? item.courses.split(', ') : [];
+
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                      className="relative"
+                    >
+                      {/* Timeline Dot - Hidden on mobile */}
+                      <div className="hidden md:flex absolute left-[1.6rem] top-6 w-4 h-4 rounded-full bg-primary border-4 border-base-100 z-10 shadow-lg"></div>
+
+                      {/* Card */}
+                      <div className="md:ml-20">
+                        <div className="card bg-base-100 border border-base-300 hover:border-primary/30 hover:shadow-xl transition-all duration-300 group">
+                          <div className="card-body p-5 sm:p-6 lg:p-8">
+
+                            {/* Admin Controls */}
+                            {user && (
+                              <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  onClick={() => handleEditEducation(idx)}
+                                  className="btn btn-circle btn-ghost btn-xs text-info hover:bg-info/10"
+                                >
+                                  <FaEdit />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteClick(idx)}
+                                  className="btn btn-circle btn-ghost btn-xs text-error hover:bg-error/10"
+                                >
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Year Badge */}
+                            <div className="mb-1">
+                              <span className="badge badge-primary badge-sm font-semibold uppercase tracking-wide">
+                                {item.year}
+                              </span>
+                              {item.isPresent && (
+                                <span className="badge badge-success badge-sm font-semibold ml-2">
+                                  <span className="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>
+                                  Present
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Title */}
+                            <h3 className="text-xl sm:text-2xl font-bold text-base-content mb-2 pr-16">
                               {item.title}
                             </h3>
-                            <a
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-base-content/70 hover:text-primary transition-colors inline-flex items-center gap-2 text-sm"
-                            >
-                              <FaUniversity className="text-xs" />
-                              <span className="line-clamp-1">{item.institution}</span>
-                              <FaExternalLinkAlt className="text-[10px]" />
-                            </a>
-                          </div>
-                        </div>
 
-                        {/* Year and Result Badges */}
-                        <div className="flex flex-wrap gap-3 mb-4">
-                          <div className="badge badge-outline gap-2 px-3 py-2">
-                            <FaCalendarAlt className="text-primary" />
-                            <span className="text-sm">{item.year}</span>
-                          </div>
-                          {item.isPresent && (
-                            <div className="badge badge-success gap-1 px-3 py-2">
-                              <span className="w-1.5 h-1.5 bg-current rounded-full"></span>
-                              Present
-                            </div>
-                          )}
-                          {item.result && (
-                            <div className="badge badge-info gap-2 px-3 py-2">
-                              <FaAward />
-                              <span className="font-medium">{item.result}</span>
-                            </div>
-                          )}
-                        </div>
+                            {/* Institution Link */}
+                            {item.url && (
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary transition-colors mb-2 group/link"
+                              >
+                                <FaUniversity className="text-lg shrink-0" />
+                                <span className="font-medium text-sm sm:text-base">{item.institution}</span>
+                              </a>
+                            )}
 
-                        {/* Expandable Section - Coursework */}
-                        <AnimatePresence>
-                          {showExpandButton && (
-                            <motion.div
-                              initial="collapsed"
-                              animate={isExpanded ? "expanded" : "collapsed"}
-                              exit="collapsed"
-                              variants={expandVariants}
-                              transition={{ duration: 0.3, ease: "easeInOut" }}
-                              className="overflow-hidden"
-                            >
-                              <div className="pt-4 border-t border-base-300/30">
-                                <div className="flex items-center justify-between mb-3">
-                                  <div className="flex items-center gap-2">
-                                    <FaBookOpen className="text-secondary" />
-                                    <span className="text-sm font-semibold text-base-content/70">
-                                      Key Coursework
-                                    </span>
-                                  </div>
+                            {/* Result Badge */}
+                            {item.result && (
+                              <div className="mb-4">
+                                <div className="inline-flex items-center gap-2 badge badge-info badge-lg px-3 py-3">
+                                  <FaAward className="text-sm" />
+                                  <span className="font-medium">{item.result}</span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Courses */}
+                            {coursesArray.length > 0 && (
+                              <div className="border-t border-base-300 pt-4">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <FaBookOpen className="text-sm text-base-content/60" />
+                                  <span className="text-xs font-semibold uppercase tracking-wide text-base-content/60">
+                                    Key Coursework
+                                  </span>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                   {coursesArray.map((course, i) => (
-                                    <span 
-                                      key={i} 
-                                      className="badge badge-outline py-1.5 px-3 text-xs"
+                                    <span
+                                      key={i}
+                                      className="badge badge-ghost text-xs sm:text-sm px-3 py-3 hover:bg-primary/10 hover:text-primary transition-colors"
                                     >
-                                      {course}
+                                      {course.trim()}
                                     </span>
                                   ))}
                                 </div>
                               </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                            )}
 
-                      {/* Expand Button and Admin Actions */}
-                      <div className="mt-6 pt-4 border-t border-base-300/30">
-                        <div className="flex items-center justify-between">
-                          {showExpandButton && (
-                            <button
-                              onClick={() => toggleCardExpansion(idx)}
-                              className="btn btn-ghost btn-sm gap-2 text-sm"
-                            >
-                              {isExpanded ? (
-                                <>
-                                  <span>Show Less</span>
-                                  <FaChevronUp className="text-xs" />
-                                </>
-                              ) : (
-                                <>
-                                  <span>Show Coursework</span>
-                                  <FaChevronDown className="text-xs" />
-                                </>
-                              )}
-                            </button>
-                          )}
-                          {user && (
-                            <div className="flex gap-1 ml-auto">
-                              <button
-                                onClick={() => handleEditEducation(idx)}
-                                className="btn btn-ghost btn-sm btn-square"
-                                aria-label="Edit"
-                              >
-                                <FaEdit className="text-base-content/60 hover:text-primary" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteClick(idx)}
-                                className="btn btn-ghost btn-sm btn-square"
-                                aria-label="Delete"
-                              >
-                                <FaTrash className="text-base-content/60 hover:text-error" />
-                              </button>
-                            </div>
-                          )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
           ) : (
             /* Empty State */
             <div className="text-center py-16 md:py-24">
@@ -363,7 +295,7 @@ const Education = () => {
                   onClick={() => setShowAddModal(true)}
                   className="btn btn-primary mt-6"
                 >
-                  Add Education
+                  <FaPlus className="mr-2" /> Add Education
                 </button>
               )}
             </div>
@@ -371,7 +303,7 @@ const Education = () => {
         </div>
       </section>
 
-      {/* Education Modal - Fixed Version */}
+      {/* Add/Edit Modal */}
       <AnimatePresence>
         {showAddModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -383,176 +315,168 @@ const Education = () => {
               onClick={resetForm}
               className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             />
-            
+
             {/* Modal Content */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="relative bg-base-100 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto z-10"
+              className="relative bg-base-100 rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl z-10"
             >
               {/* Modal Header */}
-              <div className="sticky top-0 bg-base-100 p-6 border-b border-base-300 rounded-t-2xl z-20">
+              <div className="sticky top-0 bg-base-100 border-b border-base-300 px-6 py-4 z-20">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-2xl font-bold">
-                      {editingIndex !== null ? 'Edit Education' : 'Add Education'}
-                    </h3>
-                    <p className="text-base-content/70 mt-1 text-sm">
-                      {editingIndex !== null ? 'Update your education details' : 'Add your new academic achievement'}
-                    </p>
-                  </div>
+                  <h3 className="text-2xl font-bold text-base-content">
+                    {editingIndex !== null ? 'Edit Education' : 'New Education'}
+                  </h3>
                   <button
                     onClick={resetForm}
-                    className="btn btn-ghost btn-circle"
+                    className="btn btn-ghost btn-circle btn-sm"
                     aria-label="Close"
                   >
-                    <FaTimes className="text-xl" />
+                    <FaTimes />
                   </button>
                 </div>
               </div>
 
               {/* Modal Body */}
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Column */}
-                  <div className="space-y-4">
-                    <div className="form-control">
-                      <label className="label">
-                        <span className="label-text font-semibold">
-                          Degree Title <span className="text-error">*</span>
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        value={newEducation.title}
-                        onChange={(e) => setNewEducation({ ...newEducation, title: e.target.value })}
-                        className="input input-bordered w-full"
-                        placeholder="e.g., Bachelor of Science in Computer Science"
-                        required
-                      />
-                    </div>
+                <div className="space-y-4">
 
+                  {/* Degree Title */}
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold text-sm">Degree Title</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newEducation.title}
+                      onChange={(e) => setNewEducation({ ...newEducation, title: e.target.value })}
+                      className="input input-bordered focus:input-primary"
+                      placeholder="e.g., Bachelor of Science in Computer Science"
+                      required
+                    />
+                  </div>
+
+                  {/* Institution & URL */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">
-                          Institution <span className="text-error">*</span>
-                        </span>
+                        <span className="label-text font-semibold text-sm">Institution</span>
                       </label>
                       <input
                         type="text"
                         value={newEducation.institution}
                         onChange={(e) => setNewEducation({ ...newEducation, institution: e.target.value })}
-                        className="input input-bordered w-full"
-                        placeholder="University name and location"
+                        className="input input-bordered focus:input-primary"
+                        placeholder="University name"
                         required
                       />
                     </div>
 
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">Institution URL</span>
+                        <span className="label-text font-semibold text-sm">Website URL</span>
                       </label>
                       <input
                         type="url"
                         value={newEducation.url}
                         onChange={(e) => setNewEducation({ ...newEducation, url: e.target.value })}
-                        className="input input-bordered w-full"
-                        placeholder="https://university.edu"
+                        className="input input-bordered focus:input-primary"
+                        placeholder="https://..."
                       />
                     </div>
                   </div>
 
-                  {/* Right Column */}
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="form-control">
-                        <label className="label">
-                          <span className="label-text font-semibold">
-                            Timeline <span className="text-error">*</span>
-                          </span>
-                        </label>
-                        <input
-                          type="text"
-                          value={newEducation.year}
-                          onChange={(e) => setNewEducation({ ...newEducation, year: e.target.value })}
-                          className="input input-bordered w-full"
-                          placeholder="e.g., 2020 - 2024"
-                          required
-                        />
-                      </div>
-
-                      <div className="form-control">
-                        <label className="label">
-                          <span className="label-text font-semibold">Grade/Result</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={newEducation.result}
-                          onChange={(e) => setNewEducation({ ...newEducation, result: e.target.value })}
-                          className="input input-bordered w-full"
-                          placeholder="e.g., GPA: 3.9/4.0"
-                        />
-                      </div>
-                    </div>
-
+                  {/* Year & Result */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="form-control">
                       <label className="label">
-                        <span className="label-text font-semibold">Coursework</span>
+                        <span className="label-text font-semibold text-sm">Timeline</span>
                       </label>
-                      <textarea
-                        value={newEducation.courses}
-                        onChange={(e) => setNewEducation({ ...newEducation, courses: e.target.value })}
-                        className="textarea textarea-bordered w-full resize-none"
-                        rows={4}
-                        placeholder="List key courses separated by commas (e.g., Data Structures, Algorithms, Database Systems)"
+                      <input
+                        type="text"
+                        value={newEducation.year}
+                        onChange={(e) => setNewEducation({ ...newEducation, year: e.target.value })}
+                        className="input input-bordered focus:input-primary"
+                        placeholder="e.g., 2020 - 2024"
+                        required
                       />
-                      <label className="label">
-                        <span className="label-text-alt text-base-content/60">
-                          Separate courses with commas
-                        </span>
-                      </label>
                     </div>
 
                     <div className="form-control">
-                      <label className="label cursor-pointer justify-start gap-3">
-                        <input
-                          type="checkbox"
-                          id="isPresent"
-                          checked={newEducation.isPresent}
-                          onChange={(e) => setNewEducation({ ...newEducation, isPresent: e.target.checked })}
-                          className="checkbox checkbox-primary"
-                        />
-                        <span className="label-text">
-                          Currently enrolled in this program
-                        </span>
+                      <label className="label">
+                        <span className="label-text font-semibold text-sm">Grade/Result</span>
                       </label>
+                      <input
+                        type="text"
+                        value={newEducation.result}
+                        onChange={(e) => setNewEducation({ ...newEducation, result: e.target.value })}
+                        className="input input-bordered focus:input-primary"
+                        placeholder="e.g., GPA: 3.9/4.0"
+                      />
                     </div>
                   </div>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row justify-end gap-4 mt-8 pt-6 border-t border-base-300">
-                  <button
-                    onClick={resetForm}
-                    className="btn btn-ghost"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleAddEducation}
-                    className="btn btn-primary"
-                  >
-                    {editingIndex !== null ? 'Update' : 'Save'}
-                  </button>
+                  {/* Coursework */}
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold text-sm">Key Coursework</span>
+                    </label>
+                    <textarea
+                      value={newEducation.courses}
+                      onChange={(e) => setNewEducation({ ...newEducation, courses: e.target.value })}
+                      className="textarea textarea-bordered focus:textarea-primary resize-none"
+                      rows={4}
+                      placeholder="Data Structures, Algorithms, Database Systems, Web Development"
+                    />
+                    <label className="label">
+                      <span className="label-text-alt text-base-content/60">
+                        Separate courses with commas
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Currently Enrolled Checkbox */}
+                  <div className="form-control">
+                    <label className="label cursor-pointer justify-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={newEducation.isPresent}
+                        onChange={(e) => setNewEducation({ ...newEducation, isPresent: e.target.checked })}
+                        className="checkbox checkbox-primary"
+                      />
+                      <span className="label-text">
+                        Currently enrolled in this program
+                      </span>
+                    </label>
+                  </div>
+
                 </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="sticky bottom-0 bg-base-100 border-t border-base-300 px-6 py-4 flex justify-end gap-3">
+                <button
+                  className="btn btn-ghost btn-sm sm:btn-md"
+                  onClick={resetForm}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-primary btn-sm sm:btn-md"
+                  onClick={handleAddEducation}
+                >
+                  {editingIndex !== null ? 'Update' : 'Save Education'}
+                </button>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
+      {/* Delete Confirmation */}
       <ConfirmationModal
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
@@ -563,6 +487,7 @@ const Education = () => {
         title="Delete Education Record"
       />
 
+      {/* Toast Notification */}
       {toast.show && (
         <Toast
           message={toast.message}
